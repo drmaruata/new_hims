@@ -1,0 +1,87 @@
+name: HIMS CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - phase-0-closeout
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hims-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Build, lint, typecheck and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.15.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  database-isolation:
+    name: PostgreSQL migration and RLS isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: hims_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hims_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Apply schema
+        env:
+          DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db
+        run: bash infra/db/migrate.sh
+
+      - name: Apply development seed
+        env:
+          DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db
+        run: psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 -f supabase/seed/seed.sql
+
+      - name: Provision non-BYPASSRLS application role
+        env:
+          DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db
+          HIMS_DB_APP_PASSWORD: ci-only-app-password
+        run: bash infra/db/provision-app-role.sh
+
+      - name: Verify tenant isolation
+        env:
+          DATABASE_URL: postgresql://hims_app:ci-only-app-password@localhost:5432/hims_db
+          HIMS_TENANT_ID: 11111111-1111-1111-1111-111111111111
+        run: bash infra/db/verify-rls.sh

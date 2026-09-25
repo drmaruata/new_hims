@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import {
   Body,
   Controller,
@@ -65,7 +67,7 @@ export class AuditController {
         isTenantAdmin: user.isTenantAdmin,
       },
       actorRole: user.roles[0] ?? 'UNKNOWN',
-      correlationId: String(request['correlationId'] ?? crypto.randomUUID()),
+      correlationId: String((request as Request & { correlationId?: string }).correlationId ?? randomUUID()),
       ipAddress: request.ip,
       userAgent: request.get('user-agent') ?? undefined,
     });

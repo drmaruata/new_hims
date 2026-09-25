@@ -1,0 +1,3 @@
+{
+  "expo":{"name":"HIMS Clinician","slug":"hims-clinician","version":"0.1.0","orientation":"portrait","scheme":"hims-clinician","userInterfaceStyle":"automatic","plugins":["expo-router"],"experiments":{"typedRoutes":true},"android":{"package":"com.hims.clinician"},"ios":{"bundleIdentifier":"com.hims.clinician"}}
+}

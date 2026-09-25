@@ -1,7 +1,8 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/auth.guard.js';
-import { CurrentUser } from '../../core/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
 import { EmrService } from './emr.service.js';
 
 @ApiTags('EMR')
@@ -13,8 +14,11 @@ export class EmrController {
 
   @Get('patients/:id/timeline')
   @ApiOperation({ summary: 'Get unified cross-department provenance-aware longitudinal timeline' })
-  async getTimeline(@Param('id') id: string, @CurrentUser() user: any) {
+  async getTimeline(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     const timeline = await this.emrService.getTimeline(id, user.tenantId);
-    return { data: timeline };
+    return timeline;
   }
 }
+
+
+

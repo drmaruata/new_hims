@@ -1,12 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
+import type { CreateLabOrderDto } from '@hims/validation';
+import { DatabaseService } from '@hims/database';
 import type { LabOrder } from '@hims/domain-types';
+import type { VerifyLabResultInput } from './dto/lis.dto.js';
 
 @Injectable()
 export class LisService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getOrders(status?: string, tenantId?: string, facilityId?: string): Promise<LabOrder[]> {
+  async getOrders(status?: string, tenantId?: string | null, facilityId?: string | null): Promise<LabOrder[]> {
     return [
       {
         id: '50505050-5050-5050-5050-505050505001',
@@ -53,7 +55,12 @@ export class LisService {
     ];
   }
 
-  async createOrder(data: any, tenantId: string, facilityId: string, doctorId: string): Promise<LabOrder> {
+  async createOrder(
+    input: CreateLabOrderDto,
+    tenantId: string,
+    facilityId: string,
+    doctorId: string,
+  ): Promise<LabOrder> {
     const orderNumber = `LAB-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     const accessionNumber = `ACC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -63,12 +70,12 @@ export class LisService {
       facilityId,
       orderNumber,
       accessionNumber,
-      encounterId: data.encounterId,
-      patientId: data.patientId,
+      encounterId: input.encounterId,
+      patientId: input.patientId,
       requestingDoctorId: doctorId,
-      priority: data.priority || 'ROUTINE',
+      priority: input.priority,
       status: 'ORDERED',
-      tests: (data.testCodes || ['CBC_HB']).map((code: string) => ({
+      tests: input.testCodes.map((code) => ({
         testCode: code,
         testName: code.replace('_', ' '),
         category: 'HEMATOLOGY',
@@ -81,17 +88,34 @@ export class LisService {
     };
   }
 
-  async verifyResult(id: string, testCode: string, resultData: any, pathologistId: string): Promise<LabOrder> {
+  async verifyResult(
+    id: string,
+    testCode: string,
+    input: VerifyLabResultInput,
+    pathologistId: string,
+  ): Promise<LabOrder> {
     const orders = await this.getOrders();
-    const order = orders[0];
-    const test = order.tests.find(t => t.testCode === testCode) || order.tests[0];
-    test.resultValue = resultData.resultValue;
-    test.numericResult = resultData.numericResult;
-    test.isAbnormal = resultData.isAbnormal || false;
-    test.isCritical = resultData.isCritical || false;
+    const order = orders.find((candidate) => candidate.id === id);
+
+    // Verifying the wrong order would sign off an unrelated patient's result,
+    // so an unknown id is a 404 rather than a fallback to the first row.
+    if (!order) {
+      throw new NotFoundException(`No laboratory order ${id} is visible to this caller`);
+    }
+
+    const test = order.tests.find((candidate) => candidate.testCode === testCode);
+    if (!test) {
+      throw new NotFoundException(`Order ${order.orderNumber} has no test ${testCode}`);
+    }
+
+    test.resultValue = input.resultValue;
+    test.numericResult = input.numericResult;
+    test.isAbnormal = input.isAbnormal ?? false;
+    test.isCritical = input.isCritical ?? false;
     test.verifiedBy = pathologistId;
     test.verifiedAt = new Date().toISOString();
     order.status = 'VERIFIED';
     return order;
   }
 }
+

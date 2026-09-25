@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from './card.js';
+﻿import * as React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from './card';
 import { LucideIcon } from 'lucide-react';
 
 export interface CommandCenterWidgetProps {
@@ -52,3 +52,4 @@ export function CommandCenterWidget({
     </Card>
   );
 }
+

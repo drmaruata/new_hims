@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { EmrController } from './emr.controller.js';
 import { EmrService } from './emr.service.js';
 
@@ -8,3 +8,4 @@ import { EmrService } from './emr.service.js';
   exports: [EmrService],
 })
 export class EmrModule {}
+

@@ -1,8 +1,8 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import type { ClinicalVitals } from '@hims/domain-types';
 import { formatClinicalDateTime } from '@hims/date-time';
-import { Card, CardHeader, CardTitle, CardContent } from './card.js';
-import { Activity, Heart, Thermometer, Droplet, Wind } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from './card';
+import { Activity, Heart, Thermometer, Droplet } from 'lucide-react';
 
 export interface VitalsPanelProps {
   vitals?: ClinicalVitals | null;
@@ -65,3 +65,4 @@ export function VitalsPanel({ vitals }: VitalsPanelProps) {
     </Card>
   );
 }
+

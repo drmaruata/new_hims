@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { IpdController } from './ipd.controller.js';
 import { IpdService } from './ipd.service.js';
 
@@ -8,3 +8,4 @@ import { IpdService } from './ipd.service.js';
   exports: [IpdService],
 })
 export class IpdModule {}
+

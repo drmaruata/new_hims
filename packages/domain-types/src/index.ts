@@ -32,7 +32,9 @@ export interface ScopedEntity extends BaseEntity {
   facilityId: UUID;
 }
 
-export interface ApiResponse<T = any> {
+// `unknown`, not `any`: an unparameterised `ApiResponse` should force the caller
+// to narrow the payload, not hand them values they will read as typed.
+export interface ApiResponse<T = unknown> {
   data: T;
   meta?: {
     correlationId?: string;
@@ -56,6 +58,9 @@ export interface ApiErrorResponse {
 // 2. TENANCY & ORGANIZATION
 // =============================================================================
 
+// The `*_jsonb` columns are `jsonb NOT NULL DEFAULT '{}'` with no documented
+// shape. `unknown` values say that honestly; `any` would promise they are
+// readable, which nothing in the database guarantees.
 export interface Tenant extends BaseEntity {
   code: string;
   legalName: string;
@@ -64,7 +69,7 @@ export interface Tenant extends BaseEntity {
   timezone: string;
   defaultLocale: string;
   defaultCurrency: CurrencyCode;
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
 }
 
 export interface Facility extends ScopedEntity {
@@ -74,8 +79,8 @@ export interface Facility extends ScopedEntity {
   hfrId?: string | null;
   timezone: string;
   status: 'ACTIVE' | 'INACTIVE';
-  address?: Record<string, any>;
-  contact?: Record<string, any>;
+  address?: Record<string, unknown>;
+  contact?: Record<string, unknown>;
 }
 
 export interface Department extends ScopedEntity {
@@ -131,26 +136,97 @@ export interface AuthSession {
 // 4. PATIENT 360 & MPI
 // =============================================================================
 
+/**
+ * `hims_patient.patients` as it actually exists.
+ *
+ * Field names, nullability and the identifier split mirror
+ * `doc/supabase_schema.sql`, which is the authority for anything the API
+ * contract does not contradict. Two consequences are worth stating because they
+ * are easy to get wrong:
+ *
+ *  - `lastName` and `dateOfBirth` are **nullable**. Registrations routinely
+ *    lack one or both and the columns are not `NOT NULL`, so a non-null type
+ *    here would make the model lie about what can be stored.
+ *  - National ID and ABHA are **not columns on `patients`**. They live in
+ *    `hims_patient.patient_identifiers`, which holds a hash plus an encrypted
+ *    value rather than the identifier in the clear. See {@link PatientIdentifier}.
+ *
+ * `displayName` is the NOT NULL column that search and display both key off;
+ * the first/middle/last parts are the structured form it is derived from.
+ */
 export interface Patient extends BaseEntity {
-  uhid: string; // Canonical unique hospital identity number
+  /** Unique per tenant: `UNIQUE (tenant_id, uhid)`. */
+  uhid: string;
+
   firstName: string;
   middleName?: string | null;
-  lastName: string;
-  dateOfBirth: DateOnlyString;
-  gender: Gender;
-  bloodGroup?: BloodGroup;
-  mobile: string;
+  lastName?: string | null;
+  displayName: string;
+
+  dateOfBirth?: DateOnlyString | null;
+  /** How precisely `dateOfBirth` is known: `DAY`, `MONTH`, `YEAR`, `UNKNOWN`. */
+  dobPrecision?: 'DAY' | 'MONTH' | 'YEAR' | 'UNKNOWN' | null;
+  /**
+   * Sex recorded at birth. Distinct from `genderIdentity`, which is the
+   * patient's own statement and can differ.
+   */
+  sexAtBirth?: Gender | null;
+  genderIdentity?: Gender | null;
+  maritalStatus?: MaritalStatus | null;
+
+  bloodGroup?: BloodGroup | null;
+  primaryMobile?: string | null;
+  secondaryMobile?: string | null;
   email?: string | null;
-  nationalIdType?: 'AADHAAR' | 'PAN' | 'PASSPORT' | 'VOTER_ID' | 'ABHA' | 'OTHER';
-  nationalIdNumber?: string | null;
-  abhaAddress?: string | null;
-  abhaNumber?: string | null;
-  isVip?: boolean;
-  isMlc?: boolean;
+
+  /** Free-form postal address. NOT NULL in the database, defaults to `{}`. */
+  address?: Record<string, unknown>;
+
+  preferredLanguage?: string | null;
+  communicationPreference?: 'SMS' | 'EMAIL' | 'PUSH' | 'PHONE' | null;
+
   status: 'ACTIVE' | 'MERGED' | 'DECEASED' | 'INACTIVE';
+  deceasedAt?: ISODateString | null;
   mergedIntoPatientId?: UUID | null;
+  /**
+   * Master Patient Index state: `MASTER`, `DUPLICATE` or `GOLDEN`. A duplicate
+   * must be merged before its record is treated as authoritative.
+   */
+  masteringStatus: 'MASTER' | 'DUPLICATE' | 'GOLDEN' | 'ERROR';
+
   allergies?: PatientAllergy[];
   contacts?: PatientContact[];
+  identifiers?: PatientIdentifier[];
+}
+
+/**
+ * A government or national identity document held for a patient.
+ *
+ * The plaintext identifier is never returned by the API. `valueHash` exists so
+ * an exact-match lookup can be answered without decrypting anything, and
+ * `identifierType` plus `system` is what tells a caller which document it is.
+ */
+export interface PatientIdentifier {
+  id: UUID;
+  identifierType:
+    | 'AADHAAR'
+    | 'PAN'
+    | 'PASSPORT'
+    | 'VOTER_ID'
+    | 'ABHA'
+    | 'DL'
+    | 'OTHER';
+  system?: string | null;
+  isPrimary: boolean;
+  verifiedAt?: ISODateString | null;
+  validFrom?: DateOnlyString | null;
+  validTo?: DateOnlyString | null;
+  /**
+   * Hex digest of the identifier, scoped per tenant by
+   * `ux_patient_identifier_hash`. Safe to return; an exact lookup is
+   * hash-then-match rather than a scan over plaintext.
+   */
+  valueHash?: string | null;
 }
 
 export interface PatientAllergy {
@@ -212,19 +288,34 @@ export interface ClinicalVitals {
 // 6. MODULE 1: OPD (OUTPATIENT DEPARTMENT)
 // =============================================================================
 
-export type AppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+export type OpdAppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
 
+/**
+ * One row of the OPD register for a business date.
+ *
+ * `departmentName`, `patientUhid`, `patientDisplayName` and `queueToken` are
+ * **not** columns on `hims_opd.appointments`. They are joined in by the API so
+ * the queue screen can render a row without a second round trip per patient —
+ * a queue table that shows a UUID where a name belongs gets ignored by the
+ * person running it. They are optional because the underlying columns are
+ * nullable or may be absent from a projection.
+ */
 export interface OpdAppointment extends ScopedEntity {
   appointmentNumber: string;
   patientId: UUID;
   departmentId: UUID;
-  practitionerId: UUID;
+  practitionerId?: UUID | null;
   scheduledAt: ISODateString;
+  scheduledEnd: ISODateString;
   durationMinutes: number;
-  status: AppointmentStatus;
+  status: OpdAppointmentStatus;
   queueToken?: string | null;
   checkedInAt?: ISODateString | null;
-  reasonForVisit?: string;
+  reasonForVisit?: string | null;
+
+  departmentName?: string;
+  patientUhid?: string;
+  patientDisplayName?: string;
 }
 
 export interface OpdPrescriptionItem {
@@ -463,22 +554,82 @@ export interface PharmacyDispenseOrder extends ScopedEntity {
 // 14. MODULE 9: EMR (ELECTRONIC MEDICAL RECORD / PATIENT 360)
 // =============================================================================
 
+/**
+ * One row of `hims_emr.timeline_entries`, the append-only longitudinal index
+ * that Patient 360 renders.
+ *
+ * `eventType`, `sourceDomain` and `sourceTable` are free-text `text NOT NULL`
+ * columns in the schema, written by whichever domain module emitted the event
+ * (`hims_clinical`, `hims_lab`, `hims_rad`, …). The unions below are the values
+ * the platform itself emits; the trailing `string` keeps a new emitter from
+ * becoming a type error in the read path, which is where new event sources will
+ * appear first.
+ *
+ * `eventType` is also carried as `title` because the schema has no separate
+ * human-readable label — `display_summary` is the clinician-facing text and is
+ * surfaced as `summary`.
+ */
 export interface EmrTimelineItem {
   id: UUID;
   timestamp: ISODateString;
-  eventType: 'ENCOUNTER' | 'DIAGNOSIS' | 'PRESCRIPTION' | 'LAB_RESULT' | 'RADIOLOGY_REPORT' | 'SURGERY' | 'VITALS' | 'ADMISSION' | 'DISCHARGE';
+  eventType:
+    | 'ENCOUNTER'
+    | 'DIAGNOSIS'
+    | 'PRESCRIPTION'
+    | 'LAB_RESULT'
+    | 'RADIOLOGY_REPORT'
+    | 'SURGERY'
+    | 'VITALS'
+    | 'ADMISSION'
+    | 'DISCHARGE'
+    | (string & {});
   title: string;
   summary: string;
-  sourceModule: 'OPD' | 'IPD' | 'LIS' | 'RIS' | 'EMERGENCY' | 'OT' | 'ICU' | 'PHARMACY';
+  /** Owning domain, e.g. `hims_lab`. */
+  sourceModule:
+    | 'OPD'
+    | 'IPD'
+    | 'LIS'
+    | 'RIS'
+    | 'EMERGENCY'
+    | 'OT'
+    | 'ICU'
+    | 'PHARMACY'
+    | (string & {});
   sourceId: UUID;
   practitionerName?: string;
   departmentName?: string;
   criticalFlag?: boolean;
 }
 
+/**
+ * A problem list entry from `hims_patient.conditions`.
+ *
+ * Kept separate from `Encounter`-scoped `diagnoses`: the problem list outlives
+ * any single encounter and is what a clinician scans before prescribing.
+ */
+export interface PatientCondition {
+  id: UUID;
+  codeSystem?: string | null;
+  code?: string | null;
+  description: string;
+  status: 'ACTIVE' | 'RESOLVED' | 'CHRONIC' | 'INACTIVE';
+  onsetDate?: DateOnlyString | null;
+  recordedAt: ISODateString;
+}
+
+/**
+ * The longitudinal view assembled for the Patient 360 screen.
+ *
+ * Assembled from the owning schemas at read time rather than from
+ * `hims_emr.patient_summaries`, which is a projection maintained by the worker
+ * and can lag a transaction behind the clinical record.
+ */
 export interface Patient360Record {
   patient: Patient;
   allergies: PatientAllergy[];
+  contacts: PatientContact[];
+  conditions: PatientCondition[];
   activeEncounters: Encounter[];
   recentVitals: ClinicalVitals[];
   activePrescriptions: OpdPrescription[];
@@ -535,7 +686,78 @@ export interface Invoice extends ScopedEntity {
 }
 
 // =============================================================================
-// 17. QUALITY OS, INCIDENTS & ACCREDITATION (NABH / NQAS)
+// 17. COMMAND CENTER
+// =============================================================================
+
+/**
+ * The operational dashboard roll-up.
+ *
+ * Every field is a count or a sum the API computes from the owning table, not a
+ * stored snapshot — a cached dashboard that drifts from the record is worse
+ * than a slow one, because a hospital operates its surge plan off it.
+ *
+ * All day-boundary figures (`opd`, `revenue`, `ot.casesScheduledToday`) are
+ * resolved in the **facility's** timezone, not the server's. A server running
+ * UTC would otherwise report a different "today" than the hospital for seven
+ * hours a day, which is exactly when the number is being watched.
+ */
+export interface CommandCenterMetrics {
+  /** When the roll-up was computed. */
+  timestamp: ISODateString;
+  facilityId: UUID;
+  facilityName: string;
+  /** IANA zone the day boundaries above were resolved in. */
+  timezone: string;
+
+  occupancy: {
+    totalBeds: number;
+    occupiedBeds: number;
+    /** `occupiedBeds / totalBeds` as a percentage, to one decimal. */
+    occupancyRate: number;
+    icuBedsOccupied: number;
+    icuBedsTotal: number;
+  };
+
+  opd: {
+    registeredToday: number;
+    inConsultation: number;
+    waitingInQueue: number;
+    /** Mean minutes from `scheduled_start` to `consultation_started_at`. */
+    avgWaitTimeMinutes: number | null;
+  };
+
+  emergency: {
+    activePatients: number;
+    esi1Resuscitation: number;
+    esi2Emergent: number;
+    /** Mean minutes from `arrival_at` to `triage_at` for cases seen today. */
+    avgTriageTimeMinutes: number | null;
+  };
+
+  ot: {
+    casesScheduledToday: number;
+    casesCompleted: number;
+    theatresRunning: number;
+    theatresTotal: number;
+  };
+
+  diagnostics: {
+    pendingLabSamples: number;
+    /** Results flagged as critical that no clinician has acknowledged. */
+    criticalLabAlerts: number;
+    pendingRadiologyReads: number;
+  };
+
+  revenue: {
+    grossBilledToday: number;
+    collectionsToday: number;
+    claimsSubmitted: number;
+    preAuthPending: number;
+  };
+}
+
+// =============================================================================
+// 18. QUALITY OS, INCIDENTS & ACCREDITATION (NABH / NQAS)
 // =============================================================================
 
 export interface QualityIndicatorMeasurement extends ScopedEntity {
@@ -564,7 +786,10 @@ export interface IncidentReport extends ScopedEntity {
 // 18. DOMAIN EVENTS & AUDIT LOGGING
 // =============================================================================
 
-export interface DomainEventEnvelope<T = any> {
+// `unknown` by default for the same reason as ApiResponse: a domain event's
+// payload shape depends on `eventType`, so an unparameterised envelope must not
+// hand the subscriber a value it will read as typed.
+export interface DomainEventEnvelope<T = unknown> {
   eventId: UUID;
   eventType: string;
   eventVersion: number;
@@ -591,4 +816,457 @@ export interface AuditLogEntry extends ScopedEntity {
   reason?: string;
   correlationId: string;
   ipAddress?: string;
+}
+
+// =============================================================================
+// 19. BACKGROUND QUEUE AND JOB CONTRACT
+// =============================================================================
+
+/**
+ * BullMQ queue names.
+ *
+ * These strings are the seam between three processes: `apps/worker` produces,
+ * `apps/integration-worker` consumes, and `apps/api` produces. They live here
+ * rather than in either worker so the two ends cannot drift — a queue name is a
+ * bare string, so a typo on the producing side does not fail the build or the
+ * type-checker, it fails as a job nobody ever picks up, days later, in
+ * production.
+ *
+ * One queue per development.md §8.2 responsibility. `HIMS_INTEGRATION` is the
+ * boundary §8.3 asks for: the worker decides *that* an external call is needed,
+ * the integration gateway decides *how* to make it.
+ */
+export const HIMS_QUEUES = {
+  /** Relay of `hims_workflow.outbox_events` into the queues below. */
+  OUTBOX: 'hims.outbox',
+  NOTIFICATIONS: 'hims.notifications',
+  REPORTS: 'hims.reports',
+  DOCUMENTS: 'hims.documents',
+  EXPORTS: 'hims.exports',
+  REMINDERS: 'hims.reminders',
+  ANALYTICS: 'hims.analytics',
+  /**
+   * Maintains the Patient 360 projections in `hims_emr` — `timeline_entries`,
+   * `patient_summaries`, `document_index`. These are derived: the owning domain
+   * schema stays authoritative and the projection can be rebuilt from it.
+   */
+  EMR: 'hims.emr',
+  AI: 'hims.ai',
+  BULK_IMPORT: 'hims.bulk-import',
+  INTEGRATION: 'hims.integration',
+} as const;
+
+export type HimsQueueName = (typeof HIMS_QUEUES)[keyof typeof HIMS_QUEUES];
+
+/**
+ * Job names, per queue.
+ *
+ * BullMQ routes on `(queue, name)`, so a job name is as much of a contract as
+ * the queue name. Kept as one flat union because a worker subscribes to one
+ * name and the producer names the other; the pairing is enforced by
+ * `HIMS_JOB_NAMES[queue]` rather than by 200 lines of per-queue interfaces.
+ */
+export const HIMS_JOB_NAMES = {
+  [HIMS_QUEUES.OUTBOX]: {
+    RELAY: 'outbox.relay',
+    SWEEP: 'outbox.sweep',
+  },
+  [HIMS_QUEUES.NOTIFICATIONS]: {
+    DISPATCH: 'notifications.dispatch',
+  },
+  [HIMS_QUEUES.REPORTS]: {
+    GENERATE: 'reports.generate',
+  },
+  [HIMS_QUEUES.DOCUMENTS]: {
+    PROCESS: 'documents.process',
+  },
+  [HIMS_QUEUES.EXPORTS]: {
+    BUILD: 'exports.build',
+  },
+  [HIMS_QUEUES.REMINDERS]: {
+    SCAN: 'reminders.scan',
+  },
+  [HIMS_QUEUES.ANALYTICS]: {
+    INGEST: 'analytics.ingest',
+  },
+  [HIMS_QUEUES.EMR]: {
+    PROJECT: 'emr.project',
+  },
+  [HIMS_QUEUES.AI]: {
+    RUN: 'ai.run',
+  },
+  [HIMS_QUEUES.BULK_IMPORT]: {
+    IMPORT: 'bulk-import.import',
+  },
+  [HIMS_QUEUES.INTEGRATION]: {
+    DELIVER: 'integration.deliver',
+  },
+} as const satisfies Record<HimsQueueName, Record<string, string>>;
+
+export type HimsQueueJobName<Q extends HimsQueueName> =
+  (typeof HIMS_JOB_NAMES)[Q][keyof (typeof HIMS_JOB_NAMES)[Q]];
+
+/**
+ * Fields every job carries.
+ *
+ * `tenantId` is not decoration: the worker re-applies it as the `app.tenant_id`
+ * GUC before every statement, so a processor cannot accidentally read another
+ * hospital's data even if it forgets a `WHERE` clause. A job with no resolvable
+ * `tenantId` is rejected rather than run unscoped.
+ *
+ * `actorUserId` is for the audit trail only. Per EVENT_CATALOGUE.md §3.8, being
+ * handed a job is not a permission — a processor that acts on behalf of a user
+ * must re-authorize rather than trust this field.
+ */
+export interface JobScope {
+  tenantId: UUID;
+  facilityId?: UUID | null;
+  actorUserId?: UUID | null;
+  /** Propagated from the originating request so a job's logs join its trace. */
+  correlationId: string;
+  /**
+   * The `event_id` this job was relayed from, when there was one. The
+   * recommended consumer idempotency key is `(consumer, eventId)`
+   * (EVENT_CATALOGUE.md §20).
+   */
+  eventId?: UUID;
+}
+
+/** One `hims_workflow.outbox_events` row, shaped for a processor. */
+export interface OutboxRelayJob extends JobScope {
+  eventType: string;
+  eventVersion: number;
+  aggregateType: string;
+  aggregateId: UUID;
+  occurredAt: ISODateString;
+  payload: Record<string, unknown>;
+}
+
+export interface NotificationDispatchJob extends JobScope {
+  notificationId: UUID;
+  channel: 'SMS' | 'EMAIL' | 'PUSH' | 'WHATSAPP';
+}
+
+export interface ReportGenerateJob extends JobScope {
+  reportCode: string;
+  format: 'PDF' | 'CSV' | 'XLSX';
+  /** Report parameters, validated by the processor against a Zod schema. */
+  parameters: Record<string, unknown>;
+}
+
+export type DocumentOperation =
+  | 'VERIFY_CHECKSUM'
+  | 'MALWARE_SCAN'
+  | 'RENDER_PREVIEW'
+  | 'AMEND_EMR_INDEX';
+
+export interface DocumentProcessJob extends JobScope {
+  documentId: UUID;
+  versionId?: UUID | null;
+  operation: DocumentOperation;
+}
+
+export interface ExportBuildJob extends JobScope {
+  exportCode: string;
+  format: 'CSV' | 'XLSX';
+  parameters: Record<string, unknown>;
+}
+
+export interface ReminderScanJob extends JobScope {
+  /** Reminder family to scan for, e.g. `FOLLOW_UP` or `EXPIRY_RISK`. */
+  reminderCode: string;
+  /** IANA zone the day boundary is resolved in, per tenant. */
+  timezone: string;
+  businessDate: DateOnlyString;
+}
+
+export interface AnalyticsIngestJob extends JobScope {
+  dataset: string;
+  from: ISODateString;
+  to: ISODateString;
+}
+
+/** A non-critical AI task; the gateway still owns model selection. */
+export interface AiRunJob extends JobScope {
+  requestId: UUID;
+  useCase: string;
+  patientId?: UUID | null;
+  encounterId?: UUID | null;
+}
+
+export interface BulkImportJob extends JobScope {
+  importBatchId: UUID;
+  /** Object key in the document bucket; the payload never travels in the job. */
+  objectKey: string;
+  format: 'CSV' | 'NDJSON';
+}
+
+/**
+ * One external call, carried by the integration gateway.
+ *
+ * `messageRecordId` is the row in `hims_integration.messages`; the payload is a
+ * storage reference, never inline, so a job in Redis holds no clinical data.
+ */
+export interface IntegrationDeliverJob extends JobScope {
+  messageRecordId: UUID;
+  integrationCode: string;
+  messageId: string;
+  messageType: string;
+  direction: 'OUTBOUND' | 'INBOUND';
+  /** 1-based; also written to `hims_integration.message_attempts`. */
+  attemptNumber: number;
+}
+
+// =============================================================================
+// 20. DOMAIN EVENT TYPE CATALOGUE
+// =============================================================================
+
+/**
+ * Every event name in `doc/EVENT_CATALOGUE.md`, as a compile-time contract.
+ *
+ * This exists for one reason: an event type that no queue handles must not
+ * disappear. The worker's routing table is typed as
+ * `Record<HimsEventType, EventRoute>`, so adding an event to the catalogue
+ * without giving it a destination is a type error at build time, not a support
+ * ticket weeks later.
+ *
+ * Kept grouped by domain rather than flattened so a reviewer diffing it against
+ * the catalogue can do so section by section. Keep the order and the spelling
+ * of the catalogue — `labs.result.critical` and `lab.result.critical` are two
+ * different events, and only one of them is ever published.
+ */
+export const HIMS_EVENT_TYPES = {
+  /** Catalogue §4. */
+  patient: [
+    'patient.created',
+    'patient.updated',
+    'patient.identifier.linked',
+    'patient.identifier.verified',
+    'patient.merge.requested',
+    'patient.merge.approved',
+    'patient.merge.completed',
+    'patient.consent.granted',
+    'patient.consent.withdrawn',
+  ],
+  /** Catalogue §5. */
+  opd: [
+    'opd.appointment.created',
+    'opd.appointment.confirmed',
+    'opd.appointment.checked_in',
+    'opd.queue.ticket.created',
+    'opd.queue.ticket.called',
+    'opd.encounter.started',
+    'opd.note.signed',
+    'opd.order.created',
+    'opd.prescription.issued',
+    'opd.encounter.completed',
+    'opd.admission.requested',
+  ],
+  /** Catalogue §6. */
+  ipd: [
+    'ipd.admission.requested',
+    'ipd.admission.approved',
+    'ipd.admission.created',
+    'ipd.bed.reserved',
+    'ipd.bed.assigned',
+    'ipd.bed.released',
+    'ipd.patient.transferred',
+    'ipd.note.signed',
+    'ipd.vitals.recorded',
+    'ipd.medication.order.created',
+    'ipd.medication.order.changed',
+    'ipd.mar.entry.recorded',
+    'ipd.ot.requested',
+    'ipd.icu.transfer.requested',
+    'ipd.discharge.summary.finalized',
+    'ipd.discharge.completed',
+  ],
+  /** Catalogue §7. */
+  lab: [
+    'lab.order.created',
+    'lab.specimen.collected',
+    'lab.specimen.received',
+    'lab.specimen.rejected',
+    'lab.result.entered',
+    'lab.result.verified',
+    'lab.result.critical',
+    'lab.result.critical.acknowledged',
+    'lab.result.released',
+    'lab.result.amended',
+    'lab.qc.failed',
+  ],
+  /** Catalogue §8. */
+  radiology: [
+    'radiology.order.created',
+    'radiology.order.scheduled',
+    'radiology.study.started',
+    'radiology.study.completed',
+    'radiology.report.drafted',
+    'radiology.report.verified',
+    'radiology.report.released',
+    'radiology.report.amended',
+    'radiology.pacs.failed',
+  ],
+  /** Catalogue §9. */
+  ed: [
+    'ed.encounter.created',
+    'ed.triage.completed',
+    'ed.resuscitation.started',
+    'ed.critical_alert.created',
+    'ed.admission.requested',
+    'ed.icu.transfer.requested',
+    'ed.discharge.completed',
+    'ed.transfer.completed',
+    'ed.mlc.recorded',
+  ],
+  /** Catalogue §10. */
+  ot: [
+    'ot.surgery.requested',
+    'ot.surgery.approved',
+    'ot.surgery.scheduled',
+    'ot.case.checked_in',
+    'ot.checklist.stage.completed',
+    'ot.time_out.completed',
+    'ot.procedure.started',
+    'ot.procedure.completed',
+    'ot.specimen.created',
+    'ot.case.completed',
+  ],
+  /** Catalogue §11. */
+  icu: [
+    'icu.transfer.accepted',
+    'icu.admission.created',
+    'icu.vitals.recorded',
+    'icu.device.inserted',
+    'icu.device.removed',
+    'icu.infusion.started',
+    'icu.critical_alert.created',
+    'icu.transfer.requested',
+    'icu.discharge.completed',
+  ],
+  /** Catalogue §12. */
+  pharmacy: [
+    'pharmacy.prescription.received',
+    'pharmacy.medication_order.received',
+    'pharmacy.prescription.verified',
+    'pharmacy.dispensing.started',
+    'pharmacy.dispensing.completed',
+    'pharmacy.stock.decremented',
+    'pharmacy.stock.adjusted',
+    'pharmacy.stock.below_threshold',
+    'pharmacy.stock.expiry_risk',
+    'pharmacy.recall.created',
+  ],
+  /** Catalogue §12. */
+  inventory: [
+    'inventory.purchase_order.created',
+    'inventory.purchase_order.approved',
+    'inventory.goods_received',
+    'inventory.stock_transferred',
+  ],
+  /** Catalogue §13. */
+  billing: [
+    'billing.charge.created',
+    'billing.invoice.created',
+    'billing.invoice.finalized',
+    'billing.payment.created',
+    'billing.payment.completed',
+    'billing.payment.reversed',
+    'billing.refund.requested',
+    'billing.refund.approved',
+  ],
+  /** Catalogue §13. */
+  insurance: [
+    'insurance.eligibility.checked',
+    'insurance.preauth.created',
+    'insurance.preauth.submitted',
+    'insurance.preauth.approved',
+    'insurance.claim.created',
+    'insurance.claim.submitted',
+    'insurance.claim.rejected',
+    'insurance.claim.resubmitted',
+    'insurance.claim.settled',
+    'insurance.remittance.received',
+    'insurance.remittance.reconciled',
+  ],
+  /** Catalogue §14. */
+  quality: [
+    'quality.incident.reported',
+    'quality.incident.investigation.completed',
+    'quality.capa.created',
+    'quality.capa.action.assigned',
+    'quality.capa.action.completed',
+    'quality.capa.effectiveness.verified',
+    'quality.capa.closed',
+    'quality.audit.created',
+    'quality.audit.finding.created',
+    'quality.indicator.calculated',
+    'quality.indicator.below_target',
+  ],
+  /** Catalogue §15. */
+  document: [
+    'document.created',
+    'document.uploaded',
+    'document.scan.completed',
+    'document.scan.failed',
+    'document.version.created',
+    'document.signed',
+    'document.amended',
+  ],
+  /** Catalogue §16. */
+  workflow: [
+    'workflow.started',
+    'workflow.task.created',
+    'workflow.task.assigned',
+    'workflow.task.completed',
+    'workflow.task.escalated',
+    'workflow.approval.requested',
+    'workflow.approval.approved',
+    'workflow.approval.rejected',
+    'workflow.failed',
+    'workflow.completed',
+  ],
+  /** Catalogue §17. */
+  integration: [
+    'integration.message.created',
+    'integration.message.sent',
+    'integration.message.acknowledged',
+    'integration.message.failed',
+    'integration.message.dead_lettered',
+    'integration.message.replayed',
+  ],
+  /** Catalogue §18. */
+  ai: [
+    'ai.request.created',
+    'ai.output.generated',
+    'ai.output.flagged',
+    'ai.output.accepted',
+    'ai.output.rejected',
+    'ai.document.drafted',
+    'ai.document.finalized',
+  ],
+} as const;
+
+export type HimsEventType =
+  (typeof HIMS_EVENT_TYPES)[keyof typeof HIMS_EVENT_TYPES][number];
+
+/**
+ * Every catalogue event name, flattened once at module load.
+ *
+ * A `Set` rather than an array `includes`: the relay calls this for every event
+ * it claims, and an array is a linear scan across 160 strings per event.
+ */
+const ALL_EVENT_TYPES: ReadonlySet<string> = new Set(
+  Object.values(HIMS_EVENT_TYPES).flat(),
+);
+
+/**
+ * Narrow an arbitrary string to a catalogue event type.
+ *
+ * The relay receives `event_type` as a bare `text` column — the database does
+ * not constrain it — so this is the check that decides whether the event is
+ * routable or has to be dead-lettered.
+ */
+export function isHimsEventType(value: string): value is HimsEventType {
+  return ALL_EVENT_TYPES.has(value);
 }

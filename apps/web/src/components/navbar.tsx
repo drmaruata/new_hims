@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Activity, Bell, Search, ShieldAlert, User } from 'lucide-react';
-import { Badge } from '@hims/ui';
+import { Bell, Search, ShieldAlert } from 'lucide-react';
 
 export function Navbar() {
   return (

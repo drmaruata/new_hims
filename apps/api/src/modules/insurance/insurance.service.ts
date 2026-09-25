@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { InsuranceClaim } from '@hims/domain-types';
+import type { SubmitPreAuthInput } from './dto/insurance.dto.js';
 
 @Injectable()
 export class InsuranceService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getClaims(tenantId?: string, facilityId?: string): Promise<InsuranceClaim[]> {
+  async getClaims(tenantId?: string, facilityId?: string | null): Promise<InsuranceClaim[]> {
     return [
       {
         id: '17171717-1717-1717-1717-171717171701',
@@ -31,7 +32,7 @@ export class InsuranceService {
     ];
   }
 
-  async submitPreAuth(data: any, tenantId: string, facilityId: string): Promise<InsuranceClaim> {
+  async submitPreAuth(data: SubmitPreAuthInput, tenantId: string, facilityId: string): Promise<InsuranceClaim> {
     const claimNumber = `CLM-2026-${Math.floor(10000 + Math.random() * 90000)}`;
 
     return {
@@ -54,3 +55,4 @@ export class InsuranceService {
     };
   }
 }
+

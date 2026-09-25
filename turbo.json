@@ -1,27 +1,70 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalDependencies": [".env*", "tsconfig.base.json"],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_JWKS_URL",
+    "SUPABASE_JWT_SECRET",
+    "SUPABASE_JWT_AUDIENCE",
+    "SUPABASE_JWT_ISSUER",
+    "REDIS_URL",
+    "SENTRY_DSN",
+    "OTEL_EXPORTER_OTLP_ENDPOINT",
+    "CORS_ORIGIN"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.test.ts", "!**/*.spec.ts"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
-    "typecheck": {
-      "dependsOn": ["^typecheck"]
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "db:reset": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

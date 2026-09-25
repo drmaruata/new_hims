@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { EmergencyController } from './emergency.controller.js';
 import { EmergencyService } from './emergency.service.js';
 
@@ -8,3 +8,4 @@ import { EmergencyService } from './emergency.service.js';
   exports: [EmergencyService],
 })
 export class EmergencyModule {}
+

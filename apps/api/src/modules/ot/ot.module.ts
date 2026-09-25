@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { OtController } from './ot.controller.js';
 import { OtService } from './ot.service.js';
 
@@ -8,3 +8,4 @@ import { OtService } from './ot.service.js';
   exports: [OtService],
 })
 export class OtModule {}
+

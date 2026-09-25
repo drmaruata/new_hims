@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { BillingController } from './billing.controller.js';
 import { BillingService } from './billing.service.js';
 
@@ -8,3 +8,4 @@ import { BillingService } from './billing.service.js';
   exports: [BillingService],
 })
 export class BillingModule {}
+

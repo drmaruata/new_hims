@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/auth.guard.js';
-import { CurrentUser } from '../../core/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
+import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
+import { DispenseMedicationSchema, type DispenseMedicationInput } from './dto/pharmacy.dto.js';
 import { PharmacyService } from './pharmacy.service.js';
 
 @ApiTags('Pharmacy')
@@ -13,15 +16,22 @@ export class PharmacyController {
 
   @Get('dispense-queue')
   @ApiOperation({ summary: 'Get OPD & IPD medication queue for dispensing' })
-  async getDispenseQueue(@CurrentUser() user: any) {
-    const queue = await this.pharmacyService.getDispenseQueue(user.tenantId, user.facilityId);
-    return { data: queue };
+  async getDispenseQueue(@CurrentUser() user: AuthenticatedUser) {
+    const queue = await this.pharmacyService.getDispenseQueue(user.tenantId, user.activeFacilityId);
+    return queue;
   }
 
   @Post('dispense/:id')
   @ApiOperation({ summary: 'Dispense medication with batch FEFO validation' })
-  async dispense(@Param('id') id: string, @Body() dispenseDto: any, @CurrentUser() user: any) {
-    const order = await this.pharmacyService.dispense(id, dispenseDto, user.userId);
-    return { data: order };
+  async dispense(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(DispenseMedicationSchema)) input: DispenseMedicationInput,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    const order = await this.pharmacyService.dispense(id, input, user.userId);
+    return order;
   }
 }
+
+
+

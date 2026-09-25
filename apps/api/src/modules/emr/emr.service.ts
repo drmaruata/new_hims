@@ -1,12 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { EmrTimelineItem } from '@hims/domain-types';
 
 @Injectable()
 export class EmrService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getTimeline(patientId: string, tenantId?: string): Promise<EmrTimelineItem[]> {
+  /**
+   * Provenance-aware longitudinal timeline for one patient.
+   *
+   * `_patientId` / `_tenantId` are reserved for the real query. The signature is
+   * kept — and the parameters kept in place — because tenant scope is part of the
+   * contract this method will be implemented against: an EMR read that forgets
+   * `tenantId` is a cross-tenant disclosure, so the parameter belongs in the
+   * signature from the start rather than being added later.
+   */
+  async getTimeline(_patientId: string, _tenantId?: string | null): Promise<EmrTimelineItem[]> {
     return [
       {
         id: '16161616-1616-1616-1616-161616161601',
@@ -44,3 +53,4 @@ export class EmrService {
     ];
   }
 }
+

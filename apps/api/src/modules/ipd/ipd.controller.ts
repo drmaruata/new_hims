@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/auth.guard.js';
-import { CurrentUser } from '../../core/decorators/current-user.decorator.js';
+import {
+  CreateIpdAdmissionDtoSchema,
+  RecordVitalsDtoSchema,
+  type CreateIpdAdmissionDto,
+  type RecordVitalsDto,
+} from '@hims/validation';
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
+import { ActiveFacilityId, CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
+import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
 import { IpdService } from './ipd.service.js';
 
 @ApiTags('IPD')
@@ -13,29 +21,39 @@ export class IpdController {
 
   @Get('beds')
   @ApiOperation({ summary: 'Get ward and bed status board' })
-  async getBeds(@Query('wardId') wardId: string, @CurrentUser() user: any) {
-    const beds = await this.ipdService.getBeds(wardId, user.tenantId, user.facilityId);
-    return { data: beds };
+  async getBeds(@Query('wardId') wardId: string | undefined, @CurrentUser() user: AuthenticatedUser) {
+    const beds = await this.ipdService.getBeds(wardId, user.tenantId, user.activeFacilityId);
+    return beds;
   }
 
   @Get('admissions')
   @ApiOperation({ summary: 'Get active inpatient admissions' })
-  async getAdmissions(@CurrentUser() user: any) {
-    const admissions = await this.ipdService.getAdmissions(user.tenantId, user.facilityId);
-    return { data: admissions };
+  async getAdmissions(@CurrentUser() user: AuthenticatedUser) {
+    const admissions = await this.ipdService.getAdmissions(user.tenantId, user.activeFacilityId);
+    return admissions;
   }
 
   @Post('admissions')
   @ApiOperation({ summary: 'Admit patient to IPD bed' })
-  async admit(@Body() createDto: any, @CurrentUser() user: any) {
-    const admission = await this.ipdService.admit(createDto, user.tenantId, user.facilityId, user.userId);
-    return { data: admission };
+  async admit(
+    @Body(new ZodValidationPipe(CreateIpdAdmissionDtoSchema)) input: CreateIpdAdmissionDto,
+    @CurrentUser() user: AuthenticatedUser,
+    @ActiveFacilityId() facilityId: string,
+  ) {
+    const admission = await this.ipdService.admit(input, user.tenantId, facilityId, user.userId);
+    return admission;
   }
 
   @Post('vitals')
   @ApiOperation({ summary: 'Record inpatient clinical vitals' })
-  async recordVitals(@Body() vitalsDto: any, @CurrentUser() user: any) {
-    const vitals = await this.ipdService.recordVitals(vitalsDto, user.userId);
-    return { data: vitals };
+  async recordVitals(
+    @Body(new ZodValidationPipe(RecordVitalsDtoSchema)) input: RecordVitalsDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    const vitals = await this.ipdService.recordVitals(input, user.userId);
+    return vitals;
   }
 }
+
+
+

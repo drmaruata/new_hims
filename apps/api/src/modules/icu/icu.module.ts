@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { IcuController } from './icu.controller.js';
 import { IcuService } from './icu.service.js';
 
@@ -8,3 +8,4 @@ import { IcuService } from './icu.service.js';
   exports: [IcuService],
 })
 export class IcuModule {}
+

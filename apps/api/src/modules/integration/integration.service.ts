@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 
 @Injectable()
 export class IntegrationService {
@@ -43,3 +43,4 @@ export class IntegrationService {
     };
   }
 }
+

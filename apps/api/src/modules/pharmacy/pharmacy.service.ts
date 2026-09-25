@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { PharmacyDispenseOrder } from '@hims/domain-types';
+import type { DispenseMedicationInput } from './dto/pharmacy.dto.js';
 
 @Injectable()
 export class PharmacyService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getDispenseQueue(tenantId?: string, facilityId?: string): Promise<PharmacyDispenseOrder[]> {
+  async getDispenseQueue(tenantId?: string, facilityId?: string | null): Promise<PharmacyDispenseOrder[]> {
     return [
       {
         id: '14141414-1414-1414-1414-141414141401',
@@ -45,7 +46,7 @@ export class PharmacyService {
     ];
   }
 
-  async dispense(id: string, data: any, pharmacistId: string): Promise<PharmacyDispenseOrder> {
+  async dispense(id: string, data: DispenseMedicationInput, pharmacistId: string): Promise<PharmacyDispenseOrder> {
     const queue = await this.getDispenseQueue();
     const order = queue[0];
     order.status = 'DISPENSED';
@@ -54,3 +55,4 @@ export class PharmacyService {
     return order;
   }
 }
+

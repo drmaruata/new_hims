@@ -9,7 +9,26 @@ import {
   CreditCard, Shield, BarChart3, Settings, Zap
 } from 'lucide-react';
 
-const NAV_SECTIONS = [
+/**
+ * The sidebar's navigation model.
+ *
+ * `badge` is optional and part of the item type rather than read off the item
+ * with a cast: only the command centre carries one today, and a cast would keep
+ * compiling if the field were renamed on one side only.
+ */
+interface NavItem {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  badge?: string;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Command & Control',
     items: [
@@ -77,9 +96,9 @@ export function Sidebar() {
                         <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
                         {item.label}
                       </span>
-                      {(item as any).badge && (
+                      {item.badge && (
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 animate-pulse">
-                          {(item as any).badge}
+                          {item.badge}
                         </span>
                       )}
                     </Link>

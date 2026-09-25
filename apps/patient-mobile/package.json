@@ -1,7 +1,49 @@
 {
-  "name":"@hims/patient-mobile",
-  "private":true,
-  "main":"expo-router/entry",
-  "scripts":{"start":"expo start","android":"expo run:android","ios":"expo run:ios","web":"expo start --web","typecheck":"tsc --noEmit"},
-  "dependencies":{"expo":"~57.0.23","expo-router":"~6.0.0","expo-status-bar":"~3.0.0","react":"19.2.3","react-native":"0.86.3"}
+  "name": "@hims/patient-mobile",
+  "version": "0.1.0",
+  "description": "Patient portal: appointments, prescriptions, reports and bills",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint app",
+    "clean": "rimraf .expo dist"
+  },
+  "dependencies": {
+    "@hims/api-client": "workspace:*",
+    "@hims/auth": "workspace:*",
+    "@hims/date-time": "workspace:*",
+    "@hims/domain-types": "workspace:*",
+    "@hims/validation": "workspace:*",
+    "@react-native-async-storage/async-storage": "catalog:",
+    "@react-native-community/netinfo": "catalog:",
+    "@supabase/supabase-js": "catalog:",
+    "expo": "catalog:",
+    "expo-constants": "catalog:",
+    "expo-crypto": "catalog:",
+    "expo-image-picker": "catalog:",
+    "expo-linking": "catalog:",
+    "expo-network": "catalog:",
+    "expo-router": "catalog:",
+    "expo-secure-store": "catalog:",
+    "expo-status-bar": "catalog:",
+    "expo-web-browser": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "react-native-gesture-handler": "catalog:",
+    "react-native-reanimated": "catalog:",
+    "react-native-safe-area-context": "catalog:",
+    "react-native-screens": "catalog:",
+    "react-native-worklets": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "rimraf": "catalog:",
+    "typescript": "catalog:"
+  }
 }

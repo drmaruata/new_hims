@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import type { CreateIpdAdmissionDto, RecordVitalsDto } from '@hims/validation';
+import { DatabaseService } from '@hims/database';
 import type { Bed, IpdAdmission, ClinicalVitals } from '@hims/domain-types';
 
 @Injectable()
 export class IpdService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getBeds(wardId?: string, tenantId?: string, facilityId?: string): Promise<Bed[]> {
+  async getBeds(wardId?: string, tenantId?: string | null, facilityId?: string | null): Promise<Bed[]> {
     return [
       {
         id: '20202020-2020-2020-2020-202020202001',
@@ -68,7 +69,7 @@ export class IpdService {
     ];
   }
 
-  async getAdmissions(tenantId?: string, facilityId?: string): Promise<IpdAdmission[]> {
+  async getAdmissions(tenantId?: string | null, facilityId?: string | null): Promise<IpdAdmission[]> {
     return [
       {
         id: '40404040-4040-4040-4040-404040404001',
@@ -90,7 +91,12 @@ export class IpdService {
     ];
   }
 
-  async admit(data: any, tenantId: string, facilityId: string, userId: string): Promise<IpdAdmission> {
+  async admit(
+    input: CreateIpdAdmissionDto,
+    tenantId: string,
+    facilityId: string,
+    userId: string,
+  ): Promise<IpdAdmission> {
     const admissionNumber = `IPD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
@@ -99,34 +105,37 @@ export class IpdService {
       facilityId,
       admissionNumber,
       encounterId: crypto.randomUUID(),
-      patientId: data.patientId,
+      patientId: input.patientId,
       admittedAt: new Date().toISOString(),
-      admittingDoctorId: data.admittingDoctorId || userId,
-      departmentId: data.departmentId,
-      wardId: data.wardId,
-      assignedBedId: data.assignedBedId,
+      admittingDoctorId: input.admittingDoctorId,
+      departmentId: input.departmentId,
+      wardId: input.wardId,
+      assignedBedId: input.assignedBedId,
       status: 'ADMITTED',
       createdAt: new Date().toISOString(),
+      createdBy: userId,
       updatedAt: new Date().toISOString(),
+      updatedBy: userId,
       version: 1,
     };
   }
 
-  async recordVitals(data: any, userId: string): Promise<ClinicalVitals> {
+  async recordVitals(input: RecordVitalsDto, userId: string): Promise<ClinicalVitals> {
     return {
       id: crypto.randomUUID(),
-      encounterId: data.encounterId,
-      patientId: data.patientId,
+      encounterId: input.encounterId,
+      patientId: input.patientId,
       recordedAt: new Date().toISOString(),
       recordedBy: userId,
-      pulseBpm: data.pulseBpm,
-      systolicBp: data.systolicBp,
-      diastolicBp: data.diastolicBp,
-      temperatureCelsius: data.temperatureCelsius,
-      oxygenSaturationSpO2: data.oxygenSaturationSpO2,
-      respiratoryRate: data.respiratoryRate,
-      gcsScore: data.gcsScore,
-      painScore: data.painScore,
+      pulseBpm: input.pulseBpm,
+      systolicBp: input.systolicBp,
+      diastolicBp: input.diastolicBp,
+      temperatureCelsius: input.temperatureCelsius,
+      oxygenSaturationSpO2: input.oxygenSaturationSpO2,
+      respiratoryRate: input.respiratoryRate,
+      gcsScore: input.gcsScore,
+      painScore: input.painScore,
     };
   }
 }
+

@@ -41,6 +41,9 @@ coverage/
 *.lcov
 .nyc_output/
 
+# ESLint cache files (`--cache` writes `.l-<package>.json` at the repo root)
+.l-*.json
+
 # Turborepo
 .turbo/
 

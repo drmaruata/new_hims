@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/auth.guard.js';
-import { CurrentUser } from '../../core/decorators/current-user.decorator.js';
+import { CreateLabOrderDtoSchema, type CreateLabOrderDto } from '@hims/validation';
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
+import { ActiveFacilityId, CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
+import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
+import { VerifyLabResultSchema, type VerifyLabResultInput } from './dto/lis.dto.js';
 import { LisService } from './lis.service.js';
 
 @ApiTags('LIS')
@@ -13,16 +17,20 @@ export class LisController {
 
   @Get('orders')
   @ApiOperation({ summary: 'Get laboratory orders and worklist' })
-  async getOrders(@Query('status') status: string, @CurrentUser() user: any) {
-    const orders = await this.lisService.getOrders(status, user.tenantId, user.facilityId);
-    return { data: orders };
+  async getOrders(@Query('status') status: string | undefined, @CurrentUser() user: AuthenticatedUser) {
+    const orders = await this.lisService.getOrders(status, user.tenantId, user.activeFacilityId);
+    return orders;
   }
 
   @Post('orders')
   @ApiOperation({ summary: 'Create laboratory order with accessioning' })
-  async createOrder(@Body() createDto: any, @CurrentUser() user: any) {
-    const order = await this.lisService.createOrder(createDto, user.tenantId, user.facilityId, user.userId);
-    return { data: order };
+  async createOrder(
+    @Body(new ZodValidationPipe(CreateLabOrderDtoSchema)) input: CreateLabOrderDto,
+    @CurrentUser() user: AuthenticatedUser,
+    @ActiveFacilityId() facilityId: string,
+  ) {
+    const order = await this.lisService.createOrder(input, user.tenantId, facilityId, user.userId);
+    return order;
   }
 
   @Post('orders/:id/tests/:testCode/verify')
@@ -30,10 +38,13 @@ export class LisController {
   async verifyResult(
     @Param('id') id: string,
     @Param('testCode') testCode: string,
-    @Body() resultDto: any,
-    @CurrentUser() user: any
+    @Body(new ZodValidationPipe(VerifyLabResultSchema)) input: VerifyLabResultInput,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
-    const updatedOrder = await this.lisService.verifyResult(id, testCode, resultDto, user.userId);
-    return { data: updatedOrder };
+    const updatedOrder = await this.lisService.verifyResult(id, testCode, input, user.userId);
+    return updatedOrder;
   }
 }
+
+
+

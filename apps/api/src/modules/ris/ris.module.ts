@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { RisController } from './ris.controller.js';
 import { RisService } from './ris.service.js';
 
@@ -8,3 +8,4 @@ import { RisService } from './ris.service.js';
   exports: [RisService],
 })
 export class RisModule {}
+

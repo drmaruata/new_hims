@@ -1,29 +1,47 @@
 {
-  "name": "hims-monorepo",
-  "version": "1.0.0",
+  "name": "hims",
+  "version": "0.0.1",
   "private": true,
-  "description": "Next-Generation Hospital Information Management System (HIMS) - India-First Enterprise Healthcare Operating System",
-  "packageManager": "pnpm@10.5.2",
+  "description": "Next-Generation Hospital Information Management System",
+  "packageManager": "pnpm@12.6.0",
   "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=10.0.0"
+    "node": ">=22.15.0",
+    "pnpm": ">=12.0.0"
   },
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev",
+    "build": "turbo run build",
     "lint": "turbo run lint",
-    "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
-    "db:migrate": "pnpm --filter @hims/api db:migrate",
-    "db:seed": "pnpm --filter @hims/api db:seed"
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md,yaml,yml}\"",
+    "clean": "turbo run clean && rimraf node_modules",
+    "db:migrate": "turbo run db:migrate",
+    "db:seed": "pnpm --filter @hims/api run db:seed",
+    "db:reset": "pnpm --filter @hims/api run db:reset",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@types/node": "^24.16.0",
-    "prettier": "^3.5.3",
-    "turbo": "^2.4.4",
-    "typescript": "^5.8.2"
+    "@eslint/js": "catalog:",
+    "@types/js-yaml": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-unused-imports": "catalog:",
+    "globals": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "rimraf": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   }
 }

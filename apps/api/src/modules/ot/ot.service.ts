@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import type { CreateSurgeryCaseDto } from '@hims/validation';
+import { DatabaseService } from '@hims/database';
 import type { SurgeryCase } from '@hims/domain-types';
 
 @Injectable()
 export class OtService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getSchedule(date?: string, tenantId?: string, facilityId?: string): Promise<SurgeryCase[]> {
+  async getSchedule(
+    date?: string,
+    tenantId?: string | null,
+    facilityId?: string | null,
+  ): Promise<SurgeryCase[]> {
     return [
       {
         id: '90909090-9090-9090-9090-909090909001',
@@ -31,7 +36,12 @@ export class OtService {
     ];
   }
 
-  async bookCase(data: any, tenantId: string, facilityId: string): Promise<SurgeryCase> {
+  async bookCase(
+    input: CreateSurgeryCaseDto,
+    tenantId: string,
+    facilityId: string,
+    userId: string,
+  ): Promise<SurgeryCase> {
     const caseNumber = `OT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
@@ -39,20 +49,23 @@ export class OtService {
       tenantId,
       facilityId,
       caseNumber,
-      encounterId: data.encounterId,
-      patientId: data.patientId,
-      otRoomId: data.otRoomId,
-      scheduledStart: data.scheduledStart,
-      scheduledEnd: data.scheduledEnd,
-      leadSurgeonId: data.leadSurgeonId,
-      anaesthetistId: data.anaesthetistId,
-      procedureName: data.procedureName,
+      encounterId: input.encounterId,
+      patientId: input.patientId,
+      otRoomId: input.otRoomId,
+      scheduledStart: input.scheduledStart,
+      scheduledEnd: input.scheduledEnd,
+      leadSurgeonId: input.leadSurgeonId,
+      anaesthetistId: input.anaesthetistId,
+      procedureName: input.procedureName,
       status: 'SCHEDULED',
       whoChecklistCompleted: false,
-      preOpDiagnosis: data.preOpDiagnosis,
+      preOpDiagnosis: input.preOpDiagnosis,
       createdAt: new Date().toISOString(),
+      createdBy: userId,
       updatedAt: new Date().toISOString(),
+      updatedBy: userId,
       version: 1,
     };
   }
 }
+

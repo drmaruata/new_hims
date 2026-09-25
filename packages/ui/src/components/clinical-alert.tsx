@@ -1,6 +1,6 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { AlertCircle, AlertTriangle } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from './alert.js';
+import { Alert, AlertTitle, AlertDescription } from './alert';
 
 export interface ClinicalAlertProps {
   type: 'ALLERGY' | 'CRITICAL_LAB' | 'INTERACTION' | 'HIGH_ALERT_DRUG';
@@ -37,3 +37,4 @@ export function ClinicalAlert({ type, title, message, acknowledged, onAcknowledg
     </Alert>
   );
 }
+

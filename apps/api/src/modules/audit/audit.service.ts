@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { AuditLogEntry } from '@hims/domain-types';
 
 @Injectable()
 export class AuditService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getEvents(resourceId?: string, tenantId?: string): Promise<AuditLogEntry[]> {
+  async getEvents(resourceId?: string, tenantId?: string | null): Promise<AuditLogEntry[]> {
     return [
       {
         id: '21212121-2121-2121-2121-212121212101',
@@ -45,3 +45,4 @@ export class AuditService {
     };
   }
 }
+

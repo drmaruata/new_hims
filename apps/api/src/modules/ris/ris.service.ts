@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
+import type { CreateRadiologyOrderDto } from '@hims/validation';
+import { DatabaseService } from '@hims/database';
 import type { RadiologyOrder } from '@hims/domain-types';
+import type { SubmitRadiologyReportInput } from './dto/ris.dto.js';
 
 @Injectable()
 export class RisService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getWorklist(tenantId?: string, facilityId?: string): Promise<RadiologyOrder[]> {
+  async getWorklist(tenantId?: string | null, facilityId?: string | null): Promise<RadiologyOrder[]> {
     return [
       {
         id: '60606060-6060-6060-6060-606060606001',
@@ -38,7 +40,12 @@ export class RisService {
     ];
   }
 
-  async createOrder(data: any, tenantId: string, facilityId: string, doctorId: string): Promise<RadiologyOrder> {
+  async createOrder(
+    input: CreateRadiologyOrderDto,
+    tenantId: string,
+    facilityId: string,
+    doctorId: string,
+  ): Promise<RadiologyOrder> {
     const orderNumber = `RAD-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     const accessionNumber = `RAD-ACC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -48,12 +55,12 @@ export class RisService {
       facilityId,
       orderNumber,
       accessionNumber,
-      encounterId: data.encounterId,
-      patientId: data.patientId,
+      encounterId: input.encounterId,
+      patientId: input.patientId,
       orderingDoctorId: doctorId,
-      modality: data.modality,
-      bodyPart: data.bodyPart,
-      clinicalIndication: data.clinicalIndication,
+      modality: input.modality,
+      bodyPart: input.bodyPart,
+      clinicalIndication: input.clinicalIndication,
       status: 'REQUESTED',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -61,19 +68,31 @@ export class RisService {
     };
   }
 
-  async submitReport(id: string, reportData: any, radiologistId: string): Promise<RadiologyOrder> {
+  async submitReport(
+    id: string,
+    input: SubmitRadiologyReportInput,
+    radiologistId: string,
+  ): Promise<RadiologyOrder> {
     const list = await this.getWorklist();
-    const order = list[0];
+    const order = list.find((candidate) => candidate.id === id);
+
+    // A report filed against the wrong study is a wrong-patient error, so an
+    // unknown id is a 404 rather than a write to the first row.
+    if (!order) {
+      throw new NotFoundException(`No radiology order ${id} is visible to this caller`);
+    }
+
     order.status = 'REPORTED';
     order.report = {
       id: crypto.randomUUID(),
       radiologistId,
-      findings: reportData.findings,
-      impression: reportData.impression,
-      isCriticalFinding: reportData.isCriticalFinding || false,
+      findings: input.findings,
+      impression: input.impression,
+      isCriticalFinding: input.isCriticalFinding ?? false,
       reportedAt: new Date().toISOString(),
       verifiedAt: new Date().toISOString(),
     };
     return order;
   }
 }
+

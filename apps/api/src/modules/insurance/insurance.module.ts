@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { InsuranceController } from './insurance.controller.js';
 import { InsuranceService } from './insurance.service.js';
 
@@ -8,3 +8,4 @@ import { InsuranceService } from './insurance.service.js';
   exports: [InsuranceService],
 })
 export class InsuranceModule {}
+

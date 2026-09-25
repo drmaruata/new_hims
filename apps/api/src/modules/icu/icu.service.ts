@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { IcuEpisode } from '@hims/domain-types';
 
 @Injectable()
 export class IcuService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getEpisodes(tenantId?: string, facilityId?: string): Promise<IcuEpisode[]> {
+  async getEpisodes(tenantId?: string, facilityId?: string | null): Promise<IcuEpisode[]> {
     return [
       {
         id: '13131313-1313-1313-1313-131313131301',
@@ -29,3 +29,4 @@ export class IcuService {
     ];
   }
 }
+

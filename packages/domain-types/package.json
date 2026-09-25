@@ -1,16 +1,32 @@
 {
   "name": "@hims/domain-types",
-  "version": "1.0.0",
-  "description": "Authoritative TypeScript domain types and interfaces for HIMS (OPD, IPD, LIS, RIS, ED, OT, ICU, Pharmacy, EMR, Insurance, Billing, Quality)",
+  "version": "0.0.1",
+  "private": true,
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "devDependencies": {
-    "typescript": "^5.8.2"
-  }
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "eslint": "catalog:",
+    "rimraf": "catalog:"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "type": "module"
 }

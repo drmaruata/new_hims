@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { QualityController } from './quality.controller.js';
 import { QualityService } from './quality.service.js';
 
@@ -8,3 +8,4 @@ import { QualityService } from './quality.service.js';
   exports: [QualityService],
 })
 export class QualityModule {}
+

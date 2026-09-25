@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import type { TriageEmergencyDto } from '@hims/validation';
+import { DatabaseService } from '@hims/database';
 import type { EmergencyEncounter } from '@hims/domain-types';
 
 @Injectable()
 export class EmergencyService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getActiveCases(tenantId?: string, facilityId?: string): Promise<EmergencyEncounter[]> {
+  async getActiveCases(
+    tenantId?: string | null,
+    facilityId?: string | null,
+  ): Promise<EmergencyEncounter[]> {
     return [
       {
         id: '80808080-8080-8080-8080-808080808001',
@@ -27,7 +31,12 @@ export class EmergencyService {
     ];
   }
 
-  async triage(data: any, tenantId: string, facilityId: string, nurseId: string): Promise<EmergencyEncounter> {
+  async triage(
+    input: TriageEmergencyDto,
+    tenantId: string,
+    facilityId: string,
+    nurseId: string,
+  ): Promise<EmergencyEncounter> {
     const emergencyNumber = `ED-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
@@ -35,12 +44,12 @@ export class EmergencyService {
       tenantId,
       facilityId,
       emergencyNumber,
-      patientId: data.patientId,
+      patientId: input.patientId,
       arrivedAt: new Date().toISOString(),
-      arrivalMode: data.arrivalMode || 'WALK_IN',
-      triageAcuity: data.triageAcuity || 'ESI_3_URGENT',
-      isMlc: data.isMlc || false,
-      mlcNumber: data.mlcNumber,
+      arrivalMode: input.arrivalMode,
+      triageAcuity: input.triageAcuity,
+      isMlc: input.isMlc,
+      mlcNumber: input.mlcNumber,
       triageNurseId: nurseId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -48,3 +57,4 @@ export class EmergencyService {
     };
   }
 }
+

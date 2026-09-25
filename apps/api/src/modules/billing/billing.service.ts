@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { Invoice } from '@hims/domain-types';
+import type { CreateInvoiceInput, InvoiceLineInput } from './dto/billing.dto.js';
 
 @Injectable()
 export class BillingService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getInvoices(patientId?: string, tenantId?: string, facilityId?: string): Promise<Invoice[]> {
+  async getInvoices(patientId?: string, tenantId?: string, facilityId?: string | null): Promise<Invoice[]> {
     return [
       {
         id: '18181818-1818-1818-1818-181818181801',
@@ -55,9 +56,17 @@ export class BillingService {
     ];
   }
 
-  async createInvoice(data: any, tenantId: string, facilityId: string, cashierId: string): Promise<Invoice> {
+  async createInvoice(
+    data: CreateInvoiceInput,
+    tenantId: string,
+    facilityId: string,
+    cashierId: string,
+  ): Promise<Invoice> {
     const invoiceNumber = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-    const total = (data.items || []).reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0);
+    const total = data.items.reduce(
+      (acc, item: InvoiceLineInput) => acc + item.quantity * item.unitPrice,
+      0,
+    );
 
     return {
       id: crypto.randomUUID(),
@@ -73,10 +82,23 @@ export class BillingService {
       paidAmount: data.paidAmount || total,
       balanceAmount: 0,
       status: 'PAID',
-      items: data.items,
+      // The DTO deliberately withholds `netAmount` (see billing.dto.ts): a
+      // client-supplied line total that disagrees with its own quantity and
+      // unit price is exactly the discrepancy that surfaces weeks later as an
+      // unexplained revenue variance, so the server derives it.
+      items: data.items.map((item) => ({
+        serviceCode: item.serviceCode,
+        description: item.description,
+        departmentId: item.departmentId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        netAmount: item.quantity * item.unitPrice,
+      })),
       createdAt: new Date().toISOString(),
+      createdBy: cashierId,
       updatedAt: new Date().toISOString(),
       version: 1,
     };
   }
 }
+

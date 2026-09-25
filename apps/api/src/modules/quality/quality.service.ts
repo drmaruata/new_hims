@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../core/database/database.service.js';
+﻿import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@hims/database';
 import type { QualityIndicatorMeasurement, IncidentReport } from '@hims/domain-types';
+import type { ReportIncidentInput } from './dto/quality.dto.js';
 
 @Injectable()
 export class QualityService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getIndicators(tenantId?: string, facilityId?: string): Promise<QualityIndicatorMeasurement[]> {
+  async getIndicators(tenantId?: string, facilityId?: string | null): Promise<QualityIndicatorMeasurement[]> {
     return [
       {
         id: '19191919-1919-1919-1919-191919191901',
@@ -59,7 +60,7 @@ export class QualityService {
     ];
   }
 
-  async reportIncident(data: any, tenantId: string, facilityId: string): Promise<IncidentReport> {
+  async reportIncident(data: ReportIncidentInput, tenantId: string, facilityId: string): Promise<IncidentReport> {
     const incidentNumber = `INC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
@@ -78,3 +79,4 @@ export class QualityService {
     };
   }
 }
+

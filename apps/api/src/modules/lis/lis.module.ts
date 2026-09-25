@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { LisController } from './lis.controller.js';
 import { LisService } from './lis.service.js';
 
@@ -8,3 +8,4 @@ import { LisService } from './lis.service.js';
   exports: [LisService],
 })
 export class LisModule {}
+

@@ -2053,6 +2053,23 @@ BEGIN
   END LOOP;
 END $$;
 
+-- A principal must be able to read their own memberships *before* any tenant is
+-- known: resolving which hospital a user belongs to cannot itself be
+-- tenant-scoped, because the tenant is exactly what that query exists to
+-- discover (`AuthService.loadMemberships`, run on every authenticated request).
+--
+-- This exposes only the caller's own rows, matched on `app.user_id` — never
+-- another user's memberships, and never any tenant business data. Postgres ORs
+-- permissive policies for the same command, so the generic tenant policy
+-- generated above remains in force for every other reader. The application
+-- reaches this path only through `DatabaseService.queryForUser`, which sets
+-- `app.user_id` and deliberately leaves `app.tenant_id` unset.
+DROP POLICY IF EXISTS tenant_memberships_self_select ON hims_core.tenant_memberships;
+CREATE POLICY tenant_memberships_self_select
+  ON hims_core.tenant_memberships
+  FOR SELECT TO public
+  USING (user_id = hims_current_user_id());
+
 -- Production privilege note:
 -- The NestJS database role MUST NOT have BYPASSRLS and should not be a
 -- superuser. Audit schemas should grant application users INSERT/SELECT but

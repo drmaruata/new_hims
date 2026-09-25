@@ -79,6 +79,7 @@ export class JwtAuthGuard implements CanActivate {
       tenantId: user.tenantId,
       userId: user.userId,
       facilityIds: user.facilityIds,
+      isTenantAdmin: user.isTenantAdmin,
     };
   }
 }

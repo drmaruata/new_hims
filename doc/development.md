@@ -89,9 +89,7 @@ NestJS is appropriate because it provides explicit modules, providers, dependenc
 
 ## 2.3 Database strategy
 
-Use **PostgreSQL 18** as the primary transactional database for new deployments, after validating all required extensions, ORM support and managed-service availability.
-
-PostgreSQL 18 is the current supported major release as of August 2026, with PostgreSQL 17 also supported. Production deployments should use the latest patched minor release of the selected major version. [PostgreSQL versioning policy](https://www.postgresql.org/support/versioning/) [PostgreSQL 18 documentation](https://www.postgresql.org/docs/18/)
+Use PostgreSQL as the authoritative transactional database, with the version pinned by the selected deployment platform. For directly managed PostgreSQL deployments, the engineering baseline targets PostgreSQL 18 after extension/ORM validation. The current official self-hosted Supabase Docker stack used by this repository pins its bundled PostgreSQL service to the supported 17.x line, so the Phase 0 Supabase environment intentionally runs the upstream pinned version rather than pretending it is a PostgreSQL 18 deployment. Do not mix a direct PostgreSQL 18 runtime with the Supabase-managed database in the same environment. Production deployments must pin a specific patched minor release and upgrade it through the platform review process.
 
 Use PostgreSQL for authoritative transactional data. Do not distribute authoritative clinical state across multiple databases merely for architectural fashion.
 
@@ -391,7 +389,7 @@ Docker Desktop
 │                      │                     │                        │
 │                Supabase gateway      Redis + BullMQ                │
 │                      │                     │                        │
-│                PostgreSQL 18             Outbox                     │
+│                PostgreSQL / Supabase       Outbox                  │
 │                Auth / Storage /        + event jobs                 │
 │                Realtime                                              │
 │                                                                     │
@@ -1156,7 +1154,7 @@ Offset pagination is permitted for small administrative tables.
 
 ## 10.1 Primary database
 
-PostgreSQL 18.
+PostgreSQL / Supabase pinned version.
 
 ## 10.2 Database organization
 
@@ -5506,7 +5504,7 @@ The recommended baseline is:
 | Web | Next.js + React + TypeScript + Tailwind CSS + shadcn/ui |
 | Mobile | React Native + Expo + TypeScript |
 | Backend | NestJS + TypeScript |
-| Primary DB / data platform | Self-hosted Supabase (PostgreSQL 18 baseline) |
+| Primary DB / data platform | Self-hosted Supabase; PostgreSQL version follows the pinned Supabase release |
 | Cache | Redis |
 | Jobs | BullMQ initially |
 | Eventing | Transactional outbox; broker later |
@@ -5564,7 +5562,6 @@ Only after these foundations are reliable should the platform aggressively expan
 5. NestJS modules — https://docs.nestjs.com/modules
 6. NestJS documentation — https://docs.nestjs.com/
 7. PostgreSQL versioning policy — https://www.postgresql.org/support/versioning/
-8. PostgreSQL 18 documentation — https://www.postgresql.org/docs/18/
 9. HL7 FHIR — https://www.hl7.org/fhir/R4/
 10. HL7 FHIR architecture — https://hl7.org/fhir/R4/overview-arch.html
 11. AWS EKS security guidance — https://docs.aws.amazon.com/eks/latest/best-practices/aiml-security.html

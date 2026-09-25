@@ -12,8 +12,9 @@ This repository is a pnpm + Turborepo monorepo for a hospital information system
 - [apps/clinician-mobile](apps/clinician-mobile): clinician/nurse Expo app.
 - [apps/patient-mobile](apps/patient-mobile): patient-facing Expo app.
 - [packages](packages): shared libraries such as domain types, validation, auth, telemetry, localization, and UI.
-- [supabase](supabase): migrations and seed data.
-- [doc](doc): product, architecture, contracts, and schema docs.
+- [supabase](supabase): HIMS migrations, seed data, Edge Function boundary and database tests.
+- [doc](doc): product, architecture, contracts, governance and schema docs.
+- [infra](infra): Supabase, database-role, observability, backup and deployment baselines.
 
 ## Working conventions
 
@@ -57,6 +58,7 @@ pnpm --filter <target-app-or-package> build
 
 - Check whether the relevant app/package has a targeted lint/test/build command.
 - Verify the specific area changed; avoid claiming repo-wide success from a single package run.
+- For Phase 0 changes, run the CI-equivalent quality and database isolation gates before declaring closeout.
 - Keep fixes minimal and compatible with the monorepo conventions.
 
 ## Documentation links

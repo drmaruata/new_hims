@@ -38,11 +38,27 @@ END
 $$;
 SQL
 
+psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 <<'SQL'
+INSERT INTO hims_core.departments
+  (id, tenant_id, facility_id, department_code, name, department_type, clinical_service_flag)
+VALUES
+  ('33333333-3333-3333-3333-333333333399',
+   '11111111-1111-1111-1111-111111111111',
+   '22222222-2222-2222-2222-222222222222',
+   'RLS_TEST',
+   'RLS Test Department',
+   'ADMIN',
+   false)
+ON CONFLICT (facility_id, department_code) DO NOTHING;
+SQL
+
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v tenant="$HIMS_TENANT_ID" <<'SQL'
 DO $$
 DECLARE
   visible_count bigint;
   hidden_count bigint;
+  facility_visible_count bigint;
+  tenant_admin_count bigint;
   target_tenant uuid := :'tenant'::uuid;
 BEGIN
   IF (SELECT rolsuper OR rolbypassrls FROM pg_roles WHERE rolname = current_user) THEN
@@ -50,7 +66,12 @@ BEGIN
   END IF;
 
   PERFORM set_config('app.tenant_id', target_tenant::text, true);
-  SELECT count(*) INTO visible_count FROM hims_core.facilities WHERE tenant_id = target_tenant;
+  PERFORM set_config('app.is_tenant_admin', 'false', true);
+  PERFORM set_config('app.facility_ids', '["22222222-2222-2222-2222-222222222221"]', true);
+
+  SELECT count(*) INTO visible_count
+  FROM hims_core.facilities
+  WHERE tenant_id = target_tenant;
 
   PERFORM set_config('app.tenant_id', '00000000-0000-0000-0000-000000000000', true);
   SELECT count(*) INTO hidden_count FROM hims_core.facilities;
@@ -63,7 +84,31 @@ BEGIN
     RAISE EXCEPTION 'Cross-tenant read leaked % rows', hidden_count;
   END IF;
 
-  RAISE NOTICE 'RLS behavioral verification passed: visible=% hidden=%', visible_count, hidden_count;
+  PERFORM set_config('app.tenant_id', target_tenant::text, true);
+  PERFORM set_config('app.facility_ids', '["22222222-2222-2222-2222-222222222221"]', true);
+  PERFORM set_config('app.is_tenant_admin', 'false', true);
+
+  SELECT count(*) INTO facility_visible_count
+  FROM hims_core.departments
+  WHERE tenant_id = target_tenant;
+
+  IF facility_visible_count <> 10 THEN
+    RAISE EXCEPTION 'Facility RLS expected exactly the seeded main-campus departments, got %', facility_visible_count;
+  END IF;
+
+  PERFORM set_config('app.is_tenant_admin', 'true', true);
+  PERFORM set_config('app.facility_ids', '[]', true);
+
+  SELECT count(*) INTO tenant_admin_count
+  FROM hims_core.departments
+  WHERE tenant_id = target_tenant;
+
+  IF tenant_admin_count < 11 THEN
+    RAISE EXCEPTION 'Tenant-admin RLS should see both facility scopes, got %', tenant_admin_count;
+  END IF;
+
+  RAISE NOTICE 'RLS behavioral verification passed: tenant visible=% hidden=%; facility visible=%; tenant-admin visible=%',
+    visible_count, hidden_count, facility_visible_count, tenant_admin_count;
 END
 $$;
 SQL

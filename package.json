@@ -1,0 +1,4 @@
+{
+  "name":"new_hims","private":true,"packageManager":"pnpm@10",
+  "scripts":{"dev:web":"pnpm --dir apps/web dev","dev:api":"pnpm --dir apps/api start:dev","dev:patient":"pnpm --dir apps/patient-mobile start","dev:clinician":"pnpm --dir apps/clinician-mobile start","build":"pnpm -r build","lint":"pnpm -r lint","typecheck":"pnpm -r typecheck","test":"pnpm -r test"}
+}

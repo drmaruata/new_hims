@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
+import { z } from 'zod';
 
 import { BreakGlassDtoSchema, type BreakGlassDto } from '@hims/validation';
 import type { DatabaseContext } from '@hims/database';
@@ -37,7 +38,7 @@ export class AuditController {
     summary: 'Query immutable audit log events (access, mutations, break-glass)',
   })
   async getEvents(
-    @Query('resourceId') resourceId: string | undefined,
+    @Query('resourceId', new ZodValidationPipe(z.string().uuid().optional())) resourceId: string | undefined,
     @DbContext() ctx: DatabaseContext,
   ) {
     return this.auditService.getEvents(resourceId, ctx);

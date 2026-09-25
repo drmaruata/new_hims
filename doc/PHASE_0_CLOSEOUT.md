@@ -14,12 +14,16 @@ Completed implementation
 - HIMS migrations are overlaid onto the Supabase database bootstrap.
 - Development seed is explicitly opt-in.
 - NestJS API database access uses a dedicated non-BYPASSRLS role.
-- Tenant RLS has a repeatable verification script and CI gate.
+- Tenant and facility RLS have repeatable structural/behavioral verification and a CI gate.
+- The API carries tenant-admin/facility scope into transaction-local PostgreSQL settings.
 - Backup, checksum verification and restore-drill scripts exist.
 - OpenTelemetry/Prometheus/Grafana/Tempo local observability profile exists.
 - CI validates lint, typecheck, unit tests, production build, schema migration and tenant isolation.
 - Web root navigation now has a canonical /command-center route and all Phase 0 shell links resolve without dead 404s.
 - Core shared packages now contain unit tests instead of passing through an empty test suite.
+- Browser authentication uses Supabase Auth sessions rather than a manually managed access-token localStorage value.
+- Audit events and break-glass access persist to the audit schema rather than returning hard-coded demo records.
+- Authorization seed data now matches the API's canonical DOMAIN:RESOURCE:ACTION:SCOPE permission contract.
 - Environment example was reconciled with the actual config schema and local service topology.
 - Health readiness now fails when the database ping actually fails.
 

@@ -1,0 +1,53 @@
+name: HIMS Phase 0 Diagnostics
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - phase-0-closeout
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.15.0
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile 2>&1 | tee /tmp/install.log
+
+      - name: Test
+        continue-on-error: true
+        run: pnpm test 2>&1 | tee /tmp/test.log
+
+      - name: Typecheck
+        continue-on-error: true
+        run: pnpm typecheck 2>&1 | tee /tmp/typecheck.log
+
+      - name: Lint
+        continue-on-error: true
+        run: pnpm lint 2>&1 | tee /tmp/lint.log
+
+      - name: Build
+        continue-on-error: true
+        run: pnpm build 2>&1 | tee /tmp/build.log
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: phase-0-diagnostics-${{ github.sha }}
+          path: /tmp/*.log
+          if-no-files-found: warn

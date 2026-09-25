@@ -51,6 +51,8 @@ export interface DatabaseContext {
    * second without the first.
    */
   facilityIds?: readonly string[] | null;
+  /** Tenant administrators may operate across all facilities in their tenant. */
+  isTenantAdmin?: boolean;
 }
 
 @Injectable()
@@ -163,6 +165,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         JSON.stringify(ctx.facilityIds),
       ]);
     }
+    await client.query(`SELECT set_config('app.is_tenant_admin', $1, true)`, [
+      ctx.isTenantAdmin ? 'true' : 'false',
+    ]);
   }
 
   /**

@@ -1,0 +1,15 @@
+name: HIMS Runner Smoke
+
+on:
+  push:
+    branches:
+      - phase-0-closeout
+
+permissions:
+  contents: read
+
+jobs:
+  runner:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "GitHub Actions runner reached the HIMS repository"

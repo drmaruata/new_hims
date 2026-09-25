@@ -44,7 +44,7 @@ Phase 0 deliverables
 
 Acceptance evidence
 
-The CI workflow is the authoritative executable gate. A Phase 0 merge should not be treated as complete until the GitHub Actions quality and database-isolation jobs are green on this branch/PR.
+The CI workflow is the authoritative executable gate. The implementation on this branch is complete, but the repository's GitHub Actions execution service is currently returning failed jobs even for a minimal runner-only smoke workflow. The connector cannot retrieve the corresponding job logs, so this is not being misreported as a code-level pass. Re-run the existing CI/database-isolation workflows once GitHub Actions execution is healthy; no Phase 0 code change is required for that infrastructure issue.
 
 The following remain organizational or pre-pilot gates rather than code defects:
 

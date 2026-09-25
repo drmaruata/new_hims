@@ -64,6 +64,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
+      - name: Provide minimal Supabase Auth catalog for schema tests
+        env:
+          DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db
+        run: |
+          psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 -c "CREATE SCHEMA auth; CREATE TABLE auth.users (id uuid PRIMARY KEY);"
+
       - name: Apply schema
         env:
           DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db

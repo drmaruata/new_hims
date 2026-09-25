@@ -143,11 +143,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     client: PoolClient,
     ctx: DatabaseContext,
   ): Promise<void> {
-    if (!ctx?.tenantId) {
-      throw new Error(
-        'A database context without a tenantId was supplied. Row-level security keys on app.tenant_id, so an unscoped query returns zero rows rather than an error — which looks like missing data, not like a bug. Fix the caller; do not drop the context.',
-      );
-    }
+    assertDatabaseContext(ctx);
 
     await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [
       ctx.tenantId,

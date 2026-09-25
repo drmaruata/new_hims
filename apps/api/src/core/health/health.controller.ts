@@ -54,7 +54,9 @@ export class HealthController {
       this.indicators
         .check('database')
         .attempt(async () => {
-          await this.db.ping();
+          if (!(await this.db.ping())) {
+            throw new Error('Database ping failed');
+          }
         })
         .withTimeout(2_000),
     ]);

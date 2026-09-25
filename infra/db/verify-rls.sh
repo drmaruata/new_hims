@@ -2,7 +2,41 @@
 set -euo pipefail
 
 : "${DATABASE_URL:?Set DATABASE_URL to the non-BYPASSRLS HIMS application connection}"
+: "${DATABASE_ADMIN_URL:?Set DATABASE_ADMIN_URL to the migration/admin connection}"
 : "${HIMS_TENANT_ID:?Set HIMS_TENANT_ID to a tenant that should be visible}"
+
+psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 <<'SQL'
+DO $$
+DECLARE
+  tenant_tables bigint;
+  secured_tables bigint;
+BEGIN
+  SELECT count(*) INTO tenant_tables
+  FROM information_schema.columns c
+  WHERE c.table_schema LIKE 'hims_%'
+    AND c.column_name = 'tenant_id'
+    AND EXISTS (
+      SELECT 1
+      FROM information_schema.tables t
+      WHERE t.table_schema = c.table_schema
+        AND t.table_name = c.table_name
+    );
+
+  SELECT count(*) INTO secured_tables
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname LIKE 'hims_%'
+    AND c.relkind = 'r'
+    AND c.relrowsecurity;
+
+  IF tenant_tables <> secured_tables THEN
+    RAISE EXCEPTION 'RLS coverage mismatch: tenant-owned tables=% RLS-enabled tables=%', tenant_tables, secured_tables;
+  END IF;
+
+  RAISE NOTICE 'RLS structural coverage passed: % tenant-owned tables secured', tenant_tables;
+END
+$$;
+SQL
 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v tenant="$HIMS_TENANT_ID" <<'SQL'
 DO $$
@@ -29,7 +63,7 @@ BEGIN
     RAISE EXCEPTION 'Cross-tenant read leaked % rows', hidden_count;
   END IF;
 
-  RAISE NOTICE 'RLS verification passed: visible=% hidden=%', visible_count, hidden_count;
+  RAISE NOTICE 'RLS behavioral verification passed: visible=% hidden=%', visible_count, hidden_count;
 END
 $$;
 SQL

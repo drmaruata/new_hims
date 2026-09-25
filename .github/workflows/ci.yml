@@ -89,5 +89,6 @@ jobs:
       - name: Verify tenant isolation
         env:
           DATABASE_URL: postgresql://hims_app:ci-only-app-password@localhost:5432/hims_db
+          DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/hims_db
           HIMS_TENANT_ID: 11111111-1111-1111-1111-111111111111
         run: bash infra/db/verify-rls.sh

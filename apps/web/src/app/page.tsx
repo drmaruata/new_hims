@@ -1,28 +1,98 @@
-import { Button } from "@/components/ui/button";
+import { CommandCenterWidget } from '@hims/ui';
+import { apiClient } from '@/lib/api';
 
-const domains = ["OPD", "IPD", "Laboratory", "Radiology", "Emergency", "OT", "ICU", "Pharmacy", "EMR", "Insurance"];
+export default async function CommandCenterPage() {
+  const metricsResponse = await apiClient.commandCenter.getMetrics();
+  const metrics = metricsResponse.data;
 
-export default function Home() {
   return (
-    <main className="min-h-svh bg-background text-foreground">
-      <div className="mx-auto flex min-h-svh max-w-7xl flex-col px-6 py-10">
-        <header className="flex items-center justify-between border-b pb-6">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Hospital Operating Platform</p>
-            <h1 className="text-2xl font-semibold tracking-tight">HIMS</h1>
-          </div>
-          <Button>Open Command Center</Button>
-        </header>
-        <section className="grid flex-1 content-center gap-8 py-12 md:grid-cols-[1.2fr_1fr]">
-          <div>
-            <h2 className="max-w-3xl text-4xl font-semibold tracking-tight">One patient. One longitudinal record. One operational truth.</h2>
-            <p className="mt-5 max-w-2xl text-lg text-muted-foreground">Production foundation for a multi-tenant, interoperable hospital information management system.</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {domains.map((domain) => <div key={domain} className="rounded-xl border bg-card p-4 text-sm font-medium shadow-sm">{domain}</div>)}
-          </div>
-        </section>
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hospital Command Center
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Real-time operational and clinical overview for {metrics.facilityName}
+          </p>
+        </div>
+        <div className="text-xs text-slate-400 font-mono">
+          Last synced: {new Date(metrics.timestamp).toLocaleString()}
+        </div>
       </div>
-    </main>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CommandCenterWidget
+          title="Bed Occupancy"
+          value={`${metrics.occupancy.occupiedBeds}/${metrics.occupancy.totalBeds}`}
+          subtitle={`${metrics.occupancy.occupancyRate}% occupancy`}
+          variant="success"
+        />
+        <CommandCenterWidget
+          title="OPD Today"
+          value={metrics.opd.registeredToday}
+          subtitle={`${metrics.opd.waitingInQueue} waiting`}
+          variant="default"
+        />
+        <CommandCenterWidget
+          title="ED Active"
+          value={metrics.emergency.activePatients}
+          subtitle={`ESI-1: ${metrics.emergency.esi1Resuscitation}`}
+          variant="warning"
+        />
+        <CommandCenterWidget
+          title="OT Today"
+          value={metrics.ot.casesScheduledToday}
+          subtitle={`${metrics.ot.casesCompleted} completed`}
+          variant="danger"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+            Diagnostics & Workload
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Pending Lab Samples</span>
+              <span className="font-bold text-rose-600">{metrics.diagnostics.pendingLabSamples}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Critical Lab Alerts</span>
+              <span className="font-bold text-amber-600">{metrics.diagnostics.criticalLabAlerts}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Pending Radiology Reads</span>
+              <span className="font-bold text-blue-600">{metrics.diagnostics.pendingRadiologyReads}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+            Revenue Cycle (Today)
+          </h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Gross Billed</span>
+              <span className="font-bold text-slate-900">₹{metrics.revenue.grossBilledToday.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Collections</span>
+              <span className="font-bold text-emerald-600">₹{metrics.revenue.collectionsToday.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Claims Submitted</span>
+              <span className="font-bold text-slate-900">{metrics.revenue.claimsSubmitted}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Pre-Auth Pending</span>
+              <span className="font-bold text-amber-600">{metrics.revenue.preAuthPending}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

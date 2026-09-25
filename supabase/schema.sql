@@ -1,2 +1,0 @@
--- HIMS schema migration source placeholder.
--- The production schema is maintained as ordered Supabase migrations under supabase/migrations.

@@ -1,0 +1,16 @@
+{
+  "name": "@hims/localization",
+  "version": "1.0.0",
+  "description": "Healthcare localization, currency formatting (INR), number systems and multi-lingual dictionary helpers",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

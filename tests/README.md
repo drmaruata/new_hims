@@ -1,3 +1,0 @@
-# tests
-
-HIMS tests workspace.

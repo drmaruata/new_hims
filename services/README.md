@@ -1,3 +1,0 @@
-# services
-
-HIMS services workspace.

@@ -1,3 +1,0 @@
-# packages
-
-HIMS packages workspace.

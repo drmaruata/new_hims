@@ -1,0 +1,29 @@
+{
+  "name": "@hims/ui",
+  "version": "1.0.0",
+  "description": "HIMS Design System built with Tailwind CSS v4 & shadcn/ui primitives",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hims/date-time": "workspace:*",
+    "@hims/domain-types": "workspace:*",
+    "@hims/localization": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.8.2"
+  }
+}

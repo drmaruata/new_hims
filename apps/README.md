@@ -1,3 +1,0 @@
-# apps
-
-HIMS apps workspace.

@@ -1,0 +1,10 @@
+{
+  "name": "@hims/config",
+  "version": "1.0.0",
+  "description": "Shared configurations for ESLint, TypeScript and Prettier across the HIMS monorepo",
+  "main": "./index.js",
+  "files": [
+    "tsconfig.base.json",
+    "index.js"
+  ]
+}

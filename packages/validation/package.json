@@ -1,0 +1,19 @@
+{
+  "name": "@hims/validation",
+  "version": "1.0.0",
+  "description": "Zod runtime validation schemas for HIMS entities, commands and DTOs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

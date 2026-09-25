@@ -1,4 +1,29 @@
 {
-  "name":"new_hims","private":true,"packageManager":"pnpm@10",
-  "scripts":{"dev:web":"pnpm --dir apps/web dev","dev:api":"pnpm --dir apps/api start:dev","dev:patient":"pnpm --dir apps/patient-mobile start","dev:clinician":"pnpm --dir apps/clinician-mobile start","build":"pnpm -r build","lint":"pnpm -r lint","typecheck":"pnpm -r typecheck","test":"pnpm -r test"}
+  "name": "hims-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Next-Generation Hospital Information Management System (HIMS) - India-First Enterprise Healthcare Operating System",
+  "packageManager": "pnpm@10.5.2",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
+    "db:migrate": "pnpm --filter @hims/api db:migrate",
+    "db:seed": "pnpm --filter @hims/api db:seed"
+  },
+  "devDependencies": {
+    "@types/node": "^24.16.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4",
+    "typescript": "^5.8.2"
+  }
 }

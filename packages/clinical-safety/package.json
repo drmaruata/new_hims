@@ -1,0 +1,19 @@
+{
+  "name": "@hims/clinical-safety",
+  "version": "1.0.0",
+  "description": "Healthcare clinical safety checks, allergy cross-matching, drug-interaction warnings and break-glass audit trails",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@hims/domain-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

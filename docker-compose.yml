@@ -1,0 +1,99 @@
+services:
+  # PostgreSQL 18 Relational Database (Authoritative transactional core)
+  postgres:
+    image: postgres:18-alpine
+    container_name: hims-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hims_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (Cache, locks, and BullMQ task queues)
+  redis:
+    image: redis:7-alpine
+    container_name: hims-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Orthanc PACS & DICOM Server (for Radiology & Modality testing)
+  orthanc:
+    image: orthancteam/orthanc:24.12.0
+    container_name: hims-orthanc
+    restart: unless-stopped
+    environment:
+      ORTHANC_NAME: HIMS_PACS
+      ORTHANC_STORAGE: /var/lib/orthanc/db
+    ports:
+      - "8042:8042" # HTTP REST / Web interface
+      - "4242:4242" # DICOM protocol
+    volumes:
+      - orthanc-data:/var/lib/orthanc/db
+
+  # Gotenberg (PDF rendering engine for clinical reports, discharge packets, and invoices)
+  gotenberg:
+    image: gotenberg/gotenberg:8.17.3
+    container_name: hims-gotenberg
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+
+  # Mailpit (Safe local SMTP testing & email preview)
+  mailpit:
+    image: axllent/mailpit:v1.23
+    container_name: hims-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+
+  # ClamAV (Malware and antivirus scanner for clinical document uploads)
+  clamav:
+    image: clamav/clamav:latest
+    container_name: hims-clamav
+    restart: unless-stopped
+    ports:
+      - "3310:3310"
+
+  # OpenSearch (Search engine for patient master index & operational full-text search)
+  opensearch:
+    image: opensearchproject/opensearch:2.19.0
+    container_name: hims-opensearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+volumes:
+  postgres-data:
+  redis-data:
+  orthanc-data:
+  opensearch-data:
+
+networks:
+  default:
+    name: hims-network

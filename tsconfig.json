@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@hims/domain-types": ["./packages/domain-types/src/index.ts"],
+      "@hims/domain-types/*": ["./packages/domain-types/src/*"],
+      "@hims/validation": ["./packages/validation/src/index.ts"],
+      "@hims/validation/*": ["./packages/validation/src/*"],
+      "@hims/api-client": ["./packages/api-client/src/index.ts"],
+      "@hims/api-client/*": ["./packages/api-client/src/*"],
+      "@hims/ui": ["./packages/ui/src/index.ts"],
+      "@hims/ui/*": ["./packages/ui/src/*"],
+      "@hims/auth": ["./packages/auth/src/index.ts"],
+      "@hims/auth/*": ["./packages/auth/src/*"],
+      "@hims/date-time": ["./packages/date-time/src/index.ts"],
+      "@hims/date-time/*": ["./packages/date-time/src/*"],
+      "@hims/localization": ["./packages/localization/src/index.ts"],
+      "@hims/localization/*": ["./packages/localization/src/*"],
+      "@hims/telemetry": ["./packages/telemetry/src/index.ts"],
+      "@hims/telemetry/*": ["./packages/telemetry/src/*"],
+      "@hims/clinical-safety": ["./packages/clinical-safety/src/index.ts"],
+      "@hims/clinical-safety/*": ["./packages/clinical-safety/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", ".next", ".expo"]
+}

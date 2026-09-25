@@ -1,0 +1,16 @@
+{
+  "name": "@hims/telemetry",
+  "version": "1.0.0",
+  "description": "OpenTelemetry instrumentation, correlation propagation, and structured healthcare logging",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

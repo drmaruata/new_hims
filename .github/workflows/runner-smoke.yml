@@ -1,6 +1,7 @@
 name: HIMS Runner Smoke
 
 on:
+  pull_request:
   push:
     branches:
       - phase-0-closeout

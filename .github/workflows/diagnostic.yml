@@ -2,6 +2,7 @@ name: HIMS Phase 0 Diagnostics
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - phase-0-closeout

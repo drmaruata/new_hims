@@ -71,11 +71,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
      */
     poolSizeKey = 'DATABASE_POOL_MAX',
   ) {
+    const databaseUrl = this.configService.get<string>('DATABASE_URL');
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL is required; refusing to fall back to a privileged PostgreSQL account');
+    }
+
     this.pool = new Pool({
-      connectionString: this.configService.get<string>(
-        'DATABASE_URL',
-        'postgresql://postgres:postgres@localhost:5432/hims',
-      ),
+      connectionString: databaseUrl,
       max: this.configService.get<number>(poolSizeKey, 20),
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,

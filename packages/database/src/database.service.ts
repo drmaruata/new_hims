@@ -51,6 +51,8 @@ export interface DatabaseContext {
    * second without the first.
    */
   facilityIds?: readonly string[] | null;
+  /** Tenant administrators may operate across all facilities in their tenant. */
+  isTenantAdmin?: boolean;
 }
 
 @Injectable()
@@ -69,11 +71,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
      */
     poolSizeKey = 'DATABASE_POOL_MAX',
   ) {
+    const databaseUrl = this.configService.get<string>('DATABASE_URL');
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL is required; refusing to fall back to a privileged PostgreSQL account');
+    }
+
     this.pool = new Pool({
-      connectionString: this.configService.get<string>(
-        'DATABASE_URL',
-        'postgresql://postgres:postgres@localhost:5432/hims',
-      ),
+      connectionString: databaseUrl,
       max: this.configService.get<number>(poolSizeKey, 20),
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
@@ -143,11 +147,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     client: PoolClient,
     ctx: DatabaseContext,
   ): Promise<void> {
-    if (!ctx?.tenantId) {
-      throw new Error(
-        'A database context without a tenantId was supplied. Row-level security keys on app.tenant_id, so an unscoped query returns zero rows rather than an error — which looks like missing data, not like a bug. Fix the caller; do not drop the context.',
-      );
-    }
+    assertDatabaseContext(ctx);
 
     await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [
       ctx.tenantId,
@@ -167,6 +167,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         JSON.stringify(ctx.facilityIds),
       ]);
     }
+    await client.query(`SELECT set_config('app.is_tenant_admin', $1, true)`, [
+      ctx.isTenantAdmin ? 'true' : 'false',
+    ]);
   }
 
   /**

@@ -161,211 +161,213 @@ Notes:
 
 # 7. Core permissions
 
+Runtime permission identifiers use DOMAIN:RESOURCE:ACTION:SCOPE. A trailing * scope means the permission can be bound to a narrower facility/department/patient scope by the role assignment or route policy.
+
 ## Patient
 
 ```text
-patient.read
-patient.create
-patient.update
-patient.identifier.link
-patient.identifier.verify
-patient.merge.request
-patient.merge.approve
-patient.merge.execute
-patient.consent.read
-patient.consent.create
-patient.consent.withdraw
-patient.export
-patient.access-history.read
+PATIENT:READ:*:*
+PATIENT:CREATE:*:*
+PATIENT:UPDATE:*:*
+PATIENT:IDENTIFIER:LINK:*
+PATIENT:IDENTIFIER:VERIFY:*
+PATIENT:MERGE:REQUEST:*
+PATIENT:MERGE:APPROVE:*
+PATIENT:MERGE:EXECUTE:*
+PATIENT:CONSENT:READ:*
+PATIENT:CONSENT:CREATE:*
+PATIENT:CONSENT:WITHDRAW:*
+PATIENT:EXPORT:*:*
+PATIENT:ACCESS-HISTORY:READ:*
 ```
 
 ## OPD
 
 ```text
-opd.appointment.read
-opd.appointment.create
-opd.appointment.update
-opd.queue.manage
-opd.encounter.create
-opd.encounter.update
-opd.encounter.sign
-opd.order.create
-opd.prescription.create
-opd.prescription.finalize
-opd.referral.create
-opd.admission.request
+OPD:APPOINTMENT:READ:*
+OPD:APPOINTMENT:CREATE:*
+OPD:APPOINTMENT:UPDATE:*
+OPD:QUEUE:MANAGE:*
+OPD:ENCOUNTER:CREATE:*
+OPD:ENCOUNTER:UPDATE:*
+OPD:ENCOUNTER:SIGN:*
+OPD:ORDER:CREATE:*
+OPD:PRESCRIPTION:CREATE:*
+OPD:PRESCRIPTION:FINALIZE:*
+OPD:REFERRAL:CREATE:*
+OPD:ADMISSION:REQUEST:*
 ```
 
 ## IPD/Nursing
 
 ```text
-ipd.admission.read
-ipd.admission.create
-ipd.admission.approve
-ipd.bed.read
-ipd.bed.reserve
-ipd.bed.assign
-ipd.bed.transfer
-ipd.nursing-note.create
-ipd.nursing-note.sign
-ipd.vitals.create
-ipd.medication-order.create
-ipd.medication-order.update
-ipd.mar.record
-ipd.discharge-summary.draft
-ipd.discharge-summary.finalize
-ipd.discharge.execute
-ipd.icu-transfer.request
-ipd.ot-request.create
+IPD:ADMISSION:READ:*
+IPD:ADMISSION:CREATE:*
+IPD:ADMISSION:APPROVE:*
+IPD:BED:READ:*
+IPD:BED:RESERVE:*
+IPD:BED:ASSIGN:*
+IPD:BED:TRANSFER:*
+IPD:NURSING-NOTE:CREATE:*
+IPD:NURSING-NOTE:SIGN:*
+IPD:VITALS:CREATE:*
+IPD:MEDICATION-ORDER:CREATE:*
+IPD:MEDICATION-ORDER:UPDATE:*
+IPD:MAR:RECORD:*
+IPD:DISCHARGE-SUMMARY:DRAFT:*
+IPD:DISCHARGE-SUMMARY:FINALIZE:*
+IPD:DISCHARGE:EXECUTE:*
+IPD:ICU-TRANSFER:REQUEST:*
+IPD:OT-REQUEST:CREATE:*
 ```
 
 ## LIS
 
 ```text
-lab.order.read
-lab.order.create
-lab.specimen.collect
-lab.specimen.receive
-lab.specimen.reject
-lab.result.enter
-lab.result.verify
-lab.result.release
-lab.result.amend
-lab.result.critical.acknowledge
-lab.qc.manage
-lab.instrument.manage
+LAB:ORDER:READ:*
+LAB:ORDER:CREATE:*
+LAB:SPECIMEN:COLLECT:*
+LAB:SPECIMEN:RECEIVE:*
+LAB:SPECIMEN:REJECT:*
+LAB:RESULT:ENTER:*
+LAB:RESULT:VERIFY:*
+LAB:RESULT:RELEASE:*
+LAB:RESULT:AMEND:*
+LAB:RESULT:CRITICAL_ACKNOWLEDGE:*
+LAB:QC:MANAGE:*
+LAB:INSTRUMENT:MANAGE:*
 ```
 
 ## RIS
 
 ```text
-radiology.order.read
-radiology.order.create
-radiology.schedule
-radiology.study.perform
-radiology.report.draft
-radiology.report.verify
-radiology.report.release
-radiology.report.amend
-radiology.pacs.launch
-radiology.modality.manage
+RADIOLOGY:ORDER:READ:*
+RADIOLOGY:ORDER:CREATE:*
+RADIOLOGY:SCHEDULE:*:*
+RADIOLOGY:STUDY:PERFORM:*
+RADIOLOGY:REPORT:DRAFT:*
+RADIOLOGY:REPORT:VERIFY:*
+RADIOLOGY:REPORT:RELEASE:*
+RADIOLOGY:REPORT:AMEND:*
+RADIOLOGY:PACS:LAUNCH:*
+RADIOLOGY:MODALITY:MANAGE:*
 ```
 
 ## Emergency
 
 ```text
-emergency.encounter.create
-emergency.triage.create
-emergency.triage.finalize
-emergency.resuscitation.record
-emergency.order.create
-emergency.disposition.admit
-emergency.disposition.icu
-emergency.disposition.transfer
-emergency.disposition.discharge
-emergency.mlc.manage
+EMERGENCY:ENCOUNTER:CREATE:*
+EMERGENCY:TRIAGE:CREATE:*
+EMERGENCY:TRIAGE:FINALIZE:*
+EMERGENCY:RESUSCITATION:RECORD:*
+EMERGENCY:ORDER:CREATE:*
+EMERGENCY:DISPOSITION:ADMIT:*
+EMERGENCY:DISPOSITION:ICU:*
+EMERGENCY:DISPOSITION:TRANSFER:*
+EMERGENCY:DISPOSITION:DISCHARGE:*
+EMERGENCY:MLC:MANAGE:*
 ```
 
 ## OT
 
 ```text
-ot.request.create
-ot.request.approve
-ot.case.schedule
-ot.case.read
-ot.checklist.complete
-ot.timeout.complete
-ot.procedure.record
-ot.anaesthesia.record
-ot.case.complete
-ot.specimen.create
+OT:REQUEST:CREATE:*
+OT:REQUEST:APPROVE:*
+OT:CASE:SCHEDULE:*
+OT:CASE:READ:*
+OT:CHECKLIST:COMPLETE:*
+OT:TIMEOUT:COMPLETE:*
+OT:PROCEDURE:RECORD:*
+OT:ANAESTHESIA:RECORD:*
+OT:CASE:COMPLETE:*
+OT:SPECIMEN:CREATE:*
 ```
 
 ## ICU
 
 ```text
-icu.transfer.accept
-icu.admission.create
-icu.flowsheet.write
-icu.device.write
-icu.infusion.write
-icu.handover.read
-icu.transfer.request
-icu.discharge
+ICU:TRANSFER:ACCEPT:*
+ICU:ADMISSION:CREATE:*
+ICU:FLOWSHEET:WRITE:*
+ICU:DEVICE:WRITE:*
+ICU:INFUSION:WRITE:*
+ICU:HANDOVER:READ:*
+ICU:TRANSFER:REQUEST:*
+ICU:DISCHARGE:*:*
 ```
 
 ## Pharmacy/inventory
 
 ```text
-pharmacy.prescription.read
-pharmacy.prescription.verify
-pharmacy.dispense
-pharmacy.medication-order.read
-pharmacy.stock.read
-pharmacy.stock.adjust
-pharmacy.stock.transfer
-pharmacy.purchase.create
-pharmacy.purchase.approve
-pharmacy.goods-receive
-pharmacy.return.create
-pharmacy.recall.manage
-inventory.asset.manage
-inventory.vendor.manage
+PHARMACY:PRESCRIPTION:READ:*
+PHARMACY:PRESCRIPTION:VERIFY:*
+PHARMACY:DISPENSE:*:*
+PHARMACY:MEDICATION-ORDER:READ:*
+PHARMACY:STOCK:READ:*
+PHARMACY:STOCK:ADJUST:*
+PHARMACY:STOCK:TRANSFER:*
+PHARMACY:PURCHASE:CREATE:*
+PHARMACY:PURCHASE:APPROVE:*
+PHARMACY:GOODS-RECEIVE:*:*
+PHARMACY:RETURN:CREATE:*
+PHARMACY:RECALL:MANAGE:*
+INVENTORY:ASSET:MANAGE:*
+INVENTORY:VENDOR:MANAGE:*
 ```
 
 ## Billing/insurance
 
 ```text
-billing.charge.read
-billing.charge.create
-billing.invoice.create
-billing.invoice.finalize
-billing.payment.create
-billing.payment.reverse
-billing.refund.create
-billing.refund.approve
-insurance.policy.read
-insurance.eligibility.check
-insurance.preauth.create
-insurance.preauth.submit
-insurance.preauth.approve
-insurance.claim.create
-insurance.claim.submit
-insurance.claim.resubmit
-insurance.remittance.reconcile
+BILLING:CHARGE:READ:*
+BILLING:CHARGE:CREATE:*
+BILLING:INVOICE:CREATE:*
+BILLING:INVOICE:FINALIZE:*
+BILLING:PAYMENT:CREATE:*
+BILLING:PAYMENT:REVERSE:*
+BILLING:REFUND:CREATE:*
+BILLING:REFUND:APPROVE:*
+INSURANCE:POLICY:READ:*
+INSURANCE:ELIGIBILITY:CHECK:*
+INSURANCE:PREAUTH:CREATE:*
+INSURANCE:PREAUTH:SUBMIT:*
+INSURANCE:PREAUTH:APPROVE:*
+INSURANCE:CLAIM:CREATE:*
+INSURANCE:CLAIM:SUBMIT:*
+INSURANCE:CLAIM:RESUBMIT:*
+INSURANCE:REMITTANCE:RECONCILE:*
 ```
 
 ## Quality
 
 ```text
-quality.incident.create
-quality.incident.read
-quality.incident.investigate
-quality.capa.create
-quality.capa.assign
-quality.capa.complete
-quality.capa.verify
-quality.capa.close
-quality.audit.create
-quality.audit.review
-quality.indicator.configure
-quality.indicator.calculate
-quality.evidence.manage
+QUALITY:INCIDENT:CREATE:*
+QUALITY:INCIDENT:READ:*
+QUALITY:INCIDENT:INVESTIGATE:*
+QUALITY:CAPA:CREATE:*
+QUALITY:CAPA:ASSIGN:*
+QUALITY:CAPA:COMPLETE:*
+QUALITY:CAPA:VERIFY:*
+QUALITY:CAPA:CLOSE:*
+QUALITY:AUDIT:CREATE:*
+QUALITY:AUDIT:REVIEW:*
+QUALITY:INDICATOR:CONFIGURE:*
+QUALITY:INDICATOR:CALCULATE:*
+QUALITY:EVIDENCE:MANAGE:*
 ```
 
 ## System
 
 ```text
-system.user.manage
-system.role.manage
-system.permission.manage
-system.facility.manage
-system.department.manage
-system.integration.manage
-system.feature-flag.manage
-system.audit.read
-system.security.manage
-system.export.manage
+SYSTEM:USER:MANAGE:*
+SYSTEM:ROLE:MANAGE:*
+SYSTEM:PERMISSION:MANAGE:*
+SYSTEM:FACILITY:MANAGE:*
+SYSTEM:DEPARTMENT:MANAGE:*
+SYSTEM:INTEGRATION:MANAGE:*
+SYSTEM:FEATURE-FLAG:MANAGE:*
+SYSTEM:AUDIT:READ:*
+SYSTEM:SECURITY:MANAGE:*
+SYSTEM:EXPORT:MANAGE:*
 ```
 
 ---

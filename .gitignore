@@ -63,3 +63,6 @@ supabase/.temp/
 
 # Docker persistent volume mounts (if mapped locally)
 docker-data/
+
+# Self-hosted Supabase runtime is generated from the pinned upstream release
+infra/supabase/runtime/

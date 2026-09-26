@@ -1,4 +1,5 @@
 import { HimsApiClient, ApiError } from '@hims/api-client';
+import { createSupabaseBrowserClient } from '@hims/auth';
 
 /**
  * The API origin, from a build-time public variable.
@@ -9,6 +10,13 @@ import { HimsApiClient, ApiError } from '@hims/api-client';
  * default of 4000 contradicted it and every request 404'd at the router.
  */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+const browserSupabase =
+  typeof window !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY
+    ? createSupabaseBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
 
 /**
  * Server-side client, used from Server Components and Route Handlers.
@@ -30,7 +38,10 @@ export const apiClient = new HimsApiClient({ baseUrl: API_BASE_URL });
  */
 export const browserApiClient = new HimsApiClient({
   baseUrl: API_BASE_URL,
-  getAuthToken: () => window.localStorage.getItem('hims_access_token'),
+  getAuthToken: async () => {
+    const { data } = await browserSupabase?.auth.getSession() ?? { data: { session: null } };
+    return data.session?.access_token ?? null;
+  },
   getFacilityId: () => window.localStorage.getItem('hims_facility_id'),
 });
 

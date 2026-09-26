@@ -4,7 +4,7 @@
 **Version:** 1.0  
 **Date:** 2026-09-25  
 **Related:** `PRD.md`, `SRS.md`, `development.md`  
-**Database:** PostgreSQL 17/18 compatible; pin the exact Supabase-supported image/version at deployment time.
+**Database:** PostgreSQL, as provisioned and versioned by the Supabase Cloud project. Confirm the exact version with `show server_version` after linking; this repository does not select it.
 
 ## 1. Scope and architecture decisions
 
@@ -47,7 +47,7 @@ A business transaction is executed by the NestJS backend. Frontend clients do no
 
 Supabase provides infrastructure services—Auth, PostgreSQL, Storage and Realtime—but the HIMS business API remains the NestJS API. RLS is mandatory as tenant-isolation defense in depth.
 
-Supabase's current self-hosting documentation states that self-hosted deployments require the operator to own security, backups, upgrades, monitoring, availability and scalability. It also documents Supavisor as the default Postgres pooler and distinguishes session and transaction connection modes. citeturn863674search0turn863674search1turn863674search4
+The platform is a managed Supabase Cloud project. Supabase operates the database's backups, upgrades, monitoring and availability; the deployment is responsible for access control, credential management, data residency and verifying that the project's backup retention meets the hospital's recovery objectives. Supabase's connection pooler (Supavisor) is the documented access path and distinguishes session and transaction modes; this deployment uses session mode over IPv4, because a direct connection to the project database is IPv6-only without the paid IPv4 add-on. citeturn863674search0turn863674search1turn863674search4
 
 ---
 
@@ -2100,7 +2100,7 @@ The database must support:
 
 Do not treat Docker volumes as backups.
 
-Self-hosted Supabase does not provide the managed platform's managed backups/PITR capabilities; those responsibilities move to the operator. citeturn863674search0
+The platform is a managed Supabase Cloud project, so backups and point-in-time recovery are provided by the platform. That moves the obligation rather than removing it: the deployment must verify that the project's region and retention settings meet the hospital's recovery objectives, test restore against the platform's backup, and maintain an application-level export that does not depend on the platform's retention policy. citeturn863674search0
 
 ---
 
@@ -2118,7 +2118,7 @@ Migration rules:
 6. Test on a production-sized dataset.
 7. Record release version and migration version.
 
-Supabase's self-hosted CLI documentation changes over time; use the installed CLI's `--help` before relying on command syntax and pin the Supabase stack release in deployment configuration. citeturn863674search1
+Supabase Cloud applies migrations through the Supabase CLI, which records each applied version in `supabase_migrations.schema_migrations` and applies only files absent from it. The CLI's command surface changes over time; use the installed CLI's `--help` before relying on command syntax. Migrations must not be applied as plain SQL against a cloud project outside the CLI, because that records nothing and leaves the schema out of step with the platform's history. citeturn863674search1
 
 ---
 

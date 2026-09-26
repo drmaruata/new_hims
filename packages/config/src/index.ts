@@ -100,6 +100,36 @@ export const DatabaseEnvSchema = z.object({
 export const SupabaseEnvSchema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string().min(1),
+
+  /**
+   * The 20-character project slug Supabase assigns when the project is created,
+   * visible in both the API hostname (`<ref>.supabase.co`) and the database
+   * hostname (`db.<ref>.supabase.com`).
+   *
+   * Not needed to connect — `DATABASE_URL` is complete on its own. It is
+   * recorded separately because the pooler hostname is built from the ref *and*
+   * the region, and an operator assembling a connection string by hand needs
+   * one of the two to be verifiable. Requiring it would also force every
+   * existing deployment to add a value that changes nothing, so it stays
+   * optional; when it is present it is shape-checked, because a ref with a
+   * typo produces a hostname that fails at DNS with an error that does not
+   * mention the real cause.
+   */
+  SUPABASE_PROJECT_REF: z
+    .string()
+    .regex(/^[a-z0-9]{20}$/, 'SUPABASE_PROJECT_REF must be the 20-character project slug')
+    .optional(),
+
+  /**
+   * The project's region, for example `ap-south-1`. Supabase's connection pooler
+   * is per-region: `aws-0-<region>.pooler.supabase.com`. Optional for the same
+   * reason as `SUPABASE_PROJECT_REF`, and shape-checked when present.
+   */
+  SUPABASE_REGION: z
+    .string()
+    .regex(/^[a-z]{2}-[a-z]+-\d$/, 'SUPABASE_REGION must look like ap-south-1')
+    .optional(),
+
   /**
    * Server-only. Must never be exposed to a browser or mobile bundle; the API
    * role in PostgreSQL must not hold BYPASSRLS.
@@ -233,7 +263,46 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
     );
   }
 
+  // A Supabase Cloud project is reached over the public internet, so an
+  // unencrypted connection to it would carry patient data in the clear. Both
+  // halves of the condition are checked separately on purpose: this catches the
+  // case where someone reached for the locally-familiar `DATABASE_SSL=false`
+  // default while pointing DATABASE_URL at a cloud project, and it catches a
+  // host that is merely *named* like a cloud project. Failing at startup is the
+  // point — the alternative is a deployment that looks healthy and is not.
+  if (isSupabaseCloudHost(env.SUPABASE_URL) && !env.DATABASE_SSL) {
+    throw new Error(
+      'SUPABASE_URL is a Supabase Cloud host but DATABASE_SSL is off. Set DATABASE_SSL=true, ' +
+        'or put ?sslmode=verify-full on DATABASE_URL and leave DATABASE_SSL unset so the ' +
+        'connection string carries TLS. Patient data must not cross the public internet in clear text.'
+    );
+  }
+
   return env;
+}
+
+/**
+ * Whether `url` addresses a managed Supabase Cloud project.
+ *
+ * Cloud projects are served from `https://<project-ref>.supabase.co`. Testing
+ * for that shape rather than asking the operator to declare the deployment
+ * means a misconfigured production environment cannot slip past: the thing that
+ * makes the cloud target risky — that it is off-host — is derived from the
+ * hostname itself, so there is no separate flag to forget.
+ */
+function isSupabaseCloudHost(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    // Anchored on the registrable domain and exact. A hostname merely
+    // *containing* `supabase.co` is not this platform, and the port and path are
+    // irrelevant to where the bytes travel.
+    return hostname.endsWith('.supabase.co');
+  } catch {
+    // Zod has already rejected an unparseable SUPABASE_URL by this point, so
+    // this is unreachable in practice. Treated as "not cloud" rather than
+    // throwing a second, less specific error.
+    return false;
+  }
 }
 
 export const isProduction = (env: Pick<AppEnv, 'NODE_ENV'>) => env.NODE_ENV === 'production';

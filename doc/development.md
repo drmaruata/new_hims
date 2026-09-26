@@ -89,7 +89,7 @@ NestJS is appropriate because it provides explicit modules, providers, dependenc
 
 ## 2.3 Database strategy
 
-Use PostgreSQL as the authoritative transactional database, with the version pinned by the selected deployment platform. For directly managed PostgreSQL deployments, the engineering baseline targets PostgreSQL 18 after extension/ORM validation. The current official self-hosted Supabase Docker stack used by this repository pins its bundled PostgreSQL service to the supported 17.x line, so the Phase 0 Supabase environment intentionally runs the upstream pinned version rather than pretending it is a PostgreSQL 18 deployment. Do not mix a direct PostgreSQL 18 runtime with the Supabase-managed database in the same environment. Production deployments must pin a specific patched minor release and upgrade it through the platform review process.
+Use PostgreSQL as the authoritative transactional database. The version is whatever the Supabase Cloud project runs: the platform provisions and upgrades it, so this repository does not select it. Confirm it with `show server_version` after linking rather than assuming a number, and treat an upgrade as a platform event to be tested against the HIMS migration chain rather than a change requested by this team. For a directly managed PostgreSQL deployment outside Supabase, the engineering baseline targets PostgreSQL 18 after extension/ORM validation. Do not mix a directly managed PostgreSQL runtime with the Supabase-managed database in the same environment.
 
 Use PostgreSQL for authoritative transactional data. Do not distribute authoritative clinical state across multiple databases merely for architectural fashion.
 
@@ -114,7 +114,7 @@ The system shall use:
 
 ### Primary development/data-platform decision
 
-The project shall use **self-hosted Supabase** as the primary database/auth/realtime/storage platform for development and controlled environments.
+The project shall use a **managed Supabase Cloud project** as the primary database/auth/realtime/storage platform.
 
 The boundary is:
 
@@ -128,24 +128,27 @@ Frontend (Next.js / React Native)
             +-----------------------------+
             |                             |
             v                             v
-   Self-hosted Supabase              Supporting services
-   PostgreSQL/Auth/Realtime/Storage  Redis/Workers/PACS/Search/etc.
+    Supabase Cloud (managed)        Supporting services
+    PostgreSQL/Auth/Realtime/Storage  Redis/Workers/PACS/Search/etc.
 ```
 
 Supabase is the platform layer, not the complete HIMS backend. NestJS remains the authoritative business/API layer.
+
+There is no self-hosted Supabase stack. `infra/supabase/` documents the cloud
+project setup, and the root Compose file runs only the supporting services the
+API calls.
 
 ### Docker Desktop vs production
 
 Docker Desktop is recommended for:
 
 - developer laptops
-- local Supabase stack
 - local Redis/workers
 - local PACS/LIS/RIS simulators
 - integration testing
 - UI/API development
 
-Docker Desktop is **not** the target production runtime for a hospital. Production should use Linux Docker Engine or a container orchestrator. Supabase's current self-hosting guidance explicitly states that self-hosting transfers server provisioning, security hardening, backups, DR, monitoring, HA and scalability responsibilities to the operator. (https://supabase.com/docs/guides/self-hosting)
+Docker Desktop is **not** the target production runtime for a hospital. Production should use Linux Docker Engine or a container orchestrator for the application and its supporting services. The database, Auth, Storage and Realtime are hosted by Supabase, so their provisioning, security hardening, backups, DR, patching and availability are the platform's responsibility; what the deployment team owns is credential management, access control, data residency, and verifying that the project's region and retention settings meet the hospital's obligations. (https://supabase.com/docs/guides/platform)
 
 ### Production deployment tiers
 
@@ -335,69 +338,75 @@ The same patient transaction is never copied independently into every module. Mo
 
 # 4A. Supabase Service Boundary and Supporting Stack
 
-Supabase currently consists of PostgreSQL plus services including Auth, PostgREST, Realtime and Storage. The official self-hosting guidance also makes clear that self-hosted operators assume responsibility for security, backups, monitoring, availability and scaling. (https://supabase.com/docs/guides/self-hosting)
+Supabase Cloud provides PostgreSQL plus Auth, PostgREST (the Data API), Realtime and Storage as a managed platform. Backup, point-in-time recovery, patching, monitoring and availability of the database are therefore the platform's responsibility; the deployment team's obligations are credential management, access control, data residency, and verifying that the project's region and retention settings satisfy the hospital's continuity and data-protection obligations. (https://supabase.com/docs/guides/platform)
 
-| Capability           | Supabase                                                 | Additional service                                           | Deployment recommendation                                                |
-| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| PostgreSQL           | Yes                                                      | —                                                            | Docker development; Linux production; HA later                           |
-| Auth/JWT             | Yes                                                      | Enterprise IdP optional                                      | Supabase Auth; optional OIDC/SSO later                                   |
-| REST API             | Yes                                                      | NestJS                                                       | PostgREST only for controlled data access; NestJS canonical business API |
-| Realtime             | Yes                                                      | —                                                            | UI subscriptions; not durable event transport                            |
-| Object storage       | Yes                                                      | MinIO/S3 preferred for durable large-scale storage as needed | Supabase Storage + durable S3-compatible backend                         |
-| Background jobs      | No                                                       | Redis + BullMQ                                               | Docker/Kubernetes                                                        |
-| Event broker         | No durable broker built for all HIMS needs               | NATS/Kafka later                                             | Add after outbox-driven modular-monolith stage                           |
-| Search               | PostgreSQL search                                        | OpenSearch later                                             | Docker/Kubernetes/managed                                                |
-| PACS                 | No                                                       | Orthanc                                                      | Docker/Kubernetes                                                        |
-| DICOMweb             | No                                                       | Orthanc / DICOM gateway                                      | Docker/Kubernetes                                                        |
-| FHIR server          | No dedicated full server                                 | HAPI FHIR optional                                           | Docker/Kubernetes                                                        |
-| HL7 interface engine | No                                                       | Approved interface engine                                    | Docker/Kubernetes                                                        |
-| PDF generation       | No complete renderer                                     | Gotenberg                                                    | Docker                                                                   |
-| OCR                  | No                                                       | Tesseract optional                                           | Docker                                                                   |
-| Malware scanning     | No                                                       | ClamAV                                                       | Docker                                                                   |
-| Secrets              | No enterprise vault equivalent assumed                   | Vault / cloud secrets manager                                | Docker or managed                                                        |
-| Metrics/traces/logs  | Not sufficient as full production observability platform | OTel + Prometheus/Grafana/Loki/Tempo                         | Docker/Kubernetes/managed                                                |
-| Backup/DR            | Self-host operator responsibility                        | pgBackRest + off-host storage                                | Linux production                                                         |
-| WAF/edge             | No full internet edge stack                              | Nginx/Traefik + cloud WAF as applicable                      | Docker/cloud                                                             |
-| Email/SMS/WhatsApp   | No                                                       | External providers                                           | Managed API services                                                     |
-| Payments             | No                                                       | Razorpay/PayU/etc.                                           | Managed                                                                  |
-| Push                 | No                                                       | FCM/APNs                                                     | Managed                                                                  |
-| Video                | No                                                       | Jitsi / managed provider                                     | Docker or managed                                                        |
-| SIEM                 | No                                                       | Wazuh / managed SIEM                                         | Later production maturity                                                |
+| Capability           | Supabase                                          | Additional service                                         | Deployment recommendation                                           |
+| -------------------- | ------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------- |
+| PostgreSQL           | Yes, managed                                      | —                                                          | Supabase Cloud; region chosen for data residency                    |
+| Auth/JWT             | Yes                                               | Enterprise IdP optional                                    | Supabase Auth; optional OIDC/SSO later                              |
+| REST API             | Yes (Data API)                                    | NestJS                                                     | Not a PHI delivery path: disable where unused, NestJS canonical API |
+| Realtime             | Yes                                               | —                                                          | UI subscriptions; not durable event transport                       |
+| Object storage       | Yes                                               | S3-compatible export where an independent copy is required | Supabase Storage                                                    |
+| Background jobs      | No                                                | Redis + BullMQ                                             | Docker/Kubernetes                                                   |
+| Event broker         | No durable broker built for all HIMS needs        | NATS/Kafka later                                           | Add after outbox-driven modular-monolith stage                      |
+| Search               | PostgreSQL search                                 | OpenSearch later                                           | Docker/Kubernetes/managed                                           |
+| PACS                 | No                                                | Orthanc                                                    | Docker/Kubernetes                                                   |
+| DICOMweb             | No                                                | Orthanc / DICOM gateway                                    | Docker/Kubernetes                                                   |
+| FHIR server          | No dedicated full server                          | HAPI FHIR optional                                         | Docker/Kubernetes                                                   |
+| HL7 interface engine | No                                                | Approved interface engine                                  | Docker/Kubernetes                                                   |
+| PDF generation       | No complete renderer                              | Gotenberg                                                  | Docker                                                              |
+| OCR                  | No                                                | Tesseract optional                                         | Docker                                                              |
+| Malware scanning     | No                                                | ClamAV                                                     | Docker                                                              |
+| Secrets              | No enterprise vault equivalent assumed            | Vault / cloud secrets manager                              | Docker or managed                                                   |
+| Metrics/traces/logs  | Platform logs and metrics; not full observability | OTel + Prometheus/Grafana/Loki/Tempo                       | Docker/Kubernetes/managed                                           |
+| Backup/DR            | Managed backups and point-in-time recovery        | Application-level export                                   | Verify retention meets hospital policy                              |
+| WAF/edge             | No full internet edge stack                       | Nginx/Traefik + cloud WAF as applicable                    | Docker/cloud                                                        |
+| Email/SMS/WhatsApp   | No                                                | External providers                                         | Managed API services                                                |
+| Payments             | No                                                | Razorpay/PayU/etc.                                         | Managed                                                             |
+| Push                 | No                                                | FCM/APNs                                                   | Managed                                                             |
+| Video                | No                                                | Jitsi / managed provider                                   | Docker or managed                                                   |
+| SIEM                 | No                                                | Wazuh / managed SIEM                                       | Later production maturity                                           |
 
 ### RLS and tenant context
 
-Supabase PostgreSQL RLS is a defense-in-depth control. Every exposed tenant-owned table shall enable RLS. Authorization data must not be taken from user-editable `user_metadata`; authorization claims may use controlled server-side application metadata or, preferably for detailed HIMS authorization, database-backed role/scope tables. The Supabase documentation states that `service_role` bypasses RLS and must remain server-side; the application must therefore never expose that credential to web or mobile clients. (https://supabase.com/docs/guides/database/postgres/row-level-security)
+Supabase PostgreSQL RLS is a defense-in-depth control. Every exposed tenant-owned table shall enable RLS. Authorization data must not be taken from user-editable `user_metadata`; authorization claims may use controlled server-side application metadata or, preferably for detailed HIMS authorization, database-backed role/scope tables. The Supabase documentation states that `service_role` bypasses RLS and must remain server-side; the application must therefore never expose that credential to web or mobile clients. The same applies to the `postgres` database role on a cloud project: it is deliberately not a superuser, but it does hold `BYPASSRLS`, so the application connects as the dedicated `hims_app` role instead. (https://supabase.com/docs/guides/database/postgres/row-level-security)
 
 NestJS request handling shall establish tenant/facility context transactionally before accessing tenant data. Pooled connections must never retain another request's tenant context.
 
+The Data API shall be treated as a public internet endpoint. It is served to the `anon` and `authenticated` roles at a well-known URL, so the schema is discoverable there regardless of grants. The HIMS baseline grants neither role any privilege on a `hims_*` table, which is the correct control, but it is a control that a future grant could remove silently. Where the stack does not use the Data API, deployments shall disable it in the project's API settings rather than relying on the absence of grants.
+
+### Database connectivity
+
+Connections shall use Supabase's connection pooler, which is reached over IPv4. A direct connection to the project database is IPv6-only unless the paid IPv4 add-on is enabled, and IPv4-only networks — most CI runners, and many hospital networks — cannot use it. All database connections shall be encrypted in transit; the application refuses to start when the Supabase URL is a cloud host and TLS is not configured.
+
 ---
 
-# 4B. Local Docker Desktop Development Stack
+# 4B. Local Development Stack
 
-The local development environment shall model the production boundaries without requiring cloud services.
+The local environment runs the supporting services in Docker and connects to a Supabase Cloud project for the platform layer. There is no local Supabase stack.
 
 ```text
-Docker Desktop
+Developer workstation
 ┌─────────────────────────────────────────────────────────────────────┐
-│ hims-dev network                                                   │
 │                                                                     │
 │  Next.js web            NestJS API              Worker              │
 │       │                     │                     │                 │
 │       └──────────────┬──────┴──────────────┬──────┘                 │
 │                      │                     │                        │
-│                Supabase gateway      Redis + BullMQ                │
-│                      │                     │                        │
-│                PostgreSQL / Supabase       Outbox                  │
-│                Auth / Storage /        + event jobs                 │
-│                Realtime                                              │
+│              Supabase Cloud           Redis + BullMQ               │
+│          (PostgreSQL / Auth /         (Docker)                    │
+│           Storage / Realtime)                 │                    │
+│                                             Outbox                  │
+│                                        + event jobs                 │
 │                                                                     │
 │  Orthanc(PACS)  Gotenberg(PDF)  ClamAV  Mailpit  optional OpenSearch│
+│  (Docker)                                                                    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-Recommended local services:
+Services:
 
-- `supabase` — self-hosted Supabase Compose stack.
+- Supabase Cloud — PostgreSQL, Auth, Storage and Realtime for the project named in `.env`.
 - `api` — NestJS backend.
 - `worker` — BullMQ worker process.
 - `redis` — cache/queue/locks.
@@ -408,7 +417,9 @@ Recommended local services:
 - `opensearch` — optional local profile, enabled when search features require it.
 - `otel/prometheus/grafana/loki/tempo` — optional observability profile.
 
-Local development may use Docker Desktop, but production persistent storage must not depend on a developer workstation filesystem.
+Local development may use Docker Desktop for the supporting services, but production persistent storage must not depend on a developer workstation filesystem.
+
+Continuous integration deliberately does not use a Supabase Cloud project. It runs a plain `postgres:` service with a minimal `auth.users` shim and applies the migration chain with `infra/db/migrate.sh`, so the suite is hermetic, needs no cloud credential, and cannot mutate the project developers point at. See `.github/workflows/ci.yml`.
 
 ---
 
@@ -5503,32 +5514,32 @@ No major clinical module should enter pilot merely because its screens are visua
 
 The recommended baseline is:
 
-| Layer                      | Recommendation                                                               |
-| -------------------------- | ---------------------------------------------------------------------------- |
-| Web                        | Next.js + React + TypeScript + Tailwind CSS + shadcn/ui                      |
-| Mobile                     | React Native + Expo + TypeScript                                             |
-| Backend                    | NestJS + TypeScript                                                          |
-| Primary DB / data platform | Self-hosted Supabase; PostgreSQL version follows the pinned Supabase release |
-| Cache                      | Redis                                                                        |
-| Jobs                       | BullMQ initially                                                             |
-| Eventing                   | Transactional outbox; broker later                                           |
-| Object storage             | S3-compatible                                                                |
-| Search                     | PostgreSQL initially; OpenSearch later                                       |
-| API                        | REST + OpenAPI                                                               |
-| Interoperability           | FHIR + ABDM + HL7 + DICOM adapters                                           |
-| Realtime                   | WebSockets/SSE                                                               |
-| Auth                       | OIDC/OAuth2 identity provider                                                |
-| Web tests                  | Playwright + Vitest                                                          |
-| Mobile tests               | Jest + React Native Testing Library + Detox where needed                     |
-| API tests                  | Jest/Vitest + Supertest or equivalent                                        |
-| Load tests                 | k6                                                                           |
-| Observability              | OpenTelemetry + metrics/logging/tracing stack                                |
-| IaC                        | Terraform                                                                    |
-| Containers                 | Docker                                                                       |
-| CI/CD                      | GitHub Actions or equivalent                                                 |
-| Production hosting         | Linux Docker / Kubernetes; AWS or equivalent cloud optional                  |
-| Analytics                  | PostgreSQL projections first, warehouse later                                |
-| AI                         | Internal AI gateway + controlled model providers                             |
+| Layer                      | Recommendation                                                                           |
+| -------------------------- | ---------------------------------------------------------------------------------------- |
+| Web                        | Next.js + React + TypeScript + Tailwind CSS + shadcn/ui                                  |
+| Mobile                     | React Native + Expo + TypeScript                                                         |
+| Backend                    | NestJS + TypeScript                                                                      |
+| Primary DB / data platform | Supabase Cloud (managed); PostgreSQL version is the project's, via `show server_version` |
+| Cache                      | Redis                                                                                    |
+| Jobs                       | BullMQ initially                                                                         |
+| Eventing                   | Transactional outbox; broker later                                                       |
+| Object storage             | S3-compatible                                                                            |
+| Search                     | PostgreSQL initially; OpenSearch later                                                   |
+| API                        | REST + OpenAPI                                                                           |
+| Interoperability           | FHIR + ABDM + HL7 + DICOM adapters                                                       |
+| Realtime                   | WebSockets/SSE                                                                           |
+| Auth                       | OIDC/OAuth2 identity provider                                                            |
+| Web tests                  | Playwright + Vitest                                                                      |
+| Mobile tests               | Jest + React Native Testing Library + Detox where needed                                 |
+| API tests                  | Jest/Vitest + Supertest or equivalent                                                    |
+| Load tests                 | k6                                                                                       |
+| Observability              | OpenTelemetry + metrics/logging/tracing stack                                            |
+| IaC                        | Terraform                                                                                |
+| Containers                 | Docker                                                                                   |
+| CI/CD                      | GitHub Actions or equivalent                                                             |
+| Production hosting         | Linux Docker / Kubernetes; AWS or equivalent cloud optional                              |
+| Analytics                  | PostgreSQL projections first, warehouse later                                            |
+| AI                         | Internal AI gateway + controlled model providers                                         |
 
 React Native is therefore recommended for the **mobile application**, but not for the entire frontend. A web-first Next.js application using Tailwind CSS and shadcn/ui, plus React Native/Expo mobile applications, gives the HIMS the strongest combination of desktop clinical usability, tablet support, mobile reach, design-system consistency and code sharing.
 
@@ -5569,16 +5580,17 @@ Only after these foundations are reliable should the platform aggressively expan
 8. HL7 FHIR — https://www.hl7.org/fhir/R4/
 9. HL7 FHIR architecture — https://hl7.org/fhir/R4/overview-arch.html
 10. AWS EKS security guidance — https://docs.aws.amazon.com/eks/latest/best-practices/aiml-security.html
-11. Supabase self-hosting — https://supabase.com/docs/guides/self-hosting
+11. Supabase platform — https://supabase.com/docs/guides/platform
 12. Supabase architecture — https://supabase.com/docs/guides/getting-started/architecture
 13. Supabase Row Level Security — https://supabase.com/docs/guides/database/postgres/row-level-security
-14. NQAS Revised Standards 2024 — https://qps.nhsrcindia.org/national-quality-assurance-standards/quality-RNQAS
-15. NHSRC NQAS QA Directives — https://qps.nhsrcindia.org/repository-standard/quality-QA-Directives
-16. NQAS Integrated LaQshya/MusQan directive (28 Jan 2026) — https://qps.nhsrcindia.org/sites/default/files/2026-02/DO%20LETTER%20NHM-1-integration%20of%20LaQshya%20MusQan%20%20within%20NQAS%20framework%20-%2028.1.26.pdf
-17. NHCX — https://nhcx.abdm.gov.in/procedure-type
-18. MeitY DPDP Rules 2025 — https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa
-19. HL7 FHIR R5 — https://hl7.org/fhir/R5/
-20. DICOMweb — https://www.dicomstandard.org/
+14. Supabase connection management and pooler — https://supabase.com/docs/guides/database/connection-management
+15. NQAS Revised Standards 2024 — https://qps.nhsrcindia.org/national-quality-assurance-standards/quality-RNQAS
+16. NHSRC NQAS QA Directives — https://qps.nhsrcindia.org/repository-standard/quality-QA-Directives
+17. NQAS Integrated LaQshya/MusQan directive (28 Jan 2026) — https://qps.nhsrcindia.org/sites/default/files/2026-02/DO%20LETTER%20NHM-1-integration%20of%20LaQshya%20MusQan%20%20within%20NQAS%20framework%20-%2028.1.26.pdf
+18. NHCX — https://nhcx.abdm.gov.in/procedure-type
+19. MeitY DPDP Rules 2025 — https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa
+20. HL7 FHIR R5 — https://hl7.org/fhir/R5/
+21. DICOMweb — https://www.dicomstandard.org/
 
 Technology versions in this document are recommendations based on the state of the ecosystem on 2026-09-25. Exact patch versions must be frozen in the repository after dependency compatibility testing and upgraded through the project's release process.
 

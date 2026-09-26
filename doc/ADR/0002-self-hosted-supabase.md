@@ -1,6 +1,6 @@
 # ADR-0002: Self-hosted Supabase as the platform layer
 
-Status: Accepted
+Status: Superseded by [ADR-0004](0004-supabase-cloud-managed-platform.md)
 Date: 2026-09-26
 
 Context

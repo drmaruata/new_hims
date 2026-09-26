@@ -84,13 +84,15 @@ hims/
 │   └── payers/                 # NHCX and Insurance TPA gateway clients
 │
 ├── supabase/
-│   ├── migrations/             # 131-table authoritative relational PostgreSQL 18 schema
-│   └── seed/                   # Bootstrap seed data for tenants, facilities, catalogues
+│   ├── config.toml               # Supabase CLI project config (link target)
+│   ├── migrations/               # 131-table authoritative relational PostgreSQL schema
+│   └── seed/                     # Bootstrap seed data for tenants, facilities, catalogues
 │
 ├── infra/
-│   ├── docker/                 # Docker Compose development infrastructure
-│   ├── k8s/                    # Kubernetes manifests & Helm charts
-│   └── terraform/              # Infrastructure-as-Code definitions
+│   ├── supabase/                 # Supabase Cloud project setup guide
+│   ├── docker/                   # Docker Compose supporting-service infrastructure
+│   ├── k8s/                      # Kubernetes manifests & Helm charts
+│   └── terraform/                # Infrastructure-as-Code definitions
 │
 ├── doc/                        # Architecture blueprints, SRS, PRD, API contract, schemas
 ├── package.json                # Turborepo and pnpm workspace configuration
@@ -120,7 +122,9 @@ hims/
 
 - Node.js >= 22.0.0 (v24 LTS recommended)
 - pnpm >= 10.0.0
-- Docker Desktop or Linux Docker Engine
+- Docker Desktop or Linux Docker Engine (for Redis, PACS, PDF, antivirus and mail — **not** for the database)
+- A [Supabase Cloud](https://supabase.com/dashboard) project
+- The Supabase CLI: `npm install -g supabase`
 
 ### 1. Install Dependencies
 
@@ -128,20 +132,34 @@ hims/
 pnpm install
 ```
 
-### 2. Start Infrastructure
+### 2. Configure the Supabase Cloud project
+
+Create a project at <https://supabase.com/dashboard>, then link this repository to
+it and fill in your `.env`:
+
+```bash
+supabase login
+supabase link --project-ref <your-project-ref>
+cp .env.example .env   # then fill in the project ref, keys and password
+```
+
+See [infra/supabase/README.md](infra/supabase/README.md) for the full walkthrough.
+
+### 3. Start Supporting Infrastructure
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. Initialize Database Migrations & Seeds
+### 4. Initialize Database Migrations & Seeds
 
 ```bash
-pnpm db:migrate
-pnpm db:seed
+pnpm db:push                  # apply pending migrations to the cloud project
+pnpm db:seed                  # development seed; needs HIMS_ALLOW_REMOTE_SEED=1
+pnpm db:provision-app-role    # create the non-BYPASSRLS hims_app role
 ```
 
-### 4. Start Development Servers
+### 5. Start Development Servers
 
 ```bash
 pnpm dev

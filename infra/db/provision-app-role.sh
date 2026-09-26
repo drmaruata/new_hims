@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${DATABASE_ADMIN_URL:?Set DATABASE_ADMIN_URL to a superuser/migration connection string}"
+# On a Supabase Cloud project this is the `postgres` role, which is deliberately
+# not a superuser but does hold CREATEROLE and BYPASSRLS — the right role for
+# provisioning, and the wrong one for the application.
+: "${DATABASE_ADMIN_URL:?Set DATABASE_ADMIN_URL to an administrative connection (a superuser, or the Supabase Cloud postgres role)}"
 : "${HIMS_DB_APP_PASSWORD:?Set HIMS_DB_APP_PASSWORD to a strong per-environment password}"
 
 APP_ROLE="${HIMS_DB_APP_ROLE:-hims_app}"

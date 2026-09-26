@@ -5,8 +5,11 @@
   "globalEnv": [
     "NODE_ENV",
     "DATABASE_URL",
+    "DATABASE_SSL",
     "DIRECT_URL",
     "SUPABASE_URL",
+    "SUPABASE_PROJECT_REF",
+    "SUPABASE_REGION",
     "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_JWKS_URL",
@@ -52,19 +55,6 @@
     },
     "clean": {
       "cache": false
-    },
-    "db:migrate": {
-      "cache": false
-    },
-    "db:seed": {
-      "cache": false
-    },
-    "db:reset": {
-      "cache": false
-    },
-    "db:studio": {
-      "cache": false,
-      "persistent": true
     }
   }
 }

@@ -162,7 +162,7 @@ The implementation should use:
 - Central identity provider or equivalent identity service.
 - Observability stack with logs, metrics and traces.
 
-Technology choices are locked where explicitly stated in this SRS (including self-hosted Supabase/PostgreSQL, NestJS, Next.js/shadcn/ui and React Native/Expo). Other infrastructure implementations may vary only when they preserve the defined interfaces, security controls and operational requirements.
+Technology choices are locked where explicitly stated in this SRS (including managed Supabase Cloud/PostgreSQL, NestJS, Next.js/shadcn/ui and React Native/Expo). Other infrastructure implementations may vary only when they preserve the defined interfaces, security controls and operational requirements.
 
 ## 4.2 Service decomposition
 
@@ -433,15 +433,15 @@ Corrections must create amendment/version events with:
 
 ---
 
-# 10A. Self-Hosted Supabase Requirements
+# 10A. Supabase Cloud Requirements
 
-The production baseline shall use self-hosted Supabase as a data platform, not as the sole business-logic layer.
+The production baseline shall use a managed Supabase Cloud project as a data platform, not as the sole business-logic layer.
 
 ### Required Supabase components
 
 - PostgreSQL for transactional data.
 - Supabase Auth for authentication/JWT issuance where selected.
-- PostgREST only for approved simple data-access use cases; the NestJS application API remains canonical.
+- PostgREST shall not be a data path for patient data. Where the Data API is unused it shall be disabled; it is a public endpoint served to the `anon` and `authenticated` roles, and the NestJS application API remains canonical.
 - Realtime for suitable non-authoritative UI updates.
 - Storage for documents/media where appropriate.
 
@@ -451,28 +451,31 @@ NestJS shall own business transactions, orchestration, domain validation, author
 
 The normal authenticated request path shall not expose a Supabase service-role key to clients. Supabase's service-role/secret credentials bypass RLS and must remain server-side. Normal business access should use restricted database credentials and transaction-scoped tenant/user context or an equivalent RLS-safe pattern. Supabase documentation recommends RLS for exposed tables and explicitly states that service-role keys bypass RLS and must be kept server-side. (https://supabase.com/docs/guides/database/postgres/row-level-security)
 
+The `postgres` database role on a Supabase Cloud project is not a superuser, but it does hold `BYPASSRLS`. The application shall therefore connect as a dedicated non-`BYPASSRLS` role, and `DATABASE_ADMIN_URL` shall be absent from the API and worker runtime.
+
+All database connections shall be encrypted in transit. A Supabase Cloud database is off-host, and direct connections are IPv6-only unless the project has the paid IPv4 add-on, so application connections shall use the connection pooler.
+
 ### RLS requirements
 
 Every tenant-owned exposed table shall have RLS enabled. Policies must validate tenant and, where applicable, facility/department/resource scope. `TO authenticated` is not sufficient by itself; authorization policies must bind rows to the user's permitted scope.
 
 For NestJS direct PostgreSQL access, tenant context must be established **inside each transaction** and cleared/replaced before reuse of a pooled connection. Connection-pool leakage of tenant context is a release-blocking security defect.
 
-### Self-hosted operational responsibility
+### Managed-platform operational responsibility
 
-The deployment must separately implement:
+Backup, point-in-time recovery, database patching, monitoring and availability of the managed database are the platform provider's responsibility. The deployment shall separately implement:
 
-- backup and restore
-- off-host backup copies
-- restore testing
-- monitoring/alerting
-- OS/container patching
-- HA/scaling strategy
+- verification that the project's region and backup retention satisfy hospital policy
+- restore testing against the platform's backup, including the time objective it actually achieves
+- an application-level export that does not depend on the platform's retention policy
+- monitoring/alerting for the application
 - TLS/ingress
 - secret management
 - log retention
 - DR runbooks
+- data-residency assessment for the chosen region
 
-Supabase's self-hosting documentation explicitly places these responsibilities on the operator and notes that several managed-platform capabilities are unavailable when self-hosting. (https://supabase.com/docs/guides/self-hosting)
+The residual obligation exists because outsourcing operation does not outsource accountability: the hospital remains answerable for recoverability and residency even when it no longer performs the backup itself. (https://supabase.com/docs/guides/platform)
 
 ---
 
@@ -1919,7 +1922,7 @@ Supabase does not replace the complete operational stack required by a hospital 
 | Video                  | Required only for telemedicine                                     | Jitsi                                         | Managed video provider                |
 | Security monitoring    | Recommended for mature production                                  | Wazuh                                         | Managed SIEM                          |
 
-Docker Desktop shall be treated as a development/local-test host. Production must run on Linux-based infrastructure with persistent storage, backups, monitoring and access controls. A small pilot may use a single Linux host, but the architecture shall already preserve the separation required for later HA deployment.
+Docker Desktop shall be treated as a development/local-test host for the application and its supporting services. Production must run on Linux-based infrastructure with persistent storage, backups, monitoring and access controls, connecting to the managed Supabase Cloud project over an encrypted connection. A small pilot may use a single Linux host, but the architecture shall already preserve the separation required for later HA deployment.
 
 ---
 
@@ -2071,7 +2074,6 @@ Recommended requirement IDs:
 
 ### Can run in Docker/Docker Compose
 
-- Self-hosted Supabase stack.
 - NestJS API.
 - Web frontend.
 - React Native development tooling (not as a server container).
@@ -2097,13 +2099,15 @@ Recommended requirement IDs:
 - Payment/UPI processing.
 - FCM/APNs.
 - Cloud WAF/CDN.
-- Managed database/backup/PITR when a cloud deployment is selected.
+- Managed database/backup/PITR. This is not optional: the platform layer is a
+  managed Supabase Cloud project, so PostgreSQL, Auth and Storage are never
+  deployed from this repository.
 - Managed object storage if the customer does not require private storage.
 - Video/telemedicine platform if a managed provider is chosen.
 
 ### Production prohibition
 
-Docker Desktop is not the production runtime standard. It is a developer/test environment. Production hospital data requires Linux server infrastructure or an orchestrated production platform with persistent volumes, controlled networking, backups, monitoring and disaster recovery.
+Docker Desktop is not the production runtime standard. It is a developer/test environment. Production hospital data requires Linux server infrastructure or an orchestrated production platform with persistent volumes, controlled networking, backups, monitoring and disaster recovery, for the application and its supporting services; the managed database, Auth and Storage are hosted by Supabase and are reached over an encrypted connection.
 
 ---
 

@@ -1,39 +1,147 @@
-# Self-hosted Supabase baseline
+# Supabase Cloud baseline
 
-The HIMS development blueprint requires self-hosted Supabase as the platform layer for PostgreSQL, Auth, Realtime and Storage. This directory pins the upstream self-hosted Docker release and adds only the HIMS-specific migration overlay.
+The HIMS platform layer is a **managed Supabase Cloud project**. PostgreSQL,
+Auth, Realtime and Storage are operated by Supabase; this repository does not
+run a Supabase stack in Docker, and nothing under this directory starts one.
 
-The official Supabase Docker documentation currently identifies self-hosted/v0.8.2 as the current tagged self-hosted configuration. The repository does not vendor the upstream 500+ line Compose file; bootstrap.sh fetches that exact tag and records it under the generated runtime directory.
+The root `docker-compose.yml` still runs the supporting services the API calls —
+Redis, Orthanc, Gotenberg, Mailpit, ClamAV, OpenSearch — because those are not
+platform services and are cheaper to run on a workstation.
 
-Setup:
+## What moved, and what did not
 
-1. Run bash infra/supabase/bootstrap.sh.
-2. Open infra/supabase/runtime/.env.
-3. Replace all generated/example secrets and set the local URLs.
-4. Start the stack and wait for it to become healthy:
-   `docker compose -f infra/supabase/runtime/docker-compose.yml up -d --wait`
-5. Apply the HIMS migrations: `pnpm db:migrate`.
-6. Apply the development seed: `pnpm db:seed`.
-7. Apply the HIMS application role: `pnpm db:provision-app-role`.
-8. Point the API DATABASE_URL at the non-BYPASSRLS hims_app role.
-9. Verify isolation: `HIMS_TENANT_ID=<seed tenant uuid> pnpm db:verify-rls`.
+| Concern                             | Before                                 | Now                                     |
+| ----------------------------------- | -------------------------------------- | --------------------------------------- |
+| PostgreSQL, Auth, Storage, Realtime | Self-hosted Docker stack               | Supabase Cloud project                  |
+| Applied-migration bookkeeping       | None; `migrate.sh` replayed everything | `supabase_migrations.schema_migrations` |
+| Migrations applied by               | `pnpm db:migrate`                      | `pnpm db:push` (`supabase db push`)     |
+| Plain-PostgreSQL target (CI)        | `pnpm db:migrate`                      | `pnpm db:migrate` — unchanged           |
+| Reset a development database        | `pnpm db:reset`                        | `supabase db reset --linked`            |
+| Auth/Storage reachability check     | `bash infra/supabase/smoke-test.sh`    | unchanged                               |
 
-The HIMS migrations are applied by the migration runner, not mounted as Postgres
-init scripts. The baseline is not replayable over a schema that already exists, so
-mounting it at container init and then running the runner would fail on
-`relation "hims_core.tenants" already exists`; and skipping the runner would leave
-the later migrations unapplied while still appearing to succeed. Keeping one path
-also keeps migration order visible in the runner's output rather than encoded in
-init-script filename prefixes.
+Migrations stay in `supabase/migrations/` as plain SQL with the same
+`YYYYMMDDHHMMSS_name.sql` naming, so the same files serve both paths. The CI job
+in `.github/workflows/ci.yml` runs against a plain `postgres:` service and
+deliberately does not talk to Supabase at all; it keeps using
+`infra/db/migrate.sh`, which is why that script still exists.
 
-For the same reason the development seed is an explicit command rather than a
-Compose overlay. It creates a demo tenant, so it must be something an operator
-asks for, not something that happens to whatever volume the stack was started
-against. `infra/db/seed.sh` refuses to run against a non-local host unless
-`HIMS_ALLOW_REMOTE_SEED=1` is set.
+## One-time setup
 
-Important operational rules:
+1. Create the project at <https://supabase.com/dashboard>. Note the project
+   **ref** (20 lowercase alphanumeric characters) and its **region**.
 
-- Do not expose the Supabase Studio dashboard to the public internet without TLS and access controls.
-- Keep the Supabase service/secret key server-side.
-- Do not use the PostgreSQL postgres superuser as the HIMS API connection.
-- Self-hosting transfers backup, DR, security hardening, monitoring and upgrade responsibility to the operator.
+2. Install the Supabase CLI. This is the one new tool the cloud path requires:
+
+   ```sh
+   npm install -g supabase
+   ```
+
+3. Link the repository to the project. `link` writes the real project ref into
+   `supabase/config.toml`, replacing the placeholder:
+
+   ```sh
+   supabase login
+   supabase link --project-ref <your-project-ref>
+   ```
+
+4. Copy `.env.example` to `.env` and fill it in from Project Settings → API and
+   Project Settings → Database. See that file for how each value is derived and
+   which of them are secrets.
+
+## Applying the schema
+
+```sh
+pnpm db:push                      # apply pending migrations
+supabase db push --dry-run        # show what would be applied, change nothing
+```
+
+`db push` applies only files absent from the platform's migration history, so it
+is safe to re-run and will say "no pending migrations" when there is nothing to
+do. Each file is applied in one transaction and its version is recorded only on
+full success, so a failed migration is not marked as applied.
+
+`pnpm db:migrate` deliberately **refuses** a Supabase Cloud target. It applies
+files as plain SQL without recording anything in the platform's history, which
+would leave the schema and the migration ledger disagreeing; the next `db push`
+would then skip files it believed were already applied and report success. Use
+one path per platform.
+
+## Roles
+
+`pnpm db:provision-app-role` creates the non-`BYPASSRLS` application role
+(`hims_app` by default) and grants it `USAGE` on the `hims_*` schemas. It runs as
+the Supabase `postgres` role, which on a cloud project holds `BYPASSRLS` and can
+create roles — that is the correct role for the job and the wrong role for the
+API.
+
+Then verify:
+
+```sh
+HIMS_TENANT_ID=<seed tenant uuid> pnpm db:verify-rls
+```
+
+The application role connects through the pooler as `hims_app.<project-ref>`, not
+as `hims_app` — the pooler requires the ref in the username. That is the single
+most common reason a cloud connection is rejected after a correct password.
+
+## Seeding
+
+`pnpm db:seed` creates a demo tenant and is development data. It refuses any
+non-local host, so against a cloud project it stops and asks for an explicit
+opt-in:
+
+```sh
+HIMS_ALLOW_REMOTE_SEED=1 pnpm db:seed
+```
+
+Read that refusal as a question, not an obstacle. Supabase Cloud's hosted
+projects are where real patient data will live, and a demo tenant inserted into
+a project that already holds it is a data-quality incident, not a convenience.
+
+## Resetting
+
+`pnpm db:reset` rebuilds the `hims_*` schemas for a plain-PostgreSQL
+development database. It refuses a cloud project outright, for the same ledger
+reason `db:migrate` does. Use:
+
+```sh
+supabase db reset --linked
+```
+
+That drops and recreates the **entire** project database, not just the HIMS
+tables, and clears the migration history in the same operation.
+
+## Important operational rules
+
+- **Keep the service/secret key server-side.** `SUPABASE_SERVICE_ROLE_KEY` must
+  never reach a browser or mobile bundle, in either the legacy `service_role`
+  JWT form or the newer `sb_secret_` form.
+- **Do not use the `postgres` database role as the API connection.** On a cloud
+  project it holds `BYPASSRLS`, which makes every row-level security policy in
+  the HIMS baseline inert. See [ADR-0003](../../doc/ADR/0003-database-role-and-rls.md).
+- **The Data API is a public endpoint.** `https://<ref>.supabase.co/rest/v1/` is
+  reachable from the internet and served to the `anon` and `authenticated`
+  roles. The HIMS baseline grants neither role any privilege on a `hims_*`
+  table, so patient data is not readable through it — but the schema is
+  discoverable there, and a future grant would expose PHI at a public URL. If
+  nothing in the stack uses the Data API, disable it in Project Settings → API
+  rather than relying on the absence of grants as the control.
+- **Direct database connections are IPv6-only** unless the project has the paid
+  IPv4 add-on. The pooler is IPv4. Prefer the pooler, and treat
+  `DATABASE_URL` pointing at `db.<ref>.supabase.com` as something to verify
+  against the project's network settings rather than assume.
+- **TLS is mandatory.** `loadEnv` refuses to start a process whose
+  `SUPABASE_URL` is a cloud host while `DATABASE_SSL` is off, so the insecure
+  combination cannot reach a deployment by accident.
+
+## Reachability check
+
+```sh
+SUPABASE_URL=https://<ref>.supabase.co SUPABASE_ANON_KEY=<publishable key> \
+  bash infra/supabase/smoke-test.sh
+```
+
+Checks Auth, Storage and the Data API are reachable. The key is optional: without
+it the script still checks the first two and reports `SKIP rest` rather than
+failing, because an unauthenticated `rest/v1/` request is expected to be rejected
+by the gateway.

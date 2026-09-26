@@ -3,6 +3,8 @@ set -euo pipefail
 
 : "${DATABASE_ADMIN_URL:?Set DATABASE_ADMIN_URL to the migration/admin connection}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=infra/db/common.sh
+source "$ROOT_DIR/infra/db/common.sh"
 
 # The seed creates a demo tenant. That is a development-only convenience, so it
 # is an explicit step rather than something a database bootstrap does on its own,
@@ -17,7 +19,10 @@ case "${DATABASE_ADMIN_URL}" in
       echo "ERROR: refusing to seed a non-local database." >&2
       echo "       DATABASE_ADMIN_URL does not point at localhost. Seeding creates a" >&2
       echo "       demo tenant and must never reach a shared or production database." >&2
-      echo "       Set HIMS_ALLOW_REMOTE_SEED=1 if this really is a throwaway target." >&2
+      echo "       On a Supabase Cloud project this is expected to stop, because the" >&2
+      echo "       project holds real patient data. If this project is a development" >&2
+      echo "       one, opt in with:" >&2
+      echo "           HIMS_ALLOW_REMOTE_SEED=1 pnpm db:seed" >&2
       exit 1
     fi
     ;;
@@ -36,7 +41,14 @@ if [ -z "$state" ]; then
 fi
 
 if [ "$state" = "0" ]; then
-  echo "ERROR: the HIMS schema is not present. Run 'pnpm db:migrate' first." >&2
+  # The two platforms apply migrations through different commands, and sending an
+  # operator to the wrong one costs them a confusing failure: migrate.sh
+  # refuses a cloud target outright.
+  if is_supabase_cloud_url "$DATABASE_ADMIN_URL"; then
+    echo "ERROR: the HIMS schema is not present. Run 'pnpm db:push' first." >&2
+  else
+    echo "ERROR: the HIMS schema is not present. Run 'pnpm db:migrate' first." >&2
+  fi
   exit 1
 fi
 

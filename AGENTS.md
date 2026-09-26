@@ -163,10 +163,12 @@ Notes:
 - [packages/clinical-safety](packages/clinical-safety) — allergy, interaction and critical-alert rules.
 - [packages/config](packages/config) — shared TypeScript, ESLint and Prettier config.
 - [supabase/migrations](supabase/migrations) — authoritative relational schema.
+- [supabase/config.toml](supabase/config.toml) — Supabase CLI project config; the link target for `db:push`.
 - [supabase/seed](supabase/seed) — opt-in development seed data.
 - [supabase/functions](supabase/functions), [supabase/tests](supabase/tests) — Edge Function boundary and database tests.
-- [infra/db](infra/db) — migration runner, app-role provisioning, RLS verification.
-- [infra/backup](infra/backup), [infra/monitoring](infra/monitoring), [infra/supabase](infra/supabase) — operational baselines.
+- [infra/db](infra/db) — migration runner, cloud push wrapper, app-role provisioning, RLS verification.
+- [infra/backup](infra/backup), [infra/monitoring](infra/monitoring) — operational baselines.
+- [infra/supabase](infra/supabase) — Supabase Cloud project setup and reachability check.
 - [scripts](scripts) — repo tooling, including the unscoped-DB-call finder.
 - [doc](doc) — product, architecture, contract, governance and schema docs.
 - [.github/instructions](.github/instructions) — path-scoped agent instructions.
@@ -219,12 +221,26 @@ pnpm test
 pnpm test:e2e
 pnpm format
 pnpm format:check
-pnpm db:migrate
+pnpm db:push
 pnpm db:seed
 pnpm db:provision-app-role
 pnpm db:verify-rls   # needs HIMS_TENANT_ID
+pnpm db:migrate      # plain PostgreSQL only; refuses a cloud target
 pnpm db:reset        # destructive; needs HIMS_DB_RESET_CONFIRM=1
 ```
+
+The platform layer is a **managed Supabase Cloud project** (see
+[ADR-0004](doc/ADR/0004-supabase-cloud-managed-platform.md)). No Supabase stack
+runs from this repository. Read
+[infra/supabase/README.md](infra/supabase/README.md) for project setup.
+
+`db:push` and `db:migrate` are not interchangeable, and each refuses the target
+belonging to the other. `supabase db push` records applied versions in
+`supabase_migrations.schema_migrations`; `migrate.sh` records nothing and replays
+the whole chain. Applying a migration through the wrong one leaves the schema and
+the platform's history disagreeing, after which `db push` silently skips work
+while reporting success. Use `db:push` for the cloud project and `db:migrate`
+only for the plain-PostgreSQL CI job.
 
 The `db:*` scripts are thin wrappers over the shell scripts in
 [infra/db](infra/db) and need `bash` on the path. They are deliberately not
@@ -261,24 +277,39 @@ node scripts/find-unscoped-db-calls.mjs apps/api/src
 ## Database and migration rules
 
 - Migrations live in [supabase/migrations](supabase/migrations), are numbered
-  `YYYYMMDDHHMMSS_name.sql`, and are applied through [infra/db/migrate.sh](infra/db/migrate.sh).
-  Never edit a migration that has already been applied; add a new one.
+  `YYYYMMDDHHMMSS_name.sql`, and are applied to the Supabase Cloud project by
+  `pnpm db:push`. Never edit a migration that has already been applied; add a new
+  one.
 - [infra/db/migrate.sh](infra/db/migrate.sh) replays the whole chain in filename
-  order and is **not** incremental: run it once per database, never as an
-  "apply pending changes" step. It refuses to start when the HIMS schema is
-  already present. Do not mount migrations as Postgres init scripts, and do not
-  add a second migration entry point — a divergent path is how a partially
-  applied schema happens.
+  order and is **not** incremental: run it once per plain-PostgreSQL database,
+  never as an "apply pending changes" step. It refuses to start when the HIMS schema is
+  already present, and refuses a Supabase Cloud target outright. Do not mount
+  migrations as Postgres init scripts, and do not add a second migration entry
+  point — a divergent path is how a partially applied schema happens.
+- The cloud project is the single source of truth for its own schema version, in
+  `supabase_migrations.schema_migrations`. Nothing in this repository writes to
+  that table. A schema change is deployed only by `supabase db push`; anything
+  that applies SQL without recording a version has desynchronised it.
 - [infra/db/seed.sh](infra/db/seed.sh) creates a demo tenant. It is development
   only and refuses a non-local host unless `HIMS_ALLOW_REMOTE_SEED=1`.
   [infra/db/reset-db.sh](infra/db/reset-db.sh) is destructive, drops every
-  `hims_*` schema, and requires `HIMS_DB_RESET_CONFIRM=1`.
+  `hims_*` schema, requires `HIMS_DB_RESET_CONFIRM=1`, and refuses a cloud
+  target — use `supabase db reset --linked` for that.
+- Connect through the connection pooler. A direct connection to the project
+  database is IPv6-only without the paid IPv4 add-on, and the pooler requires the
+  project ref in the username (`hims_app.<ref>`, not `hims_app`).
+- Every database connection is encrypted in transit. `DATABASE_SSL` is applied by
+  `withDatabaseTls` in [packages/database](packages/database), and `loadEnv`
+  refuses to start a process whose `SUPABASE_URL` is a cloud host while TLS is
+  off. Do not add a `Pool` that skips that helper.
 - psql does not interpolate `:variables` inside a dollar-quoted string. A
   `:'var'` written into a `DO $$ ... $$` block reaches PL/pgSQL verbatim and
   fails to parse. Generate such statements with `format()` in a plain `SELECT`
   and dispatch them with `\gexec`, or pass the value in via `current_setting()`.
 - The API must connect as the provisioned non-`BYPASSRLS` application role, never
-  as `postgres` and never with a superuser or `service_role` credential. See
+  as `postgres` and never with a superuser or `service_role` credential. On a
+  Supabase Cloud project the `postgres` role is not a superuser but _does_ hold
+  `BYPASSRLS`, so the same rule applies by a different mechanism. See
   [infra/db/README.md](infra/db/README.md) and ADR-0003.
 - The application role has `SELECT`/`INSERT`/`UPDATE` and no `DELETE`. Clinical
   deletion is expressed as an amendment, cancellation, or retirement workflow.

@@ -1,0 +1,39 @@
+# Supabase CLI project configuration.
+#
+# This repository targets a **Supabase Cloud** project. There is no local
+# Supabase stack: PostgreSQL, Auth, Storage and Realtime are managed by
+# Supabase, and this file exists so the CLI can link the repository to that
+# project and track which migrations have been applied.
+#
+# First-time setup, once the project exists:
+#
+#   supabase login
+#   supabase link --project-ref <your-project-ref>
+#
+# `link` writes the real project ref into `project_id` below and fetches the
+# project's API configuration, replacing the placeholder. Apply migrations with
+# `pnpm db:push`; inspect what would be applied with `supabase db push --dry-run`.
+#
+# What is tracked, and where
+# -------------------------
+# Applied migration versions are recorded by the platform in
+# `supabase_migrations.schema_migrations`, which Supabase creates and owns.
+# `supabase db push` applies only files not present there, so unlike the
+# plain-PostgreSQL runner in infra/db/migrate.sh it is incremental and safe to
+# re-run. Nothing in this repository edits that table.
+#
+# The migrations themselves stay in supabase/migrations/ as plain SQL with the
+# same `YYYYMMDDHHMMSS_name.sql` naming, so infra/db/migrate.sh remains usable
+# for the plain-PostgreSQL CI job that does not talk to Supabase at all.
+
+# Placeholder. `supabase link --project-ref` overwrites this with the real ref,
+# which is the 20-character slug in both the API and database hostnames.
+project_id = "REPLACE_WITH_PROJECT_REF"
+
+[db]
+# Only meaningful for a local Supabase stack, which this project does not use.
+# It is set to the version Supabase Cloud currently provisions so that anyone who
+# does run `supabase start` locally gets a matching server. The authoritative
+# version of a cloud project is whatever `show server_version` reports; confirm
+# it after linking rather than trusting this value.
+major_version = 17

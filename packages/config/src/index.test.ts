@@ -32,4 +32,57 @@ describe('loadEnv', () => {
       'AUTH_DEV_FALLBACK'
     );
   });
+
+  // The platform moved from a self-hosted stack to a managed Supabase Cloud
+  // project, so `SUPABASE_URL` now points off-host. These cover the guard that
+  // makes an unencrypted connection to that host a startup failure rather than
+  // a silent one.
+  const cloud = {
+    ...base,
+    SUPABASE_URL: 'https://abcdefghijklmnopqrst.supabase.co',
+    DATABASE_URL:
+      'postgresql://hims_app.abcdefghijklmnopqrst:pw@aws-0-ap-south-1.pooler.supabase.com:5432/postgres',
+  };
+
+  it('accepts a Supabase Cloud URL when TLS is enabled', () => {
+    const env = loadEnv({ ...cloud, DATABASE_SSL: 'true' });
+    expect(env.DATABASE_SSL).toBe(true);
+  });
+
+  it('rejects a Supabase Cloud URL with TLS disabled', () => {
+    expect(() => loadEnv({ ...cloud, DATABASE_SSL: 'false' })).toThrow('DATABASE_SSL');
+  });
+
+  it('rejects a Supabase Cloud URL with TLS left at its default', () => {
+    // The dangerous case: DATABASE_SSL is simply never set, so nothing in the
+    // deployment configuration mentions transport security at all.
+    expect(() => loadEnv(cloud)).toThrow('DATABASE_SSL');
+  });
+
+  it('does not apply the cloud TLS guard to a non-cloud host', () => {
+    // Local development and the plain-PostgreSQL CI job keep working without
+    // TLS; only a cloud hostname forces it.
+    const env = loadEnv({ ...base, DATABASE_SSL: 'false' });
+    expect(env.DATABASE_SSL).toBe(false);
+  });
+
+  it('treats a lookalike hostname as not-cloud', () => {
+    // Guards against a substring match widening the rule to hosts that merely
+    // mention supabase.co in their name.
+    expect(() =>
+      loadEnv({ ...base, SUPABASE_URL: 'https://supabase.co.example.test', DATABASE_SSL: 'false' })
+    ).not.toThrow();
+  });
+
+  it('rejects a malformed project ref', () => {
+    expect(() =>
+      loadEnv({ ...cloud, DATABASE_SSL: 'true', SUPABASE_PROJECT_REF: 'too-short' })
+    ).toThrow('SUPABASE_PROJECT_REF');
+  });
+
+  it('rejects a malformed region', () => {
+    expect(() => loadEnv({ ...cloud, DATABASE_SSL: 'true', SUPABASE_REGION: 'Mumbai' })).toThrow(
+      'SUPABASE_REGION'
+    );
+  });
 });

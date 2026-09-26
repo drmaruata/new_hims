@@ -19,6 +19,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md,yaml,yml}\"",
     "clean": "turbo run clean && rimraf node_modules",
     "db:migrate": "bash infra/db/migrate.sh",
+    "db:push": "bash infra/db/push-migrations.sh",
     "db:seed": "bash infra/db/seed.sh",
     "db:reset": "bash infra/db/reset-db.sh",
     "db:provision-app-role": "bash infra/db/provision-app-role.sh",

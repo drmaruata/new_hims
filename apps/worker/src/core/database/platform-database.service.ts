@@ -2,6 +2,8 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config';
 import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
+import { withDatabaseTls } from '@hims/database';
+
 /**
  * Cross-tenant database access for infrastructure work.
  *
@@ -53,15 +55,20 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    this.pool = new Pool({
-      connectionString,
-      // Small on purpose: this pool only ever runs short, indexed maintenance
-      // statements, and a large one would compete with the API for connections
-      // for no benefit.
-      max: this.configService.get<number>('PLATFORM_POOL_MAX', 4),
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 5_000,
-    });
+    this.pool = new Pool(
+      withDatabaseTls(
+        {
+          connectionString,
+          // Small on purpose: this pool only ever runs short, indexed maintenance
+          // statements, and a large one would compete with the API for connections
+          // for no benefit.
+          max: this.configService.get<number>('PLATFORM_POOL_MAX', 4),
+          idleTimeoutMillis: 30_000,
+          connectionTimeoutMillis: 5_000,
+        },
+        this.configService.get<boolean>('DATABASE_SSL', false)
+      )
+    );
   }
 
   async onModuleInit(): Promise<void> {

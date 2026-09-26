@@ -3,6 +3,11 @@
 Status: Accepted
 Date: 2026-09-26
 
+Amendment: unchanged by ADR-0004, and reinforced by it. On a Supabase Cloud
+project the `postgres` role is deliberately not a superuser, but it does hold
+BYPASSRLS, so the failure mode this record describes is the same one and the
+dedicated application role remains necessary.
+
 Context
 
 PostgreSQL superusers and roles with BYPASSRLS defeat the tenant isolation controls implemented by the HIMS schema.

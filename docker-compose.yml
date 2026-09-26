@@ -1,6 +1,5 @@
 services:
-  # Supporting services only. PostgreSQL/Auth/Realtime/Storage are provided by
-  # the pinned self-hosted Supabase stack under infra/supabase.
+  # Supporting services only. PostgreSQL/Auth/Realtime/Storage come from the managed Supabase Cloud project described in infra/supabase/README.md and are deliberately absent here.
   redis:
     image: redis:7-alpine
     container_name: hims-redis

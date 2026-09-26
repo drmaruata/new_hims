@@ -15,6 +15,30 @@ set -euo pipefail
 : "${HIMS_DB_APP_PASSWORD:?Set HIMS_DB_APP_PASSWORD to a strong per-environment password}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=infra/db/common.sh
+source "$ROOT_DIR/infra/db/common.sh"
+
+# A cloud project has exactly one correct way to be rebuilt, and it is the
+# platform's, not this one. `supabase db reset --linked` drops and recreates the
+# database and clears the migration ledger in the same operation, so the schema
+# and `supabase_migrations.schema_migrations` cannot drift apart. Dropping the
+# `hims_*` schemas and replaying with migrate.sh would leave every version
+# recorded as applied against a database that no longer contains it, and the next
+# `supabase db push` would apply nothing at all — reporting success.
+#
+# Deliberately not overridable by HIMS_ALLOW_REMOTE_RESET. That flag authorises
+# resetting a remote *throwaway*; using it here would be a way to desynchronise
+# a real project, which is a different mistake and not one worth a flag.
+if is_supabase_cloud_url "$DATABASE_ADMIN_URL"; then
+  echo "ERROR: DATABASE_ADMIN_URL points at a Supabase Cloud project." >&2
+  echo "       db:reset cannot rebuild one: it would drop the hims_* schemas without" >&2
+  echo "       clearing supabase_migrations.schema_migrations, leaving the platform" >&2
+  echo "       to believe the whole chain is applied to a database that is missing" >&2
+  echo "       it. Use the platform's own reset instead, which is atomic:" >&2
+  echo "           supabase db reset --linked" >&2
+  echo "       That destroys every table in the project, not just the HIMS ones." >&2
+  exit 1
+fi
 
 if [ "${HIMS_DB_RESET_CONFIRM:-}" != "1" ]; then
   echo "ERROR: db:reset drops every hims_* schema and all data in them." >&2

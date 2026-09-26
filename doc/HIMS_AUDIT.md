@@ -15,7 +15,7 @@ The resulting architecture is centered on:
 - Department/service-aware encounters rather than separate patient masters.
 - A canonical cross-module order model.
 - NestJS as the business/API layer.
-- Self-hosted Supabase as the data platform.
+- A managed Supabase Cloud project as the data platform.
 - PostgreSQL as the transactional source of truth.
 - RLS plus application authorization as defense in depth for multi-tenancy.
 - Next.js + React + TypeScript + Tailwind + shadcn/ui for web.
@@ -106,19 +106,19 @@ The revised documents define ICU transfer as a workflow rather than an informal 
 
 The insurance domain now explicitly covers central/state government schemes, PM-JAY where enabled, private payers, eligibility, pre-authorisation, packages, claims, rejections, resubmission, settlement and NHCX integration boundaries.
 
-### Finding 10 — Self-hosted Supabase cannot be treated as the complete backend
+### Finding 10 — Supabase cannot be treated as the complete backend
 
 **Severity:** Critical
 
 Supabase is now defined as the data platform. NestJS is the canonical business/API layer. The revised architecture prevents direct client-side business writes to PostgreSQL and keeps service-role credentials server-side.
 
-Supabase self-hosting documentation places backups, disaster recovery, monitoring, high availability, security and scalability responsibilities on the operator. Those concerns are now explicitly part of the HIMS production architecture.
+The platform is a managed Supabase Cloud project. Backups, disaster recovery, monitoring, high availability, patching and scalability of the database are Supabase's responsibility; the deployment is responsible for access control, credential management, data residency, and verifying that the project's region and backup retention satisfy the hospital's obligations. Those residual obligations are now explicitly part of the HIMS production architecture.
 
 ### Finding 11 — Docker Desktop is for development, not the target hospital runtime
 
 **Severity:** High
 
-Docker Desktop is retained for developer workstations and local integration testing. Production target environments are Linux Docker Engine or an orchestrated platform with persistent storage, secure networking, backups, monitoring and DR.
+Docker Desktop is retained for developer workstations and local integration testing of the application and its supporting services. Production target environments are Linux Docker Engine or an orchestrated platform with persistent storage, secure networking, backups, monitoring and DR, connecting to the managed Supabase Cloud project over an encrypted connection.
 
 ### Finding 12 — Current Indian quality and interoperability developments needed to be reflected
 

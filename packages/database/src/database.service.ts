@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
 import { assertDatabaseContext } from './context.js';
+import { withDatabaseTls } from './pool-options.js';
 
 /**
  * Tenant scope for one unit of work.
@@ -70,15 +71,20 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    this.pool = new Pool({
-      connectionString: databaseUrl,
-      max: this.configService.get<number>(poolSizeKey, 20),
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 5_000,
-      // The API role must NOT have BYPASSRLS, otherwise every policy in the
-      // baseline migration is moot.
-      options: '-c statement_timeout=15000 -c lock_timeout=5000',
-    });
+    this.pool = new Pool(
+      withDatabaseTls(
+        {
+          connectionString: databaseUrl,
+          max: this.configService.get<number>(poolSizeKey, 20),
+          idleTimeoutMillis: 30_000,
+          connectionTimeoutMillis: 5_000,
+          // The API role must NOT have BYPASSRLS, otherwise every policy in the
+          // baseline migration is moot.
+          options: '-c statement_timeout=15000 -c lock_timeout=5000',
+        },
+        this.configService.get<boolean>('DATABASE_SSL', false)
+      )
+    );
   }
 
   async onModuleInit(): Promise<void> {

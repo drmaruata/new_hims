@@ -58,11 +58,10 @@ Thumbs.db
 .idea/
 
 # Supabase local data
+# .temp holds the project ref written by `supabase link`; it names the project
+# this checkout is pointed at and is machine-specific, so it is not committed.
 supabase/.branches/
 supabase/.temp/
 
 # Docker persistent volume mounts (if mapped locally)
 docker-data/
-
-# Self-hosted Supabase runtime is generated from the pinned upstream release
-infra/supabase/runtime/

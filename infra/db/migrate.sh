@@ -3,6 +3,24 @@ set -euo pipefail
 
 : "${DATABASE_ADMIN_URL:?Set DATABASE_ADMIN_URL to the migration connection}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=infra/db/common.sh
+source "$ROOT_DIR/infra/db/common.sh"
+
+# This runner is for a plain PostgreSQL target, and there is a specific reason it
+# must not be pointed at a Supabase Cloud project: the platform records applied
+# migration versions in `supabase_migrations.schema_migrations`, and applying a
+# file from here records nothing there. The schema and the ledger would then
+# disagree, and the next `supabase db push` would skip the file it believed was
+# already applied — a silent divergence, not an error.
+if is_supabase_cloud_url "$DATABASE_ADMIN_URL"; then
+  echo "ERROR: DATABASE_ADMIN_URL points at a Supabase Cloud project." >&2
+  echo "       migrate.sh does not record applied versions in" >&2
+  echo "       supabase_migrations.schema_migrations, so it would leave the schema" >&2
+  echo "       and the platform's migration ledger out of step. Use the tracked path:" >&2
+  echo "           supabase link --project-ref <ref>   # once" >&2
+  echo "           pnpm db:push" >&2
+  exit 1
+fi
 
 # Two preconditions are checked in one round trip, and an unreachable database
 # is reported as such rather than being mistaken for a missing catalog.
@@ -36,9 +54,9 @@ IFS='|' read -r has_auth_users has_hims_schema <<< "$state"
 if [ "$has_auth_users" != "1" ]; then
   echo "ERROR: auth.users is missing from the target database." >&2
   echo "       The HIMS baseline references auth.users(id) for user identity." >&2
-  echo "       Start the Supabase stack (bash infra/supabase/bootstrap.sh, then" >&2
-  echo "       'docker compose ... up -d --wait') so its Auth bootstrap creates the" >&2
-  echo "       catalog, or create it yourself against a plain PostgreSQL target." >&2
+  echo "       A Supabase Cloud project has it already; this check exists for a plain" >&2
+  echo "       PostgreSQL target, including the CI job, where it has to be created by" >&2
+  echo "       hand. See .github/workflows/ci.yml for the shim that does so." >&2
   exit 1
 fi
 

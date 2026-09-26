@@ -10,8 +10,8 @@ Establish an approved architecture, engineering baseline, repository, CI/CD skel
 Completed implementation
 
 - Modular-monolith architecture is documented by ADR.
-- Self-hosted Supabase is pinned and bootstrapped from the official Docker distribution.
-- HIMS migrations are overlaid onto the Supabase database bootstrap.
+- A managed Supabase Cloud project is the platform layer; no Supabase stack is run in Docker.
+- HIMS migrations are applied through the Supabase CLI, which records applied versions.
 - Development seed is explicitly opt-in.
 - NestJS API database access uses a dedicated non-BYPASSRLS role.
 - Tenant and facility RLS have repeatable structural/behavioral verification and a CI gate.
@@ -24,14 +24,14 @@ Completed implementation
 - Browser authentication uses Supabase Auth sessions rather than a manually managed access-token localStorage value.
 - Audit events and break-glass access persist to the audit schema rather than returning hard-coded demo records.
 - Authorization seed data now matches the API's canonical DOMAIN:RESOURCE:ACTION:SCOPE permission contract.
-- Environment example was reconciled with the actual config schema and local service topology.
+- Environment example was reconciled with the actual config schema and the managed-platform topology.
 - Health readiness now fails when the database ping actually fails.
 
 Phase 0 deliverables
 
 - PRD: present.
 - SRS: present.
-- Development blueprint: present and reconciled with the pinned Supabase runtime.
+- Development blueprint: present and reconciled with the managed Supabase platform.
 - ADR register: present.
 - Threat model: present.
 - Data classification policy: present.

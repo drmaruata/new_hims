@@ -3,13 +3,13 @@
 Status: Phase 0 baseline
 Date: 2026-09-26
 
-| Class | Examples | Minimum handling |
-|---|---|---|
-| PUBLIC | Product documentation, published service descriptions | Normal web publication |
-| INTERNAL | Non-sensitive configuration, operational metadata | Authenticated staff access |
-| CONFIDENTIAL | Business configuration, contracts, internal reports | Role/scope restriction, audit |
-| SENSITIVE | Patient identifiers, contact data, clinical documents, claims | Tenant/facility scope, RLS, encryption in transit/at rest, access audit |
-| RESTRICTED | Aadhaar/ABHA-linked identifiers, high-risk clinical data, break-glass records, privileged security data | Explicit least privilege, strong audit, export controls, step-up authentication where policy requires |
+| Class        | Examples                                                                                                | Minimum handling                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| PUBLIC       | Product documentation, published service descriptions                                                   | Normal web publication                                                                                |
+| INTERNAL     | Non-sensitive configuration, operational metadata                                                       | Authenticated staff access                                                                            |
+| CONFIDENTIAL | Business configuration, contracts, internal reports                                                     | Role/scope restriction, audit                                                                         |
+| SENSITIVE    | Patient identifiers, contact data, clinical documents, claims                                           | Tenant/facility scope, RLS, encryption in transit/at rest, access audit                               |
+| RESTRICTED   | Aadhaar/ABHA-linked identifiers, high-risk clinical data, break-glass records, privileged security data | Explicit least privilege, strong audit, export controls, step-up authentication where policy requires |
 
 Rules
 

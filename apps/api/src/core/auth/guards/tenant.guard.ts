@@ -1,9 +1,4 @@
-﻿import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+﻿import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 
 import type { AuthenticatedUser } from '../auth.types.js';
 
@@ -22,12 +17,9 @@ export class TenantGuard implements CanActivate {
     }>();
 
     if (!request.user?.tenantId) {
-      throw new ForbiddenException(
-        'No tenant scope could be resolved for this request',
-      );
+      throw new ForbiddenException('No tenant scope could be resolved for this request');
     }
 
     return true;
   }
 }
-

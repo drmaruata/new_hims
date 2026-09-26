@@ -2,7 +2,10 @@
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateLabOrderDtoSchema, type CreateLabOrderDto } from '@hims/validation';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
-import { ActiveFacilityId, CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import {
+  ActiveFacilityId,
+  CurrentUser,
+} from '../../core/auth/decorators/current-user.decorator.js';
 import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
 import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
 import { VerifyLabResultSchema, type VerifyLabResultInput } from './dto/lis.dto.js';
@@ -17,7 +20,10 @@ export class LisController {
 
   @Get('orders')
   @ApiOperation({ summary: 'Get laboratory orders and worklist' })
-  async getOrders(@Query('status') status: string | undefined, @CurrentUser() user: AuthenticatedUser) {
+  async getOrders(
+    @Query('status') status: string | undefined,
+    @CurrentUser() user: AuthenticatedUser
+  ) {
     const orders = await this.lisService.getOrders(status, user.tenantId, user.activeFacilityId);
     return orders;
   }
@@ -27,7 +33,7 @@ export class LisController {
   async createOrder(
     @Body(new ZodValidationPipe(CreateLabOrderDtoSchema)) input: CreateLabOrderDto,
     @CurrentUser() user: AuthenticatedUser,
-    @ActiveFacilityId() facilityId: string,
+    @ActiveFacilityId() facilityId: string
   ) {
     const order = await this.lisService.createOrder(input, user.tenantId, facilityId, user.userId);
     return order;
@@ -39,12 +45,9 @@ export class LisController {
     @Param('id') id: string,
     @Param('testCode') testCode: string,
     @Body(new ZodValidationPipe(VerifyLabResultSchema)) input: VerifyLabResultInput,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     const updatedOrder = await this.lisService.verifyResult(id, testCode, input, user.userId);
     return updatedOrder;
   }
 }
-
-
-

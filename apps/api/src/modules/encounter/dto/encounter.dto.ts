@@ -34,10 +34,10 @@ export const CreateEncounterDtoSchema = z
     metadata: z.record(z.string(), z.unknown()).default({}),
   })
   .strict()
-  .refine(
-    (value) => value.parentEncounterId !== value.sourceEncounterId,
-    { message: 'parentEncounterId and sourceEncounterId must differ', path: ['sourceEncounterId'] },
-  );
+  .refine((value) => value.parentEncounterId !== value.sourceEncounterId, {
+    message: 'parentEncounterId and sourceEncounterId must differ',
+    path: ['sourceEncounterId'],
+  });
 
 export const UpdateEncounterDtoSchema = z
   .object({

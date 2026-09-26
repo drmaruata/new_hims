@@ -4,9 +4,22 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Monitor, Users, Stethoscope, BedDouble, FlaskConical,
-  Scan, AlertCircle, Drama, Heart, Pill, ClipboardList,
-  CreditCard, Shield, BarChart3, Settings, Zap
+  Monitor,
+  Users,
+  Stethoscope,
+  BedDouble,
+  FlaskConical,
+  Scan,
+  AlertCircle,
+  Drama,
+  Heart,
+  Pill,
+  ClipboardList,
+  CreditCard,
+  Shield,
+  BarChart3,
+  Settings,
+  Zap,
 } from 'lucide-react';
 
 /**
@@ -31,9 +44,7 @@ interface NavSection {
 const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Command & Control',
-    items: [
-      { href: '/command-center', icon: Monitor, label: 'Command Center', badge: 'Live' },
-    ],
+    items: [{ href: '/command-center', icon: Monitor, label: 'Command Center', badge: 'Live' }],
   },
   {
     title: 'Clinical Modules',
@@ -93,7 +104,9 @@ export function Sidebar() {
                       }`}
                     >
                       <span className="flex items-center gap-2.5">
-                        <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                        <Icon
+                          className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`}
+                        />
                         {item.label}
                       </span>
                       {item.badge && (

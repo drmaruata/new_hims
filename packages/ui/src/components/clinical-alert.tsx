@@ -10,7 +10,13 @@ export interface ClinicalAlertProps {
   onAcknowledge?: () => void;
 }
 
-export function ClinicalAlert({ type, title, message, acknowledged, onAcknowledge }: ClinicalAlertProps) {
+export function ClinicalAlert({
+  type,
+  title,
+  message,
+  acknowledged,
+  onAcknowledge,
+}: ClinicalAlertProps) {
   const isCritical = type === 'ALLERGY' || type === 'CRITICAL_LAB';
 
   return (
@@ -37,4 +43,3 @@ export function ClinicalAlert({ type, title, message, acknowledged, onAcknowledg
     </Alert>
   );
 }
-

@@ -25,14 +25,6 @@ import { FacilityGuard } from './guards/facility.guard.js';
     TenantGuard,
     FacilityGuard,
   ],
-  exports: [
-    AuthService,
-    TokenService,
-    JwtAuthGuard,
-    PermissionsGuard,
-    TenantGuard,
-    FacilityGuard,
-  ],
+  exports: [AuthService, TokenService, JwtAuthGuard, PermissionsGuard, TenantGuard, FacilityGuard],
 })
 export class AuthModule {}
-

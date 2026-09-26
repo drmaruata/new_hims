@@ -39,7 +39,7 @@ export class FacilityController {
     @DbContext() ctx: DatabaseContext,
     @CurrentUser() user: AuthenticatedUser,
     @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
-    @Query('status') status?: string,
+    @Query('status') status?: string
   ) {
     return this.facilityService.list(ctx, {
       isTenantAdmin: user.isTenantAdmin,
@@ -54,7 +54,7 @@ export class FacilityController {
   @ApiOperation({ summary: 'Create a facility' })
   async create(
     @Body(new ZodValidationPipe(CreateFacilityDtoSchema)) body: unknown,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.facilityService.create(body as never, ctx);
   }
@@ -65,7 +65,7 @@ export class FacilityController {
   async get(
     @Param('facilityId', new ParseUUIDPipe()) facilityId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     // A facility id in the URL must not widen access beyond what
     // `user_facility_access` already grants. 404 (not 403) so this cannot be
@@ -82,7 +82,7 @@ export class FacilityController {
   async update(
     @Param('facilityId', new ParseUUIDPipe()) facilityId: string,
     @Body(new ZodValidationPipe(UpdateFacilityDtoSchema)) body: unknown,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.facilityService.update(facilityId, body as never, ctx);
   }
@@ -93,7 +93,7 @@ export class FacilityController {
   async departments(
     @Param('facilityId', new ParseUUIDPipe()) facilityId: string,
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.facilityService.listDepartments(facilityId, ctx, Math.min(limit, 200));
   }
@@ -104,7 +104,7 @@ export class FacilityController {
   async locations(
     @Param('facilityId', new ParseUUIDPipe()) facilityId: string,
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.facilityService.listLocations(facilityId, ctx, Math.min(limit, 200));
   }

@@ -30,7 +30,12 @@ export class CorrelationIdMiddleware implements NestMiddleware {
   private static resolveInbound(req: Request): string {
     const header = req.headers['x-correlation-id'];
 
-    if (typeof header === 'string' && header.length > 0 && header.length <= MAX_INBOUND_LENGTH && SAFE_ID.test(header)) {
+    if (
+      typeof header === 'string' &&
+      header.length > 0 &&
+      header.length <= MAX_INBOUND_LENGTH &&
+      SAFE_ID.test(header)
+    ) {
       return header;
     }
 

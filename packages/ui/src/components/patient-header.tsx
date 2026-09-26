@@ -83,7 +83,8 @@ export function PatientHeader({
 
   // `lastName` is nullable in the schema, so the initials and the name line
   // both have to tolerate a single-part name.
-  const initials = `${patient.firstName.charAt(0)}${(patient.lastName ?? '').charAt(0)}`.toUpperCase();
+  const initials =
+    `${patient.firstName.charAt(0)}${(patient.lastName ?? '').charAt(0)}`.toUpperCase();
   const fullName = patient.displayName;
 
   return (
@@ -102,8 +103,7 @@ export function PatientHeader({
             )}
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            UHID:{' '}
-            <span className="font-mono text-emerald-400 font-semibold">{patient.uhid}</span>
+            UHID: <span className="font-mono text-emerald-400 font-semibold">{patient.uhid}</span>
             {sexGender && <> • {sexGender}</>}
             {age !== null && <> • {age} Y</>}
             {patient.dateOfBirth && (

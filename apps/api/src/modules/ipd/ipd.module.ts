@@ -8,4 +8,3 @@ import { IpdService } from './ipd.service.js';
   exports: [IpdService],
 })
 export class IpdModule {}
-

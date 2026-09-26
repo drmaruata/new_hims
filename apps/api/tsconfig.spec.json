@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // ts-jest's default preset compiles to CommonJS, which is what Jest's
+    // runtime executes a `.ts` spec as. The build uses `NodeNext` and emits
+    // ESM, so the spec run declares its own module target instead of reusing
+    // the build's. `moduleResolution` follows `module`, so it moves with it.
+    "module": "CommonJS",
+    "moduleResolution": "Node10",
+    // `types` (Jest globals) is inherited from `tsconfig.json`, so the two
+    // configs cannot drift apart on which globals a spec may use.
+    // `tsc` type-checks src and specs; ts-jest transpiles without checking.
+    // Keeping the two aligned is deliberate, so a spec that does not compile
+    // fails `pnpm typecheck` rather than only failing under Jest.
+    "declaration": false,
+    "declarationMap": false,
+    "composite": false,
+    "incremental": false
+  },
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

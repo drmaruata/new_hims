@@ -15,7 +15,7 @@ export class IntegrationProcessor extends WorkerHost {
   constructor(
     private readonly db: DatabaseService,
     private readonly platformDb: PlatformDatabaseService,
-    private readonly adapterRegistry: AdapterRegistry,
+    private readonly adapterRegistry: AdapterRegistry
   ) {
     super();
   }
@@ -27,9 +27,7 @@ export class IntegrationProcessor extends WorkerHost {
     const integrations = await this.platformDb.findActiveIntegrations(ctx.tenantId);
 
     if (integrations.length === 0) {
-      this.logger.debug(
-        `No active integrations for tenant ${ctx.tenantId}`,
-      );
+      this.logger.debug(`No active integrations for tenant ${ctx.tenantId}`);
       return;
     }
 
@@ -38,7 +36,7 @@ export class IntegrationProcessor extends WorkerHost {
         await this.dispatch(integration, data, ctx);
       } catch (error) {
         this.logger.error(
-          `Failed to dispatch to ${integration.integration_code}: ${(error as Error).message}`,
+          `Failed to dispatch to ${integration.integration_code}: ${(error as Error).message}`
         );
         // One failed integration does not block others for the same event.
         // Dead-lettering is handled inside dispatch.
@@ -49,7 +47,7 @@ export class IntegrationProcessor extends WorkerHost {
   private async dispatch(
     integration: Awaited<ReturnType<PlatformDatabaseService['findActiveIntegrations']>>[number],
     event: { eventType?: string; eventId?: string; correlationId?: string },
-    ctx: { tenantId: string; facilityId?: string | null },
+    ctx: { tenantId: string; facilityId?: string | null }
   ): Promise<void> {
     const messageId = `msg_${event.eventId ?? 'unknown'}_${integration.id.slice(0, 8)}`;
 

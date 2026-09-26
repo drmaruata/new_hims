@@ -56,7 +56,7 @@ export function decodeCursor(cursor: string): Record<string, unknown> | null {
 export function buildPage<T>(
   rows: T[],
   limit: number,
-  cursorOf: (row: T) => Record<string, unknown>,
+  cursorOf: (row: T) => Record<string, unknown>
 ): PaginatedResult<T> {
   const hasMore = rows.length > limit;
   const items = hasMore ? rows.slice(0, limit) : rows;

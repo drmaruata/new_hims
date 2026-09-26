@@ -8,4 +8,3 @@ import { PharmacyService } from './pharmacy.service.js';
   exports: [PharmacyService],
 })
 export class PharmacyModule {}
-

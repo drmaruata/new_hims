@@ -22,10 +22,7 @@ import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
 import { DEFAULT_PAGE_SIZE } from '../../core/interfaces/paginated-result.js';
 import type { DatabaseContext } from '@hims/database';
 import type { CreateEncounterInput, UpdateEncounterInput } from './dto/encounter.dto.js';
-import {
-  CreateEncounterDtoSchema,
-  UpdateEncounterDtoSchema,
-} from './dto/encounter.dto.js';
+import { CreateEncounterDtoSchema, UpdateEncounterDtoSchema } from './dto/encounter.dto.js';
 
 @ApiTags('Encounter')
 @ApiBearerAuth()
@@ -39,7 +36,7 @@ export class EncounterController {
   @ApiOperation({ summary: 'Create an encounter' })
   async create(
     @Body(new ZodValidationPipe(CreateEncounterDtoSchema)) body: CreateEncounterInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.create(body, ctx);
   }
@@ -53,7 +50,7 @@ export class EncounterController {
   async listForPatient(
     @Param('patientId', new ParseUUIDPipe()) patientId: string,
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.encounterService.listForPatient(patientId, ctx, Math.min(limit, 200));
   }
@@ -64,7 +61,7 @@ export class EncounterController {
   async timeline(
     @Param('patientId', new ParseUUIDPipe()) patientId: string,
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.encounterService.getPatientTimeline(patientId, ctx, Math.min(limit, 200));
   }
@@ -74,7 +71,7 @@ export class EncounterController {
   @ApiOperation({ summary: 'Get an encounter' })
   async get(
     @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.getById(encounterId, ctx);
   }
@@ -85,7 +82,7 @@ export class EncounterController {
   async update(
     @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
     @Body(new ZodValidationPipe(UpdateEncounterDtoSchema)) body: UpdateEncounterInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.update(encounterId, body, ctx);
   }
@@ -102,7 +99,7 @@ export class EncounterController {
   @ApiOperation({ summary: 'Move an OPEN encounter to IN_PROGRESS' })
   async start(
     @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.transition(encounterId, 'start', ctx);
   }
@@ -112,7 +109,7 @@ export class EncounterController {
   @ApiOperation({ summary: 'Sign an encounter, fixing its clinical content' })
   async sign(
     @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.transition(encounterId, 'sign', ctx);
   }
@@ -122,7 +119,7 @@ export class EncounterController {
   @ApiOperation({ summary: 'Close a signed encounter' })
   async close(
     @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.encounterService.transition(encounterId, 'close', ctx);
   }

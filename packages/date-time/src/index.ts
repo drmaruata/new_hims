@@ -1,4 +1,7 @@
-export function formatClinicalDateTime(isoString?: string | null, timezone = 'Asia/Kolkata'): string {
+export function formatClinicalDateTime(
+  isoString?: string | null,
+  timezone = 'Asia/Kolkata'
+): string {
   if (!isoString) return '—';
   try {
     const date = new Date(isoString);
@@ -17,7 +20,10 @@ export function formatClinicalDateTime(isoString?: string | null, timezone = 'As
   }
 }
 
-export function formatClinicalDate(isoOrDateString?: string | null, timezone = 'Asia/Kolkata'): string {
+export function formatClinicalDate(
+  isoOrDateString?: string | null,
+  timezone = 'Asia/Kolkata'
+): string {
   if (!isoOrDateString) return '—';
   try {
     const date = new Date(isoOrDateString);

@@ -18,9 +18,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md,yaml,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md,yaml,yml}\"",
     "clean": "turbo run clean && rimraf node_modules",
-    "db:migrate": "turbo run db:migrate",
-    "db:seed": "pnpm --filter @hims/api run db:seed",
-    "db:reset": "pnpm --filter @hims/api run db:reset",
+    "db:migrate": "bash infra/db/migrate.sh",
+    "db:seed": "bash infra/db/seed.sh",
+    "db:reset": "bash infra/db/reset-db.sh",
+    "db:provision-app-role": "bash infra/db/provision-app-role.sh",
+    "db:verify-rls": "bash infra/db/verify-rls.sh",
     "prepare": "husky"
   },
   "devDependencies": {

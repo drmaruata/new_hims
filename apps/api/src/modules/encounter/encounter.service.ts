@@ -78,7 +78,7 @@ export class EncounterService {
     const encounter = await this.db.one<EncounterRecord>(
       `SELECT ${ENCOUNTER_COLUMNS} FROM hims_clinical.encounters WHERE id = $1`,
       [id],
-      ctx,
+      ctx
     );
     if (!encounter) throw new NotFoundException('Encounter not found');
     return encounter;
@@ -87,7 +87,7 @@ export class EncounterService {
   async listForPatient(
     patientId: string,
     ctx: DatabaseContext,
-    limit: number,
+    limit: number
   ): Promise<PaginatedResult<EncounterRecord>> {
     const { rows } = await this.db.query<EncounterRecord>(
       `SELECT ${ENCOUNTER_COLUMNS}
@@ -96,7 +96,7 @@ export class EncounterService {
         ORDER BY started_at DESC
         LIMIT $2`,
       [patientId, limit + 1],
-      ctx,
+      ctx
     );
 
     const hasMore = rows.length > limit;
@@ -115,15 +115,12 @@ export class EncounterService {
   async getPatientTimeline(
     patientId: string,
     ctx: DatabaseContext,
-    limit: number,
+    limit: number
   ): Promise<PaginatedResult<EncounterRecord>> {
     return this.listForPatient(patientId, ctx, limit);
   }
 
-  async create(
-    input: CreateEncounterInput,
-    ctx: DatabaseContext,
-  ): Promise<EncounterRecord> {
+  async create(input: CreateEncounterInput, ctx: DatabaseContext): Promise<EncounterRecord> {
     // The schema has no per-tenant sequence, so the number is minted in the
     // application: a ULID is monotonic and collision-free, which keeps the
     // existing UNIQUE (tenant_id, encounter_number) constraint satisfied
@@ -150,7 +147,7 @@ export class EncounterService {
           JSON.stringify(input.metadata ?? {}),
           ctx.userId ?? null,
         ],
-        ctx,
+        ctx
       )
       .catch((error: unknown) => this.rethrow(error));
 
@@ -160,7 +157,7 @@ export class EncounterService {
   async update(
     id: string,
     input: UpdateEncounterInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<EncounterRecord> {
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -189,7 +186,7 @@ export class EncounterService {
         WHERE id = $${params.length}
         RETURNING ${ENCOUNTER_COLUMNS}`,
       params,
-      ctx,
+      ctx
     );
 
     if (!encounter) throw new NotFoundException('Encounter not found');
@@ -203,11 +200,7 @@ export class EncounterService {
    * another transaction moved the encounter since it was read, the UPDATE
    * matches zero rows and we report 409 rather than overwriting their change.
    */
-  async transition(
-    id: string,
-    event: string,
-    ctx: DatabaseContext,
-  ): Promise<EncounterRecord> {
+  async transition(id: string, event: string, ctx: DatabaseContext): Promise<EncounterRecord> {
     return this.db.transaction(async (client) => {
       const current = await this.lockRow(client, id);
       if (!current) throw new NotFoundException('Encounter not found');
@@ -229,14 +222,13 @@ export class EncounterService {
           WHERE id = $3
             AND status = $4
         RETURNING ${ENCOUNTER_COLUMNS}`,
-        [next, ctx.userId ?? null, id, current.status],
+        [next, ctx.userId ?? null, id, current.status]
       );
 
       if (rows.length === 0) {
         throw new ConflictException({
           code: 'CONCURRENT_UPDATE',
-          message:
-            'The encounter was changed by another user. Reload and try again.',
+          message: 'The encounter was changed by another user. Reload and try again.',
         });
       }
 
@@ -251,16 +243,13 @@ export class EncounterService {
    * set the transaction-local tenant GUC, and the RLS policy on
    * `hims_clinical.encounters` is what makes the row visible at all.
    */
-  private async lockRow(
-    client: PoolClient,
-    id: string,
-  ): Promise<EncounterRecord | null> {
+  private async lockRow(client: PoolClient, id: string): Promise<EncounterRecord | null> {
     const { rows } = await client.query<EncounterRecord>(
       `SELECT ${ENCOUNTER_COLUMNS}
          FROM hims_clinical.encounters
         WHERE id = $1
         FOR UPDATE`,
-      [id],
+      [id]
     );
     return rows[0] ?? null;
   }
@@ -271,7 +260,7 @@ export class EncounterService {
         throw new ConflictException('Encounter number already exists in this tenant');
       case '23503':
         throw new BadRequestException(
-          'Referenced patient, facility, department or practitioner does not exist',
+          'Referenced patient, facility, department or practitioner does not exist'
         );
       case '22P02':
         throw new BadRequestException('Encounter type is not a recognised value');

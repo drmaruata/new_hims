@@ -7,12 +7,15 @@ import type { ReportIncidentInput } from './dto/quality.dto.js';
 export class QualityService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getIndicators(tenantId?: string, facilityId?: string | null): Promise<QualityIndicatorMeasurement[]> {
+  async getIndicators(
+    tenantId?: string,
+    facilityId?: string | null
+  ): Promise<QualityIndicatorMeasurement[]> {
     return [
       {
-        id: '19191919-1919-1919-1919-191919191901',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '19191919-1919-4919-8919-191919191901',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         indicatorCode: 'NABH_CLIN_01',
         indicatorName: 'Bed Occupancy Rate',
         category: 'NABH_CLINICAL',
@@ -26,9 +29,9 @@ export class QualityService {
         version: 1,
       },
       {
-        id: '19191919-1919-1919-1919-191919191902',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '19191919-1919-4919-8919-191919191902',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         indicatorCode: 'NABH_SAFE_02',
         indicatorName: 'Medication Error Rate (per 1000 bed days)',
         category: 'NABH_MEDICATION_SAFETY',
@@ -42,9 +45,9 @@ export class QualityService {
         version: 1,
       },
       {
-        id: '19191919-1919-1919-1919-191919191903',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '19191919-1919-4919-8919-191919191903',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         indicatorCode: 'NABH_HAI_01',
         indicatorName: 'Catheter-Associated UTI (CAUTI) Rate',
         category: 'NABH_INFECTION_CONTROL',
@@ -60,7 +63,11 @@ export class QualityService {
     ];
   }
 
-  async reportIncident(data: ReportIncidentInput, tenantId: string, facilityId: string): Promise<IncidentReport> {
+  async reportIncident(
+    data: ReportIncidentInput,
+    tenantId: string,
+    facilityId: string
+  ): Promise<IncidentReport> {
     const incidentNumber = `INC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
@@ -79,4 +86,3 @@ export class QualityService {
     };
   }
 }
-

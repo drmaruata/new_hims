@@ -21,14 +21,12 @@ export interface Transition<S extends string, E extends string> {
 export class StateMachine<S extends string, E extends string> {
   constructor(
     private readonly name: string,
-    private readonly transitions: ReadonlyArray<Transition<S, E>>,
+    private readonly transitions: ReadonlyArray<Transition<S, E>>
   ) {}
 
   /** Events accepted from a given state. */
   allowedEvents(state: S): E[] {
-    return this.transitions
-      .filter((t) => t.from.includes(state))
-      .map((t) => t.event);
+    return this.transitions.filter((t) => t.from.includes(state)).map((t) => t.event);
   }
 
   canTransition(state: S, event: E): boolean {
@@ -43,15 +41,13 @@ export class StateMachine<S extends string, E extends string> {
    * "state or concurrency conflict".
    */
   next(state: S, event: E): S {
-    const transition = this.transitions.find(
-      (t) => t.event === event && t.from.includes(state),
-    );
+    const transition = this.transitions.find((t) => t.event === event && t.from.includes(state));
 
     if (!transition) {
       const legal = this.allowedEvents(state);
       throw new ConflictException({
         code: 'INVALID_STATE_TRANSITION',
-        message: `Cannot ${event} a ${this.name} in state ${state}`,
+        message: `Cannot ${event} ${indefiniteArticle(this.name)} ${this.name} in state ${state}`,
         details: [
           {
             field: 'state',
@@ -66,4 +62,19 @@ export class StateMachine<S extends string, E extends string> {
 
     return transition.to;
   }
+}
+
+/**
+ * "an" before a vowel, "a" before anything else, so the 409 reads as English
+ * rather than as a template with a fixed article.
+ *
+ * The test is on the first letter, not the sound. That is correct for every
+ * aggregate in `modules/clinical-state/machines.ts` — `encounter` and
+ * `appointment` take "an", `lab specimen`, `claim` and `CAPA` take "a" — and
+ * a name that starts with a silent letter (`hour`, `honest`) would need the
+ * exception list extended. The message is a developer-facing diagnostic, so an
+ * approximate article is preferable to a grammar dependency.
+ */
+function indefiniteArticle(name: string): 'a' | 'an' {
+  return /^[aeiou]/i.test(name) ? 'an' : 'a';
 }

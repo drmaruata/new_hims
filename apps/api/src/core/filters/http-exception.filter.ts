@@ -94,12 +94,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       code: typeof record['code'] === 'string' ? record['code'] : defaultCodeFor(status),
       // Nest's ValidationPipe puts an array of strings in `message`; a single
       // string is what the envelope expects.
-      message:
-        Array.isArray(rawMessage)
-          ? 'Request validation failed'
-          : typeof rawMessage === 'string'
-            ? rawMessage
-            : exception.message,
+      message: Array.isArray(rawMessage)
+        ? 'Request validation failed'
+        : typeof rawMessage === 'string'
+          ? rawMessage
+          : exception.message,
       details: Array.isArray(rawDetails) ? (rawDetails as ErrorDetail[]) : [],
     };
   }

@@ -31,7 +31,7 @@ export class DepartmentService {
 
   async list(
     ctx: DatabaseContext,
-    options: { facilityId?: string; limit: number; status?: string },
+    options: { facilityId?: string; limit: number; status?: string }
   ): Promise<PaginatedResult<DepartmentRecord>> {
     const params: unknown[] = [ctx.tenantId];
     const filters = ['tenant_id = $1'];
@@ -54,7 +54,7 @@ export class DepartmentService {
         ORDER BY name
         LIMIT $${params.length}`,
       params,
-      ctx,
+      ctx
     );
 
     const hasMore = rows.length > options.limit;
@@ -69,16 +69,13 @@ export class DepartmentService {
     const department = await this.db.one<DepartmentRecord>(
       `SELECT ${DEPARTMENT_COLUMNS} FROM hims_core.departments WHERE id = $1`,
       [id],
-      ctx,
+      ctx
     );
     if (!department) throw new NotFoundException('Department not found');
     return department;
   }
 
-  async create(
-    input: CreateDepartmentInput,
-    ctx: DatabaseContext,
-  ): Promise<DepartmentRecord> {
+  async create(input: CreateDepartmentInput, ctx: DatabaseContext): Promise<DepartmentRecord> {
     const department = await this.db
       .one<DepartmentRecord>(
         `INSERT INTO hims_core.departments (
@@ -96,12 +93,12 @@ export class DepartmentService {
           input.clinicalServiceFlag,
           ctx.userId ?? null,
         ],
-        ctx,
+        ctx
       )
       .catch((error: unknown) => {
         if ((error as { code?: string }).code === '23505') {
           throw new ConflictException(
-            `Department code "${input.departmentCode}" already exists in this facility`,
+            `Department code "${input.departmentCode}" already exists in this facility`
           );
         }
         if ((error as { code?: string }).code === '23503') {
@@ -116,7 +113,7 @@ export class DepartmentService {
   async update(
     id: string,
     input: UpdateDepartmentInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<DepartmentRecord> {
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -149,7 +146,7 @@ export class DepartmentService {
         WHERE id = $${params.length}
         RETURNING ${DEPARTMENT_COLUMNS}`,
       params,
-      ctx,
+      ctx
     );
 
     if (!department) throw new NotFoundException('Department not found');

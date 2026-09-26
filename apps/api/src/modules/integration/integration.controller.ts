@@ -22,6 +22,3 @@ export class IntegrationController {
     return await this.integrationService.generateFhirPatientBundle(body.patientId);
   }
 }
-
-
-

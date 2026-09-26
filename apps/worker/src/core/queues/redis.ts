@@ -25,9 +25,7 @@ import type { RedisOptions } from 'bullmq';
  *  * TLS is derived from the URL scheme when `REDIS_URL` is set, so a managed
  *    Redis reached over `rediss://` is not silently downgraded to plaintext.
  */
-export function createRedisConnectionOptions(
-  configService: ConfigService,
-): RedisOptions {
+export function createRedisConnectionOptions(configService: ConfigService): RedisOptions {
   const url = configService.get<string>('REDIS_URL');
 
   if (url) {
@@ -62,13 +60,13 @@ function fromRedisUrl(url: string): RedisOptions {
     parsed = new URL(url);
   } catch {
     throw new Error(
-      `REDIS_URL is not a valid URL: ${url}. Expected redis://host:port or rediss://host:port.`,
+      `REDIS_URL is not a valid URL: ${url}. Expected redis://host:port or rediss://host:port.`
     );
   }
 
   if (parsed.protocol !== 'redis:' && parsed.protocol !== 'rediss:') {
     throw new Error(
-      `REDIS_URL has unsupported scheme "${parsed.protocol}". Expected redis: or rediss:.`,
+      `REDIS_URL has unsupported scheme "${parsed.protocol}". Expected redis: or rediss:.`
     );
   }
 

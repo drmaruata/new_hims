@@ -11,7 +11,7 @@ export const PermissionCodeSchema = z
   .max(128)
   .regex(
     /^[A-Z0-9_]+:[A-Z0-9_]+:[A-Z0-9_]+:[A-Z0-9_]+$/,
-    'Permission must be DOMAIN:RESOURCE:ACTION:SCOPE using A-Z0-9_ segments',
+    'Permission must be DOMAIN:RESOURCE:ACTION:SCOPE using A-Z0-9_ segments'
   );
 
 export const RoleCodeSchema = z

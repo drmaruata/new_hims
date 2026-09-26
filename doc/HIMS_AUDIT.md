@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-25  
 **Documents audited:** `PRD.md`, `SRS.md`, `development.md`  
-**Status:** Revised baseline after audit  
+**Status:** Revised baseline after audit
 
 ## Executive conclusion
 
@@ -27,6 +27,7 @@ The resulting architecture is centered on:
 ## 1. Findings from the audit
 
 ### Finding 1 — The ten operational modules needed an explicit contractual scope
+
 **Severity:** High
 
 The documents had more than ten domains because they also included quality, inventory, finance, analytics and other platform capabilities. That is acceptable as architecture, but the exact ten departments/modules requested for the product baseline were not explicitly defined as mandatory scope.
@@ -34,6 +35,7 @@ The documents had more than ten domains because they also included quality, inve
 **Corrected:** PRD and SRS now define the ten mandatory core modules and separate them from shared platform capabilities.
 
 ### Finding 2 — Registration needed to be department-aware
+
 **Severity:** Critical
 
 The requirement is not simply "patient registration." The registration transaction must identify the department/service being accessed, for example Medicine OPD versus ENT OPD, while the UHID remains constant.
@@ -41,6 +43,7 @@ The requirement is not simply "patient registration." The registration transacti
 **Corrected:** Department/service-aware encounter requirements were added.
 
 ### Finding 3 — One patient identity must not become ten module-specific identities
+
 **Severity:** Critical
 
 The HIMS now explicitly separates patient identity from encounters, admissions, orders, results, dispensing, claims and procedures. EMR is a longitudinal view/domain, not a second patient database.
@@ -48,6 +51,7 @@ The HIMS now explicitly separates patient identity from encounters, admissions, 
 **Corrected:** Canonical patient/encounter/order ownership rules and acceptance tests were added.
 
 ### Finding 4 — Cross-module automation needed to be transactional
+
 **Severity:** Critical
 
 The following are now explicit release requirements:
@@ -73,31 +77,37 @@ The following are now explicit release requirements:
 No routine clinical re-entry is permitted when the source transaction already exists.
 
 ### Finding 5 — RIS must be a real RIS, not just an imaging screen
+
 **Severity:** High
 
 The revised scope covers scheduling, accession/study linkage, modality worklists, DICOM/PACS integration, contrast/safety documentation, reporting states, critical findings and amendments.
 
 ### Finding 6 — LIS needed full pre-analytical/analytical/post-analytical lifecycle
+
 **Severity:** High
 
 The revised LIS baseline now includes accessioning, barcode/sample management, rejection, aliquots, analyzers, QC, reference ranges, delta checks, technical/clinical validation, critical values, report amendment and auditability.
 
 ### Finding 7 — OT needed reverse linkage from IPD
+
 **Severity:** High
 
 The revised documents explicitly require OT scheduling from an authorized IPD patient context and support procedural departments such as Surgery, ENT and Dental without creating specialty-specific forks.
 
 ### Finding 8 — ICU transfer from IPD needed a formal state machine
+
 **Severity:** High
 
 The revised documents define ICU transfer as a workflow rather than an informal bed move: request → acceptance → bed assignment → movement → ICU encounter → ICU workflow → step-down/discharge.
 
 ### Finding 9 — Insurance needed explicit government + private support
+
 **Severity:** High
 
 The insurance domain now explicitly covers central/state government schemes, PM-JAY where enabled, private payers, eligibility, pre-authorisation, packages, claims, rejections, resubmission, settlement and NHCX integration boundaries.
 
 ### Finding 10 — Self-hosted Supabase cannot be treated as the complete backend
+
 **Severity:** Critical
 
 Supabase is now defined as the data platform. NestJS is the canonical business/API layer. The revised architecture prevents direct client-side business writes to PostgreSQL and keeps service-role credentials server-side.
@@ -105,11 +115,13 @@ Supabase is now defined as the data platform. NestJS is the canonical business/A
 Supabase self-hosting documentation places backups, disaster recovery, monitoring, high availability, security and scalability responsibilities on the operator. Those concerns are now explicitly part of the HIMS production architecture.
 
 ### Finding 11 — Docker Desktop is for development, not the target hospital runtime
+
 **Severity:** High
 
 Docker Desktop is retained for developer workstations and local integration testing. Production target environments are Linux Docker Engine or an orchestrated platform with persistent storage, secure networking, backups, monitoring and DR.
 
 ### Finding 12 — Current Indian quality and interoperability developments needed to be reflected
+
 **Severity:** High
 
 The documents now explicitly account for:

@@ -8,4 +8,3 @@ import { PatientService } from './patient.service.js';
   exports: [PatientService],
 })
 export class PatientModule {}
-

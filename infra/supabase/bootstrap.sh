@@ -28,8 +28,19 @@ echo
 echo "Supabase runtime prepared at $RUNTIME_DIR"
 echo "Edit $RUNTIME_DIR/.env and set strong secrets before starting."
 echo
-echo "Start without demo seed:"
-echo "  docker compose -f infra/supabase/runtime/docker-compose.yml -f infra/supabase/docker-compose.hims.yml up -d --wait"
+echo "Start the stack and wait for it to become healthy:"
+echo "  docker compose -f infra/supabase/runtime/docker-compose.yml up -d --wait"
 echo
-echo "Development-only seed:"
-echo "  docker compose -f infra/supabase/runtime/docker-compose.yml -f infra/supabase/docker-compose.hims.yml -f infra/supabase/docker-compose.hims-seed.yml up -d --wait"
+echo "Then apply the HIMS schema through the migration runner. The migrations are"
+echo "deliberately NOT mounted as Postgres init scripts: the baseline is not"
+echo "replayable over an existing schema, so applying it at container init and"
+echo "then again through the runner would fail, and skipping the runner would"
+echo "silently leave the later migrations unapplied."
+echo "  pnpm db:migrate"
+echo
+echo "Development-only seed (creates a demo tenant; refuses a non-local host):"
+echo "  pnpm db:seed"
+echo
+echo "Provision the non-BYPASSRLS application role, then verify isolation:"
+echo "  pnpm db:provision-app-role"
+echo "  HIMS_TENANT_ID=<seed tenant uuid> pnpm db:verify-rls"

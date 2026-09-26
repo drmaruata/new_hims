@@ -1,3 +1,14 @@
 {
-  "expo":{"name":"HIMS Patient","slug":"hims-patient","version":"0.1.0","orientation":"portrait","scheme":"hims-patient","userInterfaceStyle":"automatic","plugins":["expo-router"],"experiments":{"typedRoutes":true},"android":{"package":"com.hims.patient"},"ios":{"bundleIdentifier":"com.hims.patient"}}
+  "expo": {
+    "name": "HIMS Patient",
+    "slug": "hims-patient",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "hims-patient",
+    "userInterfaceStyle": "automatic",
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true },
+    "android": { "package": "com.hims.patient" },
+    "ios": { "bundleIdentifier": "com.hims.patient" }
+  }
 }

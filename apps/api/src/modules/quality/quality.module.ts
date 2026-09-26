@@ -8,4 +8,3 @@ import { QualityService } from './quality.service.js';
   exports: [QualityService],
 })
 export class QualityModule {}
-

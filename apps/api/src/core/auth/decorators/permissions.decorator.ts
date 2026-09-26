@@ -12,4 +12,3 @@ export const PERMISSIONS_KEY = 'hims:permissions';
  */
 export const RequirePermissions = (...permissions: PermissionPattern[]) =>
   SetMetadata(PERMISSIONS_KEY, permissions);
-

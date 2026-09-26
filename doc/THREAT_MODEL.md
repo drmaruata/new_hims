@@ -18,20 +18,20 @@ Primary trust boundaries
 
 Threats and controls
 
-| Threat | Example | Phase 0 control |
-|---|---|---|
-| Tenant breakout | User changes tenant/facility header | Membership-backed scope + PostgreSQL RLS + CI isolation test |
-| Credential theft | Access token or service key leaked | Server-side secrets, JWT verification, no service key in clients |
-| Privilege escalation | User assigns self a role | Server-side permission evaluation; role management is privileged and audited |
-| Data exfiltration | Bulk patient export | Explicit export permission, audit, classification and approval workflow |
-| Clinical tampering | Released result overwritten | Immutable/versioned clinical model and audit trail |
-| Malicious upload | Infected PDF/image | ClamAV scanning before trusted document use |
-| Database bypass | API connects as superuser | Dedicated hims_app role with NOBYPASSRLS |
-| Queue abuse | Cross-tenant background job | Job tenant scope and transaction-local RLS context |
-| Replay/duplication | Integration message replay | Idempotency keys, message IDs and outbox contract |
-| Availability loss | DB/Redis outage | Health probes, backup/restore drills and operational runbooks |
-| Secret exposure | Credentials in repository | .env ignored, CI dependency/security gates, server-side secret policy |
-| Observability leakage | PHI in logs | Structured logging policy and data classification restrictions |
+| Threat                | Example                             | Phase 0 control                                                              |
+| --------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| Tenant breakout       | User changes tenant/facility header | Membership-backed scope + PostgreSQL RLS + CI isolation test                 |
+| Credential theft      | Access token or service key leaked  | Server-side secrets, JWT verification, no service key in clients             |
+| Privilege escalation  | User assigns self a role            | Server-side permission evaluation; role management is privileged and audited |
+| Data exfiltration     | Bulk patient export                 | Explicit export permission, audit, classification and approval workflow      |
+| Clinical tampering    | Released result overwritten         | Immutable/versioned clinical model and audit trail                           |
+| Malicious upload      | Infected PDF/image                  | ClamAV scanning before trusted document use                                  |
+| Database bypass       | API connects as superuser           | Dedicated hims_app role with NOBYPASSRLS                                     |
+| Queue abuse           | Cross-tenant background job         | Job tenant scope and transaction-local RLS context                           |
+| Replay/duplication    | Integration message replay          | Idempotency keys, message IDs and outbox contract                            |
+| Availability loss     | DB/Redis outage                     | Health probes, backup/restore drills and operational runbooks                |
+| Secret exposure       | Credentials in repository           | .env ignored, CI dependency/security gates, server-side secret policy        |
+| Observability leakage | PHI in logs                         | Structured logging policy and data classification restrictions               |
 
 Security assumptions
 

@@ -5,11 +5,17 @@ The HIMS API must never connect as the PostgreSQL postgres superuser. The baseli
 Bootstrap sequence:
 
 1. Start the pinned self-hosted Supabase stack from infra/supabase.
-2. Apply the numbered HIMS migrations using the migration runner.
-3. Apply seed data only in development/test environments.
-4. Run provision-app-role.sh using a separate administrator/migration connection.
+2. Apply the numbered HIMS migrations using the migration runner (`pnpm db:migrate`).
+3. Apply seed data only in development/test environments (`pnpm db:seed`).
+4. Provision the application role (`pnpm db:provision-app-role`).
 5. Set the API DATABASE_URL to the resulting hims_app connection.
-6. Run verify-rls.sh before allowing application traffic.
+6. Run `HIMS_TENANT_ID=<uuid> pnpm db:verify-rls` before allowing application traffic.
+
+The migration runner replays the whole chain in filename order and is not
+incremental, so it must be run exactly once against a given database. It refuses
+to start if the HIMS schema is already present rather than failing part way
+through. To rebuild a development database from scratch use `pnpm db:reset`,
+which requires HIMS_DB_RESET_CONFIRM=1.
 
 The application role receives SELECT/INSERT/UPDATE but no DELETE. Clinical deletion is represented by amendments, cancellation or retirement workflows.
 

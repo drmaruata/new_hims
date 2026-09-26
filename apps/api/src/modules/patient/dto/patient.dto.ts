@@ -11,13 +11,7 @@ export const SexAtBirthSchema = z.enum(['MALE', 'FEMALE', 'OTHER', 'UNKNOWN']);
 
 export const GenderIdentitySchema = z.enum(['MALE', 'FEMALE', 'OTHER', 'UNKNOWN']);
 
-export const MaritalStatusSchema = z.enum([
-  'SINGLE',
-  'MARRIED',
-  'DIVORCED',
-  'WIDOWED',
-  'OTHER',
-]);
+export const MaritalStatusSchema = z.enum(['SINGLE', 'MARRIED', 'DIVORCED', 'WIDOWED', 'OTHER']);
 
 export const BloodGroupSchema = z.enum([
   'A_POSITIVE',
@@ -112,15 +106,13 @@ export const RegisterPatientSchema = z
   })
   .strict()
   .refine((value) => value.dateOfBirth === undefined || value.dobPrecision === undefined, {
-    message:
-      'dobPrecision is only meaningful alongside dateOfBirth; omit it or set both',
+    message: 'dobPrecision is only meaningful alongside dateOfBirth; omit it or set both',
     path: ['dobPrecision'],
   })
   .refine(
     (value) =>
-      value.dateOfBirth === undefined ||
-      Date.parse(`${value.dateOfBirth}T00:00:00Z`) <= Date.now(),
-    { message: 'dateOfBirth cannot be in the future', path: ['dateOfBirth'] },
+      value.dateOfBirth === undefined || Date.parse(`${value.dateOfBirth}T00:00:00Z`) <= Date.now(),
+    { message: 'dateOfBirth cannot be in the future', path: ['dateOfBirth'] }
   )
   .refine(
     (value) =>
@@ -131,7 +123,7 @@ export const RegisterPatientSchema = z
     {
       message: 'At most one identifier may be marked primary',
       path: ['identifiers'],
-    },
+    }
   );
 
 export const SearchPatientsSchema = z

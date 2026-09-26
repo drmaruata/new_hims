@@ -23,28 +23,28 @@ The frontend can hide unavailable actions for usability but is never the securit
 
 ## 2. Scope codes
 
-| Code | Scope |
-|---|---|
-| T | tenant-wide |
-| F | facility |
-| D | department/unit |
-| P | patient/resource in authorized care context |
-| S | own work/task |
-| A | elevated approval |
+| Code | Scope                                       |
+| ---- | ------------------------------------------- |
+| T    | tenant-wide                                 |
+| F    | facility                                    |
+| D    | department/unit                             |
+| P    | patient/resource in authorized care context |
+| S    | own work/task                               |
+| A    | elevated approval                           |
 
 ## 3. Action codes
 
-| Code | Action |
-|---|---|
-| R | read |
-| C | create |
-| U | update |
-| F | finalize/sign/release |
-| X | execute/perform |
-| A | approve |
-| E | export |
-| M | configuration/manage |
-| D | cancel/delete where permitted |
+| Code | Action                        |
+| ---- | ----------------------------- |
+| R    | read                          |
+| C    | create                        |
+| U    | update                        |
+| F    | finalize/sign/release         |
+| X    | execute/perform               |
+| A    | approve                       |
+| E    | export                        |
+| M    | configuration/manage          |
+| D    | cancel/delete where permitted |
 
 For clinical records, ordinary delete should be disabled; amendment/versioning replaces destructive mutation.
 
@@ -115,40 +115,40 @@ Support Engineer
 
 `R` = read; `W` = operational write/create/update; `F` = finalize/sign/release; `A` = approve; `X` = execute/perform; `E` = export; `M` = manage. Scope is further constrained by facility/department/patient context.
 
-| Role | Patient | OPD | IPD/Nursing | LIS | RIS | Emergency | OT | ICU | Pharmacy | Billing/Insurance | Quality | Admin |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Receptionist | R/W | R/W/X | R | - | - | R/W | - | - | - | R/W | - | S |
-| Registration Supervisor | R/W/A | R/W/X/A | R | - | - | R/W | - | - | - | R/W/A | - | F |
-| OPD Nurse | R | R/W/X | R | R | R | R/W | - | - | R | R | - | - |
-| Doctor/Consultant | R/W* | R/W/F | R/W/F* | R/C/R | R/C/R | R/W/F | R/C | R/C | R | R | R | - |
-| Department Head | R | R/W/F/A | R/W/F/A | R | R | R/W/A | R/W/A | R | R | R | R | - |
-| IPD Nurse | R | R | R/W/X | R/C/R | R/C/R | R/W | R | R/W/X | R/C/X | R | R | - |
-| Head Nurse | R | R | R/W/X/A | R | R | R/W | R | R/W/A | R/W | R | R | - |
-| ICU Nurse | R | R | R | R/C/R | R/C/R | R/W | R | R/W/X | R/W/X | R | R | - |
-| Emergency Nurse | R | R | R/W | R/C/R | R/C/R | R/W/X | R | R/W | R/W/X | R | - | - |
-| Pharmacist | R | R | R | R | R | R | R | R | R/W/X | R/W | R | - |
-| Pharmacy Manager | R | R | R | - | - | - | - | - | R/W/X/A/M | R/W/A | R | M |
-| Lab Technician | R | R | R | R/W/X | R | R | R | R | - | - | R | - |
-| Pathologist | R | R | R | R/W/F/A | R | R | R | R | - | - | R | - |
-| Radiology Technician | R | R | - | - | R/W/X | R | R | R | - | - | R | - |
-| Radiologist | R | R | - | R | R/W/F/A | R | R | R | - | - | R | - |
-| OT Nurse/Technician | R | R | R | R/C | R/C | R/W | R/W/X | R/W | R/W/X | R | R | - |
-| Surgeon | R | R/W/F | R/W/F | R/C/R | R/C/R | R/W | R/W/F/X | R/W | R | R | R | - |
-| Anaesthetist | R | R | R/W/F | R/C/R | R/C/R | R/W | R/W/F/X | R/W/F | R | R | R | - |
-| Emergency Physician | R | R/W/F | R/W | R/C/R | R/C/R | R/W/F/X | R/C | R/W | R/W/X | R | R | - |
-| Billing Executive | R | R | R | R | R | R | R | R | R | R/W/X | R | - |
-| Cashier | R | R | R | - | - | R | - | - | R | R/W/X | - | - |
-| Insurance/TPA Executive | R | R | R | R | R | R | R | R | R | R/W/X | R | - |
-| Finance Manager | R | R | R | R | R | R | R | R | R | R/W/A/E | R | M |
-| Storekeeper/Procurement | R | R | R | - | - | - | R | R | R/W/X | R/W/A | R | M |
-| Quality Manager | R | R | R | R | R | R | R | R | R | R | R/W/F/A/E/M | M |
-| Infection Control Officer | R | R | R | R | R | R | R | R | R | R | R/W/F/A/E | - |
-| Hospital Administrator | R/W* | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | M |
-| Medical Superintendent | R/W* | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | R/W/A/E | M |
-| Tenant Administrator | R | R | R | R | R | R | R | R | R | R | R | M |
-| System Administrator | R** | R** | R** | R** | R** | R** | R** | R** | R** | R** | R** | M |
-| Auditor/Compliance | R*** | R*** | R*** | R*** | R*** | R*** | R*** | R*** | R*** | R*** | R/E | R |
-| Support Engineer | R**** | R**** | R**** | R**** | R**** | R**** | R**** | R**** | R**** | R**** | R**** | - |
+| Role                      | Patient | OPD     | IPD/Nursing | LIS     | RIS     | Emergency | OT      | ICU     | Pharmacy  | Billing/Insurance | Quality     | Admin |
+| ------------------------- | ------- | ------- | ----------- | ------- | ------- | --------- | ------- | ------- | --------- | ----------------- | ----------- | ----- |
+| Receptionist              | R/W     | R/W/X   | R           | -       | -       | R/W       | -       | -       | -         | R/W               | -           | S     |
+| Registration Supervisor   | R/W/A   | R/W/X/A | R           | -       | -       | R/W       | -       | -       | -         | R/W/A             | -           | F     |
+| OPD Nurse                 | R       | R/W/X   | R           | R       | R       | R/W       | -       | -       | R         | R                 | -           | -     |
+| Doctor/Consultant         | R/W*    | R/W/F   | R/W/F*      | R/C/R   | R/C/R   | R/W/F     | R/C     | R/C     | R         | R                 | R           | -     |
+| Department Head           | R       | R/W/F/A | R/W/F/A     | R       | R       | R/W/A     | R/W/A   | R       | R         | R                 | R           | -     |
+| IPD Nurse                 | R       | R       | R/W/X       | R/C/R   | R/C/R   | R/W       | R       | R/W/X   | R/C/X     | R                 | R           | -     |
+| Head Nurse                | R       | R       | R/W/X/A     | R       | R       | R/W       | R       | R/W/A   | R/W       | R                 | R           | -     |
+| ICU Nurse                 | R       | R       | R           | R/C/R   | R/C/R   | R/W       | R       | R/W/X   | R/W/X     | R                 | R           | -     |
+| Emergency Nurse           | R       | R       | R/W         | R/C/R   | R/C/R   | R/W/X     | R       | R/W     | R/W/X     | R                 | -           | -     |
+| Pharmacist                | R       | R       | R           | R       | R       | R         | R       | R       | R/W/X     | R/W               | R           | -     |
+| Pharmacy Manager          | R       | R       | R           | -       | -       | -         | -       | -       | R/W/X/A/M | R/W/A             | R           | M     |
+| Lab Technician            | R       | R       | R           | R/W/X   | R       | R         | R       | R       | -         | -                 | R           | -     |
+| Pathologist               | R       | R       | R           | R/W/F/A | R       | R         | R       | R       | -         | -                 | R           | -     |
+| Radiology Technician      | R       | R       | -           | -       | R/W/X   | R         | R       | R       | -         | -                 | R           | -     |
+| Radiologist               | R       | R       | -           | R       | R/W/F/A | R         | R       | R       | -         | -                 | R           | -     |
+| OT Nurse/Technician       | R       | R       | R           | R/C     | R/C     | R/W       | R/W/X   | R/W     | R/W/X     | R                 | R           | -     |
+| Surgeon                   | R       | R/W/F   | R/W/F       | R/C/R   | R/C/R   | R/W       | R/W/F/X | R/W     | R         | R                 | R           | -     |
+| Anaesthetist              | R       | R       | R/W/F       | R/C/R   | R/C/R   | R/W       | R/W/F/X | R/W/F   | R         | R                 | R           | -     |
+| Emergency Physician       | R       | R/W/F   | R/W         | R/C/R   | R/C/R   | R/W/F/X   | R/C     | R/W     | R/W/X     | R                 | R           | -     |
+| Billing Executive         | R       | R       | R           | R       | R       | R         | R       | R       | R         | R/W/X             | R           | -     |
+| Cashier                   | R       | R       | R           | -       | -       | R         | -       | -       | R         | R/W/X             | -           | -     |
+| Insurance/TPA Executive   | R       | R       | R           | R       | R       | R         | R       | R       | R         | R/W/X             | R           | -     |
+| Finance Manager           | R       | R       | R           | R       | R       | R         | R       | R       | R         | R/W/A/E           | R           | M     |
+| Storekeeper/Procurement   | R       | R       | R           | -       | -       | -         | R       | R       | R/W/X     | R/W/A             | R           | M     |
+| Quality Manager           | R       | R       | R           | R       | R       | R         | R       | R       | R         | R                 | R/W/F/A/E/M | M     |
+| Infection Control Officer | R       | R       | R           | R       | R       | R         | R       | R       | R         | R                 | R/W/F/A/E   | -     |
+| Hospital Administrator    | R/W*    | R/W/A/E | R/W/A/E     | R/W/A/E | R/W/A/E | R/W/A/E   | R/W/A/E | R/W/A/E | R/W/A/E   | R/W/A/E           | R/W/A/E     | M     |
+| Medical Superintendent    | R/W*    | R/W/A/E | R/W/A/E     | R/W/A/E | R/W/A/E | R/W/A/E   | R/W/A/E | R/W/A/E | R/W/A/E   | R/W/A/E           | R/W/A/E     | M     |
+| Tenant Administrator      | R       | R       | R           | R       | R       | R         | R       | R       | R         | R                 | R           | M     |
+| System Administrator      | R**     | R**     | R**         | R**     | R**     | R**       | R**     | R**     | R**       | R**               | R**         | M     |
+| Auditor/Compliance        | R***    | R***    | R***        | R***    | R***    | R***      | R***    | R***    | R***      | R***              | R/E         | R     |
+| Support Engineer          | R****   | R****   | R****       | R****   | R****   | R****     | R****   | R****   | R****     | R****             | R****       | -     |
 
 Notes:
 
@@ -389,18 +389,18 @@ Break-glass never bypasses tenant isolation.
 
 # 9. Approval matrix
 
-| Operation | Requester | Approver |
-|---|---|---|
-| Patient merge | Authorized registration/clinical user | Registration Supervisor / MS per policy |
-| High-value refund | Cashier/Billing | Finance Manager |
-| Tariff change | Billing/Admin | Finance/Admin/M.S. per policy |
-| Stock write-off above threshold | Storekeeper | Pharmacy/Finance/Admin |
-| Claim write-off | RCM | Finance Manager |
-| Released lab result amendment | Lab authorized user | Pathologist/defined senior role |
-| Released radiology report amendment | Radiology user | Radiologist |
-| Privileged role change | Tenant Admin | Higher admin / controlled dual approval |
-| Bulk clinical export | Authorized analyst/admin | Data protection/privacy authority per policy |
-| Break-glass review | Clinical user | Supervisor/Compliance |
+| Operation                           | Requester                             | Approver                                     |
+| ----------------------------------- | ------------------------------------- | -------------------------------------------- |
+| Patient merge                       | Authorized registration/clinical user | Registration Supervisor / MS per policy      |
+| High-value refund                   | Cashier/Billing                       | Finance Manager                              |
+| Tariff change                       | Billing/Admin                         | Finance/Admin/M.S. per policy                |
+| Stock write-off above threshold     | Storekeeper                           | Pharmacy/Finance/Admin                       |
+| Claim write-off                     | RCM                                   | Finance Manager                              |
+| Released lab result amendment       | Lab authorized user                   | Pathologist/defined senior role              |
+| Released radiology report amendment | Radiology user                        | Radiologist                                  |
+| Privileged role change              | Tenant Admin                          | Higher admin / controlled dual approval      |
+| Bulk clinical export                | Authorized analyst/admin              | Data protection/privacy authority per policy |
+| Break-glass review                  | Clinical user                         | Supervisor/Compliance                        |
 
 # 10. Authorization evaluation order
 

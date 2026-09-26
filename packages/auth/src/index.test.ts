@@ -17,7 +17,7 @@ describe('PolicyEngine', () => {
 
   it('honours tenant-admin wildcard semantics', () => {
     expect(
-      PolicyEngine.hasPermission({ ...context, isTenantAdmin: true }, 'system.user.manage'),
+      PolicyEngine.hasPermission({ ...context, isTenantAdmin: true }, 'system.user.manage')
     ).toBe(true);
   });
 

@@ -61,7 +61,7 @@ export class DocumentsProcessor extends WorkerHost {
       // and lands in the failed set where an operator will see it, rather than
       // occupying a retry slot five times over.
       throw new Error(
-        `Document job ${job.id} is missing documentId or operation; refusing to retry a payload that cannot succeed.`,
+        `Document job ${job.id} is missing documentId or operation; refusing to retry a payload that cannot succeed.`
       );
     }
 
@@ -82,7 +82,7 @@ export class DocumentsProcessor extends WorkerHost {
         // this consumer disagree, and silently returning would leave the
         // document stuck in its current state with nothing logged as wrong.
         throw new Error(
-          `Unknown document operation "${operation}". The producer and this consumer are on different versions.`,
+          `Unknown document operation "${operation}". The producer and this consumer are on different versions.`
         );
     }
   }
@@ -102,7 +102,7 @@ export class DocumentsProcessor extends WorkerHost {
         WHERE id = $1
           AND status = 'UPLOADING'`,
       [documentId],
-      ctx,
+      ctx
     );
 
     if (rowCount === 0) {
@@ -127,7 +127,7 @@ export class DocumentsProcessor extends WorkerHost {
          FROM hims_documents.documents
         WHERE id = $1`,
       [documentId],
-      ctx,
+      ctx
     );
 
     if (!document) {
@@ -139,13 +139,13 @@ export class DocumentsProcessor extends WorkerHost {
 
     if (!document.checksum_sha256) {
       this.logger.warn(
-        `Document ${documentId} has no recorded checksum, so it cannot be verified. Leaving it in ${document.status}.`,
+        `Document ${documentId} has no recorded checksum, so it cannot be verified. Leaving it in ${document.status}.`
       );
       return { documentId, operation: 'VERIFY_CHECKSUM', skipped: true };
     }
 
     this.logger.log(
-      `Checksum verification for ${documentId} needs a storage adapter that is not built yet; document remains ${document.status}`,
+      `Checksum verification for ${documentId} needs a storage adapter that is not built yet; document remains ${document.status}`
     );
     return { documentId, operation: 'VERIFY_CHECKSUM', skipped: true };
   }
@@ -160,7 +160,7 @@ export class DocumentsProcessor extends WorkerHost {
   private async markScanned(documentId: string, ctx: DatabaseContext): Promise<ProcessResult> {
     if (!process.env['CLAMAV_BASE_URL']) {
       this.logger.warn(
-        `CLAMAV_BASE_URL is not configured; refusing to mark document ${documentId} as scanned.`,
+        `CLAMAV_BASE_URL is not configured; refusing to mark document ${documentId} as scanned.`
       );
       return { documentId, operation: 'MALWARE_SCAN', skipped: true };
     }
@@ -171,7 +171,7 @@ export class DocumentsProcessor extends WorkerHost {
         WHERE id = $1
           AND status = 'UPLOADING'`,
       [documentId],
-      ctx,
+      ctx
     );
 
     return { documentId, operation: 'MALWARE_SCAN', skipped: rowCount === 0 };
@@ -204,12 +204,12 @@ export class DocumentsProcessor extends WorkerHost {
                 SELECT 1 FROM hims_emr.document_index i WHERE i.document_id = d.id
               )`,
       [documentId],
-      ctx,
+      ctx
     );
 
     if (rowCount === 0) {
       this.logger.debug(
-        `Document ${documentId} is already indexed, or no longer exists; nothing to do`,
+        `Document ${documentId} is already indexed, or no longer exists; nothing to do`
       );
     }
 

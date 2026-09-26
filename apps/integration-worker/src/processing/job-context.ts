@@ -20,7 +20,7 @@ export function jobContext(job: Job): DatabaseContext {
       .join('; ');
 
     throw new Error(
-      `Job ${job.id ?? '(no id)'} on ${job.queueName} has an unusable payload — ${detail}. A job without tenant scope cannot be processed safely.`,
+      `Job ${job.id ?? '(no id)'} on ${job.queueName} has an unusable payload — ${detail}. A job without tenant scope cannot be processed safely.`
     );
   }
 

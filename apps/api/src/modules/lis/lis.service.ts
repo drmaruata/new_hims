@@ -8,17 +8,21 @@ import type { VerifyLabResultInput } from './dto/lis.dto.js';
 export class LisService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getOrders(status?: string, tenantId?: string | null, facilityId?: string | null): Promise<LabOrder[]> {
+  async getOrders(
+    status?: string,
+    tenantId?: string | null,
+    facilityId?: string | null
+  ): Promise<LabOrder[]> {
     return [
       {
-        id: '50505050-5050-5050-5050-505050505001',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '50505050-5050-4050-8050-505050505001',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         orderNumber: 'LAB-2026-00341',
         accessionNumber: 'ACC-2026-0925-01',
-        encounterId: '77777777-7777-7777-7777-777777777701',
-        patientId: '99999999-9999-9999-9999-999999999901',
-        requestingDoctorId: '44444444-4444-4444-4444-444444444401',
+        encounterId: '77777777-7777-4777-8777-777777777701',
+        patientId: '99999999-9999-4999-8999-999999999901',
+        requestingDoctorId: '44444444-4444-4444-8444-444444444401',
         priority: 'ROUTINE',
         status: 'PROCESSING',
         tests: [
@@ -59,7 +63,7 @@ export class LisService {
     input: CreateLabOrderDto,
     tenantId: string,
     facilityId: string,
-    doctorId: string,
+    doctorId: string
   ): Promise<LabOrder> {
     const orderNumber = `LAB-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     const accessionNumber = `ACC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -92,7 +96,7 @@ export class LisService {
     id: string,
     testCode: string,
     input: VerifyLabResultInput,
-    pathologistId: string,
+    pathologistId: string
   ): Promise<LabOrder> {
     const orders = await this.getOrders();
     const order = orders.find((candidate) => candidate.id === id);
@@ -118,4 +122,3 @@ export class LisService {
     return order;
   }
 }
-

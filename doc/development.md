@@ -333,44 +333,42 @@ FHIR is an interoperability model containing healthcare resources and APIs; the 
 
 The same patient transaction is never copied independently into every module. Modules maintain their domain records and foreign-key/reference relationships back to the canonical patient/encounter/order model. EMR is a longitudinal presentation and document/clinical-record domain; it is not a second patient database.
 
-
 # 4A. Supabase Service Boundary and Supporting Stack
 
 Supabase currently consists of PostgreSQL plus services including Auth, PostgREST, Realtime and Storage. The official self-hosting guidance also makes clear that self-hosted operators assume responsibility for security, backups, monitoring, availability and scaling. (https://supabase.com/docs/guides/self-hosting)
 
-| Capability | Supabase | Additional service | Deployment recommendation |
-|---|---|---|---|
-| PostgreSQL | Yes | — | Docker development; Linux production; HA later |
-| Auth/JWT | Yes | Enterprise IdP optional | Supabase Auth; optional OIDC/SSO later |
-| REST API | Yes | NestJS | PostgREST only for controlled data access; NestJS canonical business API |
-| Realtime | Yes | — | UI subscriptions; not durable event transport |
-| Object storage | Yes | MinIO/S3 preferred for durable large-scale storage as needed | Supabase Storage + durable S3-compatible backend |
-| Background jobs | No | Redis + BullMQ | Docker/Kubernetes |
-| Event broker | No durable broker built for all HIMS needs | NATS/Kafka later | Add after outbox-driven modular-monolith stage |
-| Search | PostgreSQL search | OpenSearch later | Docker/Kubernetes/managed |
-| PACS | No | Orthanc | Docker/Kubernetes |
-| DICOMweb | No | Orthanc / DICOM gateway | Docker/Kubernetes |
-| FHIR server | No dedicated full server | HAPI FHIR optional | Docker/Kubernetes |
-| HL7 interface engine | No | Approved interface engine | Docker/Kubernetes |
-| PDF generation | No complete renderer | Gotenberg | Docker |
-| OCR | No | Tesseract optional | Docker |
-| Malware scanning | No | ClamAV | Docker |
-| Secrets | No enterprise vault equivalent assumed | Vault / cloud secrets manager | Docker or managed |
-| Metrics/traces/logs | Not sufficient as full production observability platform | OTel + Prometheus/Grafana/Loki/Tempo | Docker/Kubernetes/managed |
-| Backup/DR | Self-host operator responsibility | pgBackRest + off-host storage | Linux production |
-| WAF/edge | No full internet edge stack | Nginx/Traefik + cloud WAF as applicable | Docker/cloud |
-| Email/SMS/WhatsApp | No | External providers | Managed API services |
-| Payments | No | Razorpay/PayU/etc. | Managed |
-| Push | No | FCM/APNs | Managed |
-| Video | No | Jitsi / managed provider | Docker or managed |
-| SIEM | No | Wazuh / managed SIEM | Later production maturity |
+| Capability           | Supabase                                                 | Additional service                                           | Deployment recommendation                                                |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| PostgreSQL           | Yes                                                      | —                                                            | Docker development; Linux production; HA later                           |
+| Auth/JWT             | Yes                                                      | Enterprise IdP optional                                      | Supabase Auth; optional OIDC/SSO later                                   |
+| REST API             | Yes                                                      | NestJS                                                       | PostgREST only for controlled data access; NestJS canonical business API |
+| Realtime             | Yes                                                      | —                                                            | UI subscriptions; not durable event transport                            |
+| Object storage       | Yes                                                      | MinIO/S3 preferred for durable large-scale storage as needed | Supabase Storage + durable S3-compatible backend                         |
+| Background jobs      | No                                                       | Redis + BullMQ                                               | Docker/Kubernetes                                                        |
+| Event broker         | No durable broker built for all HIMS needs               | NATS/Kafka later                                             | Add after outbox-driven modular-monolith stage                           |
+| Search               | PostgreSQL search                                        | OpenSearch later                                             | Docker/Kubernetes/managed                                                |
+| PACS                 | No                                                       | Orthanc                                                      | Docker/Kubernetes                                                        |
+| DICOMweb             | No                                                       | Orthanc / DICOM gateway                                      | Docker/Kubernetes                                                        |
+| FHIR server          | No dedicated full server                                 | HAPI FHIR optional                                           | Docker/Kubernetes                                                        |
+| HL7 interface engine | No                                                       | Approved interface engine                                    | Docker/Kubernetes                                                        |
+| PDF generation       | No complete renderer                                     | Gotenberg                                                    | Docker                                                                   |
+| OCR                  | No                                                       | Tesseract optional                                           | Docker                                                                   |
+| Malware scanning     | No                                                       | ClamAV                                                       | Docker                                                                   |
+| Secrets              | No enterprise vault equivalent assumed                   | Vault / cloud secrets manager                                | Docker or managed                                                        |
+| Metrics/traces/logs  | Not sufficient as full production observability platform | OTel + Prometheus/Grafana/Loki/Tempo                         | Docker/Kubernetes/managed                                                |
+| Backup/DR            | Self-host operator responsibility                        | pgBackRest + off-host storage                                | Linux production                                                         |
+| WAF/edge             | No full internet edge stack                              | Nginx/Traefik + cloud WAF as applicable                      | Docker/cloud                                                             |
+| Email/SMS/WhatsApp   | No                                                       | External providers                                           | Managed API services                                                     |
+| Payments             | No                                                       | Razorpay/PayU/etc.                                           | Managed                                                                  |
+| Push                 | No                                                       | FCM/APNs                                                     | Managed                                                                  |
+| Video                | No                                                       | Jitsi / managed provider                                     | Docker or managed                                                        |
+| SIEM                 | No                                                       | Wazuh / managed SIEM                                         | Later production maturity                                                |
 
 ### RLS and tenant context
 
 Supabase PostgreSQL RLS is a defense-in-depth control. Every exposed tenant-owned table shall enable RLS. Authorization data must not be taken from user-editable `user_metadata`; authorization claims may use controlled server-side application metadata or, preferably for detailed HIMS authorization, database-backed role/scope tables. The Supabase documentation states that `service_role` bypasses RLS and must remain server-side; the application must therefore never expose that credential to web or mobile clients. (https://supabase.com/docs/guides/database/postgres/row-level-security)
 
 NestJS request handling shall establish tenant/facility context transactionally before accessing tenant data. Pooled connections must never retain another request's tenant context.
-
 
 ---
 
@@ -456,21 +454,21 @@ The hospital edge connector is a controlled integration boundary. It should not 
 
 The following objects have one authoritative owner:
 
-| Object | Owner | Consumers |
-|---|---|---|
-| Patient/UHID | Patient/MPI | All modules |
-| Encounter | Clinical/Encounter | OPD/IPD/Emergency/ICU/OT/LIS/RIS/Pharmacy/Billing |
-| Department | Organization/Configuration | OPD/IPD/OT/LIS/RIS/Reporting |
-| Bed state | IPD/Bed | IPD/ICU/Emergency/Command Center |
-| Medication order | Clinical/Medication | Pharmacy/MAR/EMR/Billing as configured |
-| MAR event | Nursing/Medication Administration | EMR/Quality/Clinical review |
-| Lab order | Clinical/Orders | LIS |
-| Lab result | LIS | EMR/Clinical/Billing where configured |
-| Imaging order | Clinical/Orders | RIS |
-| Imaging study/report | RIS | EMR/Clinical/Billing where configured |
-| Surgery case | OT | IPD/OPD/Inventory/Pharmacy/Insurance/Billing/EMR |
-| Dispensing | Pharmacy | Inventory/Billing/EMR |
-| Claim | Insurance/RCM | Billing/Finance/External payer |
+| Object               | Owner                             | Consumers                                         |
+| -------------------- | --------------------------------- | ------------------------------------------------- |
+| Patient/UHID         | Patient/MPI                       | All modules                                       |
+| Encounter            | Clinical/Encounter                | OPD/IPD/Emergency/ICU/OT/LIS/RIS/Pharmacy/Billing |
+| Department           | Organization/Configuration        | OPD/IPD/OT/LIS/RIS/Reporting                      |
+| Bed state            | IPD/Bed                           | IPD/ICU/Emergency/Command Center                  |
+| Medication order     | Clinical/Medication               | Pharmacy/MAR/EMR/Billing as configured            |
+| MAR event            | Nursing/Medication Administration | EMR/Quality/Clinical review                       |
+| Lab order            | Clinical/Orders                   | LIS                                               |
+| Lab result           | LIS                               | EMR/Clinical/Billing where configured             |
+| Imaging order        | Clinical/Orders                   | RIS                                               |
+| Imaging study/report | RIS                               | EMR/Clinical/Billing where configured             |
+| Surgery case         | OT                                | IPD/OPD/Inventory/Pharmacy/Insurance/Billing/EMR  |
+| Dispensing           | Pharmacy                          | Inventory/Billing/EMR                             |
+| Claim                | Insurance/RCM                     | Billing/Finance/External payer                    |
 
 The EMR must consume authoritative source events and assemble a longitudinal view. It must not become a second source of truth for laboratory, radiology, pharmacy or OT transactions.
 
@@ -1718,10 +1716,10 @@ Potential matches must show enough identifiers for safe human confirmation.
 ```
 
 ## 20.2 FHIR strategy
+
 ### FHIR version compatibility
 
 Use an adapter/profiling layer so the core domain model is not coupled to one external FHIR release. The generic HL7 published specification is currently R5, but ABDM/NRCeS integration must follow the FHIR release and India-specific profiles required by the applicable ABDM production contract. The system should therefore maintain a validated ABDM-compatible FHIR profile layer and permit future R5/R6 interoperability without rewriting core clinical modules.
-
 
 FHIR should be an external interoperability representation.
 
@@ -3371,6 +3369,7 @@ High-impact configuration changes can require approval.
 ---
 
 # 64. Multi-Tenancy Strategy
+
 ### 64.1 Shared-SaaS isolation model
 
 Standard SaaS topology:
@@ -3390,7 +3389,6 @@ Shared Next.js / NestJS
 Enterprise topology may use a dedicated application/database/object-storage stack per tenant. The same domain code and migrations should remain deployable in both modes.
 
 Do not use database-per-module. Use domain ownership within a common transactional boundary until independent scaling is demonstrated.
-
 
 The SaaS model should use logical tenant isolation initially.
 
@@ -3614,29 +3612,29 @@ The frontend must never import backend persistence code. The web/mobile clients 
 
 # 69B. Department-to-Service Data Flow Matrix
 
-| Source | Action | Destination | Authoritative source |
-|---|---|---|---|
-| OPD | Prescription finalization | Pharmacy | OPD prescription |
-| OPD | Lab order | LIS | Clinical order |
-| OPD | Imaging order | RIS | Clinical order |
-| OPD | Admission request | IPD | Admission request |
-| IPD | Medication order | Pharmacy | IPD medication order |
-| IPD | Medication administration | EMR/MAR | MAR event |
-| IPD | Lab order | LIS | Clinical order |
-| IPD | Imaging order | RIS | Clinical order |
-| IPD | ICU transfer | ICU | Transfer request |
-| IPD | OT request | OT | Procedure/surgery request |
-| Emergency | Medication order | Pharmacy | Emergency order |
-| Emergency | Lab/imaging order | LIS/RIS | Emergency order |
-| Emergency | Admission | IPD/ICU | Admission/transfer event |
-| ICU | Medication order | Pharmacy | ICU order |
-| ICU | Lab/imaging order | LIS/RIS | ICU order |
-| OT | Medication/consumable requirement | Pharmacy/Inventory | OT case requirement |
-| LIS | Result release | EMR | Verified result |
-| RIS | Report release | EMR | Verified report |
-| Pharmacy | Dispensing | EMR/Billing/Inventory | Dispensing transaction |
-| Insurance | Pre-auth/claim status | Billing/encounter | Payer transaction |
-| All clinical modules | Clinical events | EMR timeline | Source event provenance |
+| Source               | Action                            | Destination           | Authoritative source      |
+| -------------------- | --------------------------------- | --------------------- | ------------------------- |
+| OPD                  | Prescription finalization         | Pharmacy              | OPD prescription          |
+| OPD                  | Lab order                         | LIS                   | Clinical order            |
+| OPD                  | Imaging order                     | RIS                   | Clinical order            |
+| OPD                  | Admission request                 | IPD                   | Admission request         |
+| IPD                  | Medication order                  | Pharmacy              | IPD medication order      |
+| IPD                  | Medication administration         | EMR/MAR               | MAR event                 |
+| IPD                  | Lab order                         | LIS                   | Clinical order            |
+| IPD                  | Imaging order                     | RIS                   | Clinical order            |
+| IPD                  | ICU transfer                      | ICU                   | Transfer request          |
+| IPD                  | OT request                        | OT                    | Procedure/surgery request |
+| Emergency            | Medication order                  | Pharmacy              | Emergency order           |
+| Emergency            | Lab/imaging order                 | LIS/RIS               | Emergency order           |
+| Emergency            | Admission                         | IPD/ICU               | Admission/transfer event  |
+| ICU                  | Medication order                  | Pharmacy              | ICU order                 |
+| ICU                  | Lab/imaging order                 | LIS/RIS               | ICU order                 |
+| OT                   | Medication/consumable requirement | Pharmacy/Inventory    | OT case requirement       |
+| LIS                  | Result release                    | EMR                   | Verified result           |
+| RIS                  | Report release                    | EMR                   | Verified report           |
+| Pharmacy             | Dispensing                        | EMR/Billing/Inventory | Dispensing transaction    |
+| Insurance            | Pre-auth/claim status             | Billing/encounter     | Payer transaction         |
+| All clinical modules | Clinical events                   | EMR timeline          | Source event provenance   |
 
 A failed downstream consumer must produce a retry/reconciliation state rather than duplicate the source event.
 
@@ -5101,6 +5099,7 @@ Do not start with database CRUD endpoints before understanding the workflow/stat
 # 133. Example: Building Admission
 
 ### Step 1
+
 Define states.
 
 ```text
@@ -5114,6 +5113,7 @@ CANCELLED
 ```
 
 ### Step 2
+
 Define invariants.
 
 - active admission must belong to an existing patient
@@ -5122,11 +5122,13 @@ Define invariants.
 - authorization must match role/facility
 
 ### Step 3
+
 Define transaction.
 
 Patient + encounter + admission + bed assignment.
 
 ### Step 4
+
 Emit events.
 
 ```text
@@ -5135,11 +5137,13 @@ BedAssigned
 ```
 
 ### Step 5
+
 Update projections.
 
 Ward board and command center.
 
 ### Step 6
+
 Test failure paths.
 
 - bed no longer available
@@ -5499,32 +5503,32 @@ No major clinical module should enter pilot merely because its screens are visua
 
 The recommended baseline is:
 
-| Layer | Recommendation |
-|---|---|
-| Web | Next.js + React + TypeScript + Tailwind CSS + shadcn/ui |
-| Mobile | React Native + Expo + TypeScript |
-| Backend | NestJS + TypeScript |
+| Layer                      | Recommendation                                                               |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| Web                        | Next.js + React + TypeScript + Tailwind CSS + shadcn/ui                      |
+| Mobile                     | React Native + Expo + TypeScript                                             |
+| Backend                    | NestJS + TypeScript                                                          |
 | Primary DB / data platform | Self-hosted Supabase; PostgreSQL version follows the pinned Supabase release |
-| Cache | Redis |
-| Jobs | BullMQ initially |
-| Eventing | Transactional outbox; broker later |
-| Object storage | S3-compatible |
-| Search | PostgreSQL initially; OpenSearch later |
-| API | REST + OpenAPI |
-| Interoperability | FHIR + ABDM + HL7 + DICOM adapters |
-| Realtime | WebSockets/SSE |
-| Auth | OIDC/OAuth2 identity provider |
-| Web tests | Playwright + Vitest |
-| Mobile tests | Jest + React Native Testing Library + Detox where needed |
-| API tests | Jest/Vitest + Supertest or equivalent |
-| Load tests | k6 |
-| Observability | OpenTelemetry + metrics/logging/tracing stack |
-| IaC | Terraform |
-| Containers | Docker |
-| CI/CD | GitHub Actions or equivalent |
-| Production hosting | Linux Docker / Kubernetes; AWS or equivalent cloud optional |
-| Analytics | PostgreSQL projections first, warehouse later |
-| AI | Internal AI gateway + controlled model providers |
+| Cache                      | Redis                                                                        |
+| Jobs                       | BullMQ initially                                                             |
+| Eventing                   | Transactional outbox; broker later                                           |
+| Object storage             | S3-compatible                                                                |
+| Search                     | PostgreSQL initially; OpenSearch later                                       |
+| API                        | REST + OpenAPI                                                               |
+| Interoperability           | FHIR + ABDM + HL7 + DICOM adapters                                           |
+| Realtime                   | WebSockets/SSE                                                               |
+| Auth                       | OIDC/OAuth2 identity provider                                                |
+| Web tests                  | Playwright + Vitest                                                          |
+| Mobile tests               | Jest + React Native Testing Library + Detox where needed                     |
+| API tests                  | Jest/Vitest + Supertest or equivalent                                        |
+| Load tests                 | k6                                                                           |
+| Observability              | OpenTelemetry + metrics/logging/tracing stack                                |
+| IaC                        | Terraform                                                                    |
+| Containers                 | Docker                                                                       |
+| CI/CD                      | GitHub Actions or equivalent                                                 |
+| Production hosting         | Linux Docker / Kubernetes; AWS or equivalent cloud optional                  |
+| Analytics                  | PostgreSQL projections first, warehouse later                                |
+| AI                         | Internal AI gateway + controlled model providers                             |
 
 React Native is therefore recommended for the **mobile application**, but not for the entire frontend. A web-first Next.js application using Tailwind CSS and shadcn/ui, plus React Native/Expo mobile applications, gives the HIMS the strongest combination of desktop clinical usability, tablet support, mobile reach, design-system consistency and code sharing.
 
@@ -5562,19 +5566,19 @@ Only after these foundations are reliable should the platform aggressively expan
 5. NestJS modules — https://docs.nestjs.com/modules
 6. NestJS documentation — https://docs.nestjs.com/
 7. PostgreSQL versioning policy — https://www.postgresql.org/support/versioning/
-9. HL7 FHIR — https://www.hl7.org/fhir/R4/
-10. HL7 FHIR architecture — https://hl7.org/fhir/R4/overview-arch.html
-11. AWS EKS security guidance — https://docs.aws.amazon.com/eks/latest/best-practices/aiml-security.html
-12. Supabase self-hosting — https://supabase.com/docs/guides/self-hosting
-13. Supabase architecture — https://supabase.com/docs/guides/getting-started/architecture
-14. Supabase Row Level Security — https://supabase.com/docs/guides/database/postgres/row-level-security
-15. NQAS Revised Standards 2024 — https://qps.nhsrcindia.org/national-quality-assurance-standards/quality-RNQAS
-16. NHSRC NQAS QA Directives — https://qps.nhsrcindia.org/repository-standard/quality-QA-Directives
-17. NQAS Integrated LaQshya/MusQan directive (28 Jan 2026) — https://qps.nhsrcindia.org/sites/default/files/2026-02/DO%20LETTER%20NHM-1-integration%20of%20LaQshya%20MusQan%20%20within%20NQAS%20framework%20-%2028.1.26.pdf
-18. NHCX — https://nhcx.abdm.gov.in/procedure-type
-19. MeitY DPDP Rules 2025 — https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa
-20. HL7 FHIR R5 — https://hl7.org/fhir/R5/
-21. DICOMweb — https://www.dicomstandard.org/
+8. HL7 FHIR — https://www.hl7.org/fhir/R4/
+9. HL7 FHIR architecture — https://hl7.org/fhir/R4/overview-arch.html
+10. AWS EKS security guidance — https://docs.aws.amazon.com/eks/latest/best-practices/aiml-security.html
+11. Supabase self-hosting — https://supabase.com/docs/guides/self-hosting
+12. Supabase architecture — https://supabase.com/docs/guides/getting-started/architecture
+13. Supabase Row Level Security — https://supabase.com/docs/guides/database/postgres/row-level-security
+14. NQAS Revised Standards 2024 — https://qps.nhsrcindia.org/national-quality-assurance-standards/quality-RNQAS
+15. NHSRC NQAS QA Directives — https://qps.nhsrcindia.org/repository-standard/quality-QA-Directives
+16. NQAS Integrated LaQshya/MusQan directive (28 Jan 2026) — https://qps.nhsrcindia.org/sites/default/files/2026-02/DO%20LETTER%20NHM-1-integration%20of%20LaQshya%20MusQan%20%20within%20NQAS%20framework%20-%2028.1.26.pdf
+17. NHCX — https://nhcx.abdm.gov.in/procedure-type
+18. MeitY DPDP Rules 2025 — https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa
+19. HL7 FHIR R5 — https://hl7.org/fhir/R5/
+20. DICOMweb — https://www.dicomstandard.org/
 
 Technology versions in this document are recommendations based on the state of the ecosystem on 2026-09-25. Exact patch versions must be frozen in the repository after dependency compatibility testing and upgraded through the project's release process.
 

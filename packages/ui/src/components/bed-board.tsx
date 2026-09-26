@@ -38,8 +38,8 @@ export function BedBoard({ beds, onSelectBed }: BedBoardProps) {
           bed.status === 'AVAILABLE'
             ? 'bg-emerald-50/50 border-emerald-200 hover:border-emerald-400'
             : bed.status === 'OCCUPIED'
-            ? 'bg-rose-50/40 border-rose-200 hover:border-rose-400'
-            : 'bg-slate-50 border-slate-200'
+              ? 'bg-rose-50/40 border-rose-200 hover:border-rose-400'
+              : 'bg-slate-50 border-slate-200'
         }`;
 
         const content = (
@@ -75,4 +75,3 @@ export function BedBoard({ beds, onSelectBed }: BedBoardProps) {
     </div>
   );
 }
-

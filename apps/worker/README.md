@@ -10,19 +10,19 @@ single request being dropped.
 
 ## What runs here
 
-| Queue | Responsibility (§8.2) | Processor |
-|---|---|---|
-| `hims.outbox` | Drains `hims_workflow.outbox_events` into the queues below | `OutboxRelayService` |
-| `hims.documents` | Document processing | `DocumentsProcessor` |
-| `hims.notifications` | Notification sending | *not built* |
-| `hims.reports` | Report generation | *not built* |
-| `hims.exports` | Data export | *not built* |
-| `hims.reminders` | Scheduled reminders | *not built* |
-| `hims.analytics` | Analytics ingestion | *not built* |
-| `hims.emr` | Patient 360 projections | *not built* |
-| `hims.ai` | Non-critical AI tasks | *not built* |
-| `hims.bulk-import` | Bulk imports | *not built* |
-| `hims.integration` | Enqueue only — consumed by `apps/integration-worker` | n/a |
+| Queue                | Responsibility (§8.2)                                      | Processor            |
+| -------------------- | ---------------------------------------------------------- | -------------------- |
+| `hims.outbox`        | Drains `hims_workflow.outbox_events` into the queues below | `OutboxRelayService` |
+| `hims.documents`     | Document processing                                        | `DocumentsProcessor` |
+| `hims.notifications` | Notification sending                                       | _not built_          |
+| `hims.reports`       | Report generation                                          | _not built_          |
+| `hims.exports`       | Data export                                                | _not built_          |
+| `hims.reminders`     | Scheduled reminders                                        | _not built_          |
+| `hims.analytics`     | Analytics ingestion                                        | _not built_          |
+| `hims.emr`           | Patient 360 projections                                    | _not built_          |
+| `hims.ai`            | Non-critical AI tasks                                      | _not built_          |
+| `hims.bulk-import`   | Bulk imports                                               | _not built_          |
+| `hims.integration`   | Enqueue only — consumed by `apps/integration-worker`       | n/a                  |
 
 "Not built" is not a stub that silently succeeds. Those queues are registered and
 their events are routed and enqueued today; they simply accumulate jobs until a
@@ -52,18 +52,18 @@ Two things are worth knowing before changing it:
 
 Beyond the shared env contract in `@hims/config`:
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `DATABASE_PLATFORM_URL` | — | **Required.** Role with `BYPASSRLS` for outbox drain and retention sweep. Must not be `DATABASE_URL`. |
-| `WORKER_CONCURRENCY` | `10` | Jobs in flight per processor. |
-| `WORKER_OUTBOX_BATCH_SIZE` | `100` | Events claimed per poll. |
-| `WORKER_OUTBOX_POLL_MS` | `1000` | Poll interval. |
-| `OUTBOX_RETENTION_DAYS` | `30` | Published events are pruned after this. |
-| `OUTBOX_STUCK_MINUTES` | `5` | `IN_FLIGHT` age before the sweeper assumes a dead relay. |
-| `OUTBOX_MAX_PUBLISH_ATTEMPTS` | `5` | Relay failures before an event goes `DEAD`. |
-| `WORKER_POOL_MAX` | `10` | Tenant-scoped pool size. |
-| `PLATFORM_POOL_MAX` | `4` | Cross-tenant pool size. |
-| `CLAMAV_BASE_URL` | — | Without it, documents are never marked scanned. |
+| Variable                      | Default | Meaning                                                                                               |
+| ----------------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `DATABASE_PLATFORM_URL`       | —       | **Required.** Role with `BYPASSRLS` for outbox drain and retention sweep. Must not be `DATABASE_URL`. |
+| `WORKER_CONCURRENCY`          | `10`    | Jobs in flight per processor.                                                                         |
+| `WORKER_OUTBOX_BATCH_SIZE`    | `100`   | Events claimed per poll.                                                                              |
+| `WORKER_OUTBOX_POLL_MS`       | `1000`  | Poll interval.                                                                                        |
+| `OUTBOX_RETENTION_DAYS`       | `30`    | Published events are pruned after this.                                                               |
+| `OUTBOX_STUCK_MINUTES`        | `5`     | `IN_FLIGHT` age before the sweeper assumes a dead relay.                                              |
+| `OUTBOX_MAX_PUBLISH_ATTEMPTS` | `5`     | Relay failures before an event goes `DEAD`.                                                           |
+| `WORKER_POOL_MAX`             | `10`    | Tenant-scoped pool size.                                                                              |
+| `PLATFORM_POOL_MAX`           | `4`     | Cross-tenant pool size.                                                                               |
+| `CLAMAV_BASE_URL`             | —       | Without it, documents are never marked scanned.                                                       |
 
 ## Running
 

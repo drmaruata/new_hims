@@ -46,7 +46,7 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   logger.log(
-    `HIMS worker started [${env.NODE_ENV}] concurrency=${env.WORKER_CONCURRENCY} outboxPoll=${env.WORKER_OUTBOX_POLL_MS}ms`,
+    `HIMS worker started [${env.NODE_ENV}] concurrency=${env.WORKER_CONCURRENCY} outboxPoll=${env.WORKER_OUTBOX_POLL_MS}ms`
   );
 }
 
@@ -56,7 +56,7 @@ bootstrap().catch((error: unknown) => {
   // logs, which is exactly the failure this needs to make diagnosable.
   new Logger('Bootstrap').error(
     'Failed to start the worker',
-    error instanceof Error ? error.stack : error,
+    error instanceof Error ? error.stack : error
   );
   process.exit(1);
 });

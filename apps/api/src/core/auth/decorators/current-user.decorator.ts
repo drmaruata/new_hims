@@ -1,8 +1,4 @@
-﻿import {
-  createParamDecorator,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
+﻿import { createParamDecorator, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import type { Request } from 'express';
 
 import type { AuthenticatedUser } from '../auth.types.js';
@@ -24,7 +20,7 @@ export const CurrentUser = createParamDecorator(
     const user = context.switchToHttp().getRequest<PrincipalRequest>().user;
     if (!user) return undefined;
     return field ? user[field as keyof AuthenticatedUser] : user;
-  },
+  }
 );
 
 /**
@@ -45,12 +41,12 @@ export const DbContext = createParamDecorator(
 
     if (!dbContext) {
       throw new ForbiddenException(
-        'This operation needs a tenant scope, but the request was not authenticated. Remove @Public() from the route, or resolve the tenant explicitly.',
+        'This operation needs a tenant scope, but the request was not authenticated. Remove @Public() from the route, or resolve the tenant explicitly.'
       );
     }
 
     return dbContext;
-  },
+  }
 );
 
 /**
@@ -61,7 +57,7 @@ export const TenantId = createParamDecorator(
   (_data: unknown, context: ExecutionContext): string => {
     const user = context.switchToHttp().getRequest<PrincipalRequest>().user;
     return user?.tenantId as string;
-  },
+  }
 );
 /**
  * Injects the active facility id, failing when there is none.
@@ -82,21 +78,18 @@ export const ActiveFacilityId = createParamDecorator(
 
     if (!facilityId) {
       throw new ForbiddenException(
-        'This operation requires a facility scope. Select a facility you have access to, or send X-Facility-Id for one.',
+        'This operation requires a facility scope. Select a facility you have access to, or send X-Facility-Id for one.'
       );
     }
 
     return facilityId;
-  },
+  }
 );
-
 
 /**
  * Injects the active facility id, if the caller is scoped to one.
  */
 export const FacilityId = createParamDecorator(
   (_data: unknown, context: ExecutionContext): string | null =>
-    context.switchToHttp().getRequest<PrincipalRequest>().user
-      ?.activeFacilityId ?? null,
+    context.switchToHttp().getRequest<PrincipalRequest>().user?.activeFacilityId ?? null
 );
-

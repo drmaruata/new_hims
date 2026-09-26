@@ -8,4 +8,3 @@ import { OtService } from './ot.service.js';
   exports: [OtService],
 })
 export class OtModule {}
-

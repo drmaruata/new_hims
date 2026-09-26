@@ -1,4 +1,13 @@
-﻿import { Body, Controller, Get, NotFoundException, Param, Post, Query, UseGuards } from '@nestjs/common';
+﻿import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import {
@@ -43,7 +52,7 @@ export class PatientController {
     @Param('type', new ZodValidationPipe(HashedIdentifierTypeSchema))
     type: HashedIdentifierType,
     @Param('value') value: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     const patient = await this.patientService.findByIdentifier(type, value, ctx);
 
@@ -68,7 +77,7 @@ export class PatientController {
   })
   async search(
     @Query(new ZodValidationPipe(SearchPatientsSchema)) query: SearchPatientsInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.patientService.search(query.search, ctx, query.limit);
   }
@@ -92,10 +101,7 @@ export class PatientController {
     summary: 'List the identifier documents held for a patient',
     description: 'Returns the document type and digest, never the plaintext.',
   })
-  async listIdentifiers(
-    @Param('id') id: string,
-    @DbContext() ctx: DatabaseContext,
-  ) {
+  async listIdentifiers(@Param('id') id: string, @DbContext() ctx: DatabaseContext) {
     return this.patientService.listIdentifiers(id, ctx);
   }
 
@@ -104,7 +110,7 @@ export class PatientController {
   async register(
     @Body(new ZodValidationPipe(RegisterPatientSchema)) body: RegisterPatientInput,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() _user: AuthenticatedUser,
+    @CurrentUser() _user: AuthenticatedUser
   ) {
     return this.patientService.register(body, ctx);
   }

@@ -8,4 +8,3 @@ import { EmergencyService } from './emergency.service.js';
   exports: [EmergencyService],
 })
 export class EmergencyModule {}
-

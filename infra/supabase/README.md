@@ -9,14 +9,27 @@ Setup:
 1. Run bash infra/supabase/bootstrap.sh.
 2. Open infra/supabase/runtime/.env.
 3. Replace all generated/example secrets and set the local URLs.
-4. Start the HIMS overlay with the command printed by the bootstrap script.
-5. Apply the HIMS application role with infra/db/provision-app-role.sh.
-6. Point the API DATABASE_URL at the non-BYPASSRLS hims_app role.
-7. Run infra/db/verify-rls.sh.
+4. Start the stack and wait for it to become healthy:
+   `docker compose -f infra/supabase/runtime/docker-compose.yml up -d --wait`
+5. Apply the HIMS migrations: `pnpm db:migrate`.
+6. Apply the development seed: `pnpm db:seed`.
+7. Apply the HIMS application role: `pnpm db:provision-app-role`.
+8. Point the API DATABASE_URL at the non-BYPASSRLS hims_app role.
+9. Verify isolation: `HIMS_TENANT_ID=<seed tenant uuid> pnpm db:verify-rls`.
 
-The baseline migration is mounted as an init script with a zz- prefix so it runs after Supabase's own database bootstrap scripts on a fresh database volume.
+The HIMS migrations are applied by the migration runner, not mounted as Postgres
+init scripts. The baseline is not replayable over a schema that already exists, so
+mounting it at container init and then running the runner would fail on
+`relation "hims_core.tenants" already exists`; and skipping the runner would leave
+the later migrations unapplied while still appearing to succeed. Keeping one path
+also keeps migration order visible in the runner's output rather than encoded in
+init-script filename prefixes.
 
-The development seed is a separate Compose overlay and is never mounted by the default stack. This prevents demo tenant data from being silently created in a pilot/production environment.
+For the same reason the development seed is an explicit command rather than a
+Compose overlay. It creates a demo tenant, so it must be something an operator
+asks for, not something that happens to whatever volume the stack was started
+against. `infra/db/seed.sh` refuses to run against a non-local host unless
+`HIMS_ALLOW_REMOTE_SEED=1` is set.
 
 Important operational rules:
 

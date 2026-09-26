@@ -49,7 +49,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
       // reports "published 0 events", and quietly drops every domain event in
       // the system.
       throw new Error(
-        'DATABASE_PLATFORM_URL is not set. The outbox relay and the dead-letter sweep are cross-tenant by nature and need a role with BYPASSRLS. Point DATABASE_PLATFORM_URL at a dedicated platform role — do not reuse DATABASE_URL, whose role must NOT have BYPASSRLS.',
+        'DATABASE_PLATFORM_URL is not set. The outbox relay and the dead-letter sweep are cross-tenant by nature and need a role with BYPASSRLS. Point DATABASE_PLATFORM_URL at a dedicated platform role — do not reuse DATABASE_URL, whose role must NOT have BYPASSRLS.'
       );
     }
 
@@ -71,11 +71,11 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
       // silently reads nothing, so this is the difference between a loud
       // misconfiguration and a hospital that stops receiving events.
       const { rows } = await client.query<{ bypassrls: boolean }>(
-        'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user',
+        'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user'
       );
       if (!rows[0]?.bypassrls) {
         this.logger.error(
-          'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant reads will return zero rows. Grant it to this role only.',
+          'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant reads will return zero rows. Grant it to this role only.'
         );
       } else {
         this.logger.log('Platform role verified: BYPASSRLS is set');
@@ -100,10 +100,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
    * The claim commits *before* the jobs are enqueued. That ordering is the
    * whole recovery story — see `OutboxRelayService`.
    */
-  async claimOutboxEvents(
-    limit: number,
-    reason: string,
-  ): Promise<PlatformOutboxEvent[]> {
+  async claimOutboxEvents(limit: number, reason: string): Promise<PlatformOutboxEvent[]> {
     this.logger.debug(`claimOutboxEvents: ${reason}`);
 
     return this.transaction(async (client) => {
@@ -122,7 +119,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
         RETURNING o.event_id, o.tenant_id, o.aggregate_type, o.aggregate_id,
                   o.event_type, o.event_version, o.payload_jsonb, o.occurred_at,
                   o.attempt_count`,
-        [limit],
+        [limit]
       );
 
       return rows;
@@ -138,10 +135,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
    * `stuckAfter` bound is what makes that safe: a live relay's in-flight batch
    * is seconds old, not minutes.
    */
-  async requeueStuckOutboxEvents(
-    stuckAfterMinutes: number,
-    reason: string,
-  ): Promise<number> {
+  async requeueStuckOutboxEvents(stuckAfterMinutes: number, reason: string): Promise<number> {
     this.logger.debug(`requeueStuckOutboxEvents: ${reason}`);
 
     const { rowCount } = await this.query(
@@ -150,17 +144,14 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
         WHERE status = 'IN_FLIGHT'
           AND occurred_at < now() - make_interval(mins => $1)`,
       [stuckAfterMinutes],
-      reason,
+      reason
     );
 
     return rowCount ?? 0;
   }
 
   /** Mark events as handed to the queues. */
-  async markOutboxEventsPublished(
-    eventIds: string[],
-    reason: string,
-  ): Promise<void> {
+  async markOutboxEventsPublished(eventIds: string[], reason: string): Promise<void> {
     if (eventIds.length === 0) return;
     this.logger.debug(`markOutboxEventsPublished: ${reason}`);
 
@@ -170,7 +161,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
               published_at = now()
         WHERE event_id = ANY($1::uuid[])`,
       [eventIds],
-      reason,
+      reason
     );
   }
 
@@ -186,7 +177,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
     eventId: string,
     lastError: string,
     maxAttempts: number,
-    reason: string,
+    reason: string
   ): Promise<void> {
     this.logger.debug(`recordOutboxFailure: ${reason}`);
 
@@ -196,7 +187,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
               last_error = left($3, 2000)
         WHERE event_id = $1`,
       [eventId, maxAttempts, lastError],
-      reason,
+      reason
     );
   }
 
@@ -209,7 +200,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
         WHERE status = 'PUBLISHED'
           AND published_at < now() - make_interval(days => $1)`,
       [retentionDays],
-      reason,
+      reason
     );
 
     return rowCount ?? 0;
@@ -225,17 +216,14 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
   async adminQuery<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params: unknown[],
-    reason: string,
+    reason: string
   ): Promise<QueryResult<T>> {
     this.logger.warn(`adminQuery (BYPASSRLS): ${reason}`);
     return this.query<T>(text, params, reason);
   }
 
   /** Run `fn` in a transaction on the platform role. */
-  async transaction<T>(
-    fn: (client: PoolClient) => Promise<T>,
-    reason: string,
-  ): Promise<T> {
+  async transaction<T>(fn: (client: PoolClient) => Promise<T>, reason: string): Promise<T> {
     // Logged because every method here takes a `reason` and the whole point of
     // the argument is that a grep for BYPASSRLS usage finds a labelled reason
     // for each one, not just the statement text.
@@ -261,7 +249,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
   private async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params: unknown[],
-    reason: string,
+    reason: string
   ): Promise<QueryResult<T>> {
     this.logger.debug(`${reason}: ${text.split('\n')[0]?.trim() ?? ''}`);
     const client = await this.pool.connect();

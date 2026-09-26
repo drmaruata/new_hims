@@ -10,12 +10,12 @@ export class InsuranceService {
   async getClaims(tenantId?: string, facilityId?: string | null): Promise<InsuranceClaim[]> {
     return [
       {
-        id: '17171717-1717-1717-1717-171717171701',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '17171717-1717-4717-8717-171717171701',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         claimNumber: 'CLM-2026-00452',
-        encounterId: '77777777-7777-7777-7777-777777777702',
-        patientId: '99999999-9999-9999-9999-999999999901',
+        encounterId: '77777777-7777-4777-8777-777777777702',
+        patientId: '99999999-9999-4999-8999-999999999901',
         payerType: 'PMJAY',
         payerName: 'Ayushman Bharat Pradhan Mantri Jan Arogya Yojana',
         policyNumber: 'AB-PMJAY-10928374',
@@ -32,7 +32,11 @@ export class InsuranceService {
     ];
   }
 
-  async submitPreAuth(data: SubmitPreAuthInput, tenantId: string, facilityId: string): Promise<InsuranceClaim> {
+  async submitPreAuth(
+    data: SubmitPreAuthInput,
+    tenantId: string,
+    facilityId: string
+  ): Promise<InsuranceClaim> {
     const claimNumber = `CLM-2026-${Math.floor(10000 + Math.random() * 90000)}`;
 
     return {
@@ -55,4 +59,3 @@ export class InsuranceService {
     };
   }
 }
-

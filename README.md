@@ -117,30 +117,36 @@ hims/
 ## 🛠️ Quick Start
 
 ### Prerequisites
+
 - Node.js >= 22.0.0 (v24 LTS recommended)
 - pnpm >= 10.0.0
 - Docker Desktop or Linux Docker Engine
 
 ### 1. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Start Infrastructure
+
 ```bash
 docker-compose up -d
 ```
 
 ### 3. Initialize Database Migrations & Seeds
+
 ```bash
 pnpm db:migrate
 pnpm db:seed
 ```
 
 ### 4. Start Development Servers
+
 ```bash
 pnpm dev
 ```
+
 - **Web Portal:** `http://localhost:3000`
 - **Backend API:** `http://localhost:4000/api/v1`
 - **Swagger Documentation:** `http://localhost:4000/api/docs`

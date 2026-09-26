@@ -8,4 +8,3 @@ import { LisService } from './lis.service.js';
   exports: [LisService],
 })
 export class LisModule {}
-

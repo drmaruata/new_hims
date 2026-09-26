@@ -1,9 +1,4 @@
-﻿import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+﻿import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import type { Request } from 'express';
 import { map, type Observable } from 'rxjs';
 
@@ -37,12 +32,13 @@ function isPaginated<T>(value: unknown): value is PaginatedResult<T> {
  * `PaginatedResult` for lists — and never build `meta` themselves.
  */
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, ApiEnvelope<T> | ApiEnvelope<T[]>>
-{
+export class TransformInterceptor<T> implements NestInterceptor<
+  T,
+  ApiEnvelope<T> | ApiEnvelope<T[]>
+> {
   intercept(
     context: ExecutionContext,
-    next: CallHandler<T>,
+    next: CallHandler<T>
   ): Observable<ApiEnvelope<T> | ApiEnvelope<T[]>> {
     const request = context.switchToHttp().getRequest<Request>();
     const correlationId =
@@ -67,8 +63,7 @@ export class TransformInterceptor<T>
         }
 
         return { data: payload, meta };
-      }),
+      })
     );
   }
 }
-

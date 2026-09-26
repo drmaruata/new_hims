@@ -7,15 +7,19 @@ import type { Bed, IpdAdmission, ClinicalVitals } from '@hims/domain-types';
 export class IpdService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getBeds(wardId?: string, tenantId?: string | null, facilityId?: string | null): Promise<Bed[]> {
+  async getBeds(
+    wardId?: string,
+    tenantId?: string | null,
+    facilityId?: string | null
+  ): Promise<Bed[]> {
     return [
       {
-        id: '20202020-2020-2020-2020-202020202001',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '20202020-2020-4020-8020-202020202001',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         bedCode: 'MW-101',
-        wardId: wardId || '30303030-3030-3030-3030-303030303001',
-        departmentId: '33333333-3333-3333-3333-333333333301',
+        wardId: wardId || '30303030-3030-4030-8030-303030303001',
+        departmentId: '33333333-3333-4333-8333-333333333301',
         bedType: 'GENERAL',
         dailyTariff: 1500,
         status: 'AVAILABLE',
@@ -24,27 +28,27 @@ export class IpdService {
         version: 1,
       },
       {
-        id: '20202020-2020-2020-2020-202020202002',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '20202020-2020-4020-8020-202020202002',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         bedCode: 'MW-102',
-        wardId: wardId || '30303030-3030-3030-3030-303030303001',
-        departmentId: '33333333-3333-3333-3333-333333333301',
+        wardId: wardId || '30303030-3030-4030-8030-303030303001',
+        departmentId: '33333333-3333-4333-8333-333333333301',
         bedType: 'GENERAL',
         dailyTariff: 1500,
         status: 'OCCUPIED',
-        currentPatientId: '99999999-9999-9999-9999-999999999901',
+        currentPatientId: '99999999-9999-4999-8999-999999999901',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         version: 1,
       },
       {
-        id: '20202020-2020-2020-2020-202020202003',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '20202020-2020-4020-8020-202020202003',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         bedCode: 'ICU-B1',
-        wardId: '30303030-3030-3030-3030-303030303002',
-        departmentId: '33333333-3333-3333-3333-333333333305',
+        wardId: '30303030-3030-4030-8030-303030303002',
+        departmentId: '33333333-3333-4333-8333-333333333305',
         bedType: 'ICU',
         dailyTariff: 8000,
         status: 'OCCUPIED',
@@ -53,12 +57,12 @@ export class IpdService {
         version: 1,
       },
       {
-        id: '20202020-2020-2020-2020-202020202004',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '20202020-2020-4020-8020-202020202004',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         bedCode: 'ICU-B2',
-        wardId: '30303030-3030-3030-3030-303030303002',
-        departmentId: '33333333-3333-3333-3333-333333333305',
+        wardId: '30303030-3030-4030-8030-303030303002',
+        departmentId: '33333333-3333-4333-8333-333333333305',
         bedType: 'ICU',
         dailyTariff: 8000,
         status: 'AVAILABLE',
@@ -69,20 +73,23 @@ export class IpdService {
     ];
   }
 
-  async getAdmissions(tenantId?: string | null, facilityId?: string | null): Promise<IpdAdmission[]> {
+  async getAdmissions(
+    tenantId?: string | null,
+    facilityId?: string | null
+  ): Promise<IpdAdmission[]> {
     return [
       {
-        id: '40404040-4040-4040-4040-404040404001',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '40404040-4040-4040-8040-404040404001',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         admissionNumber: 'IPD-2026-0089',
-        encounterId: '77777777-7777-7777-7777-777777777702',
-        patientId: '99999999-9999-9999-9999-999999999901',
+        encounterId: '77777777-7777-4777-8777-777777777702',
+        patientId: '99999999-9999-4999-8999-999999999901',
         admittedAt: '2026-09-24T08:30:00.000Z',
-        admittingDoctorId: '44444444-4444-4444-4444-444444444401',
-        departmentId: '33333333-3333-3333-3333-333333333301',
-        wardId: '30303030-3030-3030-3030-303030303001',
-        assignedBedId: '20202020-2020-2020-2020-202020202002',
+        admittingDoctorId: '44444444-4444-4444-8444-444444444401',
+        departmentId: '33333333-3333-4333-8333-333333333301',
+        wardId: '30303030-3030-4030-8030-303030303001',
+        assignedBedId: '20202020-2020-4020-8020-202020202002',
         status: 'ADMITTED',
         createdAt: '2026-09-24T08:30:00.000Z',
         updatedAt: '2026-09-24T08:30:00.000Z',
@@ -95,7 +102,7 @@ export class IpdService {
     input: CreateIpdAdmissionDto,
     tenantId: string,
     facilityId: string,
-    userId: string,
+    userId: string
   ): Promise<IpdAdmission> {
     const admissionNumber = `IPD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -138,4 +145,3 @@ export class IpdService {
     };
   }
 }
-

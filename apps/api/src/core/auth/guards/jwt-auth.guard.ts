@@ -1,9 +1,4 @@
-﻿import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+﻿import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 
@@ -25,7 +20,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly tokenService: TokenService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -52,18 +47,10 @@ export class JwtAuthGuard implements CanActivate {
     // The tenant is requested through a header, but it is only ever *honoured*
     // after AuthService confirms an active membership. A client cannot widen
     // its own scope by sending a different value.
-    const requestedTenant = request.headers?.['x-tenant-id'] as
-      | string
-      | undefined;
-    const requestedFacility = request.headers?.['x-facility-id'] as
-      | string
-      | undefined;
+    const requestedTenant = request.headers?.['x-tenant-id'] as string | undefined;
+    const requestedFacility = request.headers?.['x-facility-id'] as string | undefined;
 
-    const user = await this.authService.resolve(
-      claims,
-      requestedTenant,
-      requestedFacility,
-    );
+    const user = await this.authService.resolve(claims, requestedTenant, requestedFacility);
 
     this.attach(request, user);
     return true;
@@ -83,4 +70,3 @@ export class JwtAuthGuard implements CanActivate {
     };
   }
 }
-

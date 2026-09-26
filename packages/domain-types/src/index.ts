@@ -16,7 +16,16 @@ export type CurrencyCode = 'INR' | 'USD' | 'EUR' | 'GBP';
 
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER' | 'UNKNOWN';
 export type MaritalStatus = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED' | 'OTHER';
-export type BloodGroup = 'A_POSITIVE' | 'A_NEGATIVE' | 'B_POSITIVE' | 'B_NEGATIVE' | 'AB_POSITIVE' | 'AB_NEGATIVE' | 'O_POSITIVE' | 'O_NEGATIVE' | 'UNKNOWN';
+export type BloodGroup =
+  | 'A_POSITIVE'
+  | 'A_NEGATIVE'
+  | 'B_POSITIVE'
+  | 'B_NEGATIVE'
+  | 'AB_POSITIVE'
+  | 'AB_NEGATIVE'
+  | 'O_POSITIVE'
+  | 'O_NEGATIVE'
+  | 'UNKNOWN';
 
 export interface BaseEntity {
   id: UUID;
@@ -86,7 +95,8 @@ export interface Facility extends ScopedEntity {
 export interface Department extends ScopedEntity {
   departmentCode: string;
   name: string;
-  departmentType: 'CLINICAL' | 'DIAGNOSTIC' | 'PHARMACY' | 'NURSING' | 'ADMIN' | 'EMERGENCY' | 'ICU' | 'SURGERY';
+  departmentType:
+    'CLINICAL' | 'DIAGNOSTIC' | 'PHARMACY' | 'NURSING' | 'ADMIN' | 'EMERGENCY' | 'ICU' | 'SURGERY';
   parentDepartmentId?: UUID | null;
   clinicalServiceFlag: boolean;
   status: 'ACTIVE' | 'INACTIVE';
@@ -102,7 +112,16 @@ export interface UserProfile extends BaseEntity {
   displayName: string;
   mobile?: string | null;
   email?: string | null;
-  professionalCategory: 'DOCTOR' | 'NURSE' | 'PATHOLOGIST' | 'RADIOLOGIST' | 'PHARMACIST' | 'ADMIN' | 'RECEPTIONIST' | 'BILLING' | 'OTHER';
+  professionalCategory:
+    | 'DOCTOR'
+    | 'NURSE'
+    | 'PATHOLOGIST'
+    | 'RADIOLOGIST'
+    | 'PHARMACIST'
+    | 'ADMIN'
+    | 'RECEPTIONIST'
+    | 'BILLING'
+    | 'OTHER';
   status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
   lastLoginAt?: ISODateString | null;
 }
@@ -208,14 +227,7 @@ export interface Patient extends BaseEntity {
  */
 export interface PatientIdentifier {
   id: UUID;
-  identifierType:
-    | 'AADHAAR'
-    | 'PAN'
-    | 'PASSPORT'
-    | 'VOTER_ID'
-    | 'ABHA'
-    | 'DL'
-    | 'OTHER';
+  identifierType: 'AADHAAR' | 'PAN' | 'PASSPORT' | 'VOTER_ID' | 'ABHA' | 'DL' | 'OTHER';
   system?: string | null;
   isPrimary: boolean;
   verifiedAt?: ISODateString | null;
@@ -252,7 +264,15 @@ export interface PatientContact {
 // =============================================================================
 
 export type EncounterType = 'OPD' | 'IPD' | 'EMERGENCY' | 'ICU' | 'DAY_CARE' | 'TELECONSULTATION';
-export type EncounterStatus = 'PLANNED' | 'ARRIVED' | 'TRIAGED' | 'IN_PROGRESS' | 'ON_HOLD' | 'DISCHARGED' | 'COMPLETED' | 'CANCELLED';
+export type EncounterStatus =
+  | 'PLANNED'
+  | 'ARRIVED'
+  | 'TRIAGED'
+  | 'IN_PROGRESS'
+  | 'ON_HOLD'
+  | 'DISCHARGED'
+  | 'COMPLETED'
+  | 'CANCELLED';
 
 export interface Encounter extends ScopedEntity {
   encounterNumber: string;
@@ -265,7 +285,8 @@ export interface Encounter extends ScopedEntity {
   endedAt?: ISODateString | null;
   chiefComplaint?: string | null;
   admissionReason?: string | null;
-  dischargeDisposition?: 'HOME' | 'TRANSFERRED' | 'AGAINST_MEDICAL_ADVICE' | 'DECEASED' | 'REFERRED';
+  dischargeDisposition?:
+    'HOME' | 'TRANSFERRED' | 'AGAINST_MEDICAL_ADVICE' | 'DECEASED' | 'REFERRED';
 }
 
 export interface ClinicalVitals {
@@ -288,7 +309,14 @@ export interface ClinicalVitals {
 // 6. MODULE 1: OPD (OUTPATIENT DEPARTMENT)
 // =============================================================================
 
-export type OpdAppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+export type OpdAppointmentStatus =
+  | 'REQUESTED'
+  | 'CONFIRMED'
+  | 'CHECKED_IN'
+  | 'IN_CONSULTATION'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'NO_SHOW';
 
 /**
  * One row of the OPD register for a business date.
@@ -346,7 +374,8 @@ export interface OpdPrescription extends ScopedEntity {
 // 7. MODULE 2: IPD (INPATIENT DEPARTMENT) & NURSING
 // =============================================================================
 
-export type BedStatus = 'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'CLEANING' | 'MAINTENANCE' | 'BLOCKED' | 'ISOLATION';
+export type BedStatus =
+  'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'CLEANING' | 'MAINTENANCE' | 'BLOCKED' | 'ISOLATION';
 
 export interface Bed extends ScopedEntity {
   bedCode: string;
@@ -403,7 +432,15 @@ export interface MedicationAdministrationRecordItem {
 // 8. MODULE 3: LIS (LABORATORY INFORMATION SYSTEM)
 // =============================================================================
 
-export type LabOrderStatus = 'ORDERED' | 'COLLECTED' | 'RECEIVED' | 'PROCESSING' | 'RESULT_ENTERED' | 'VERIFIED' | 'RELEASED' | 'CANCELLED';
+export type LabOrderStatus =
+  | 'ORDERED'
+  | 'COLLECTED'
+  | 'RECEIVED'
+  | 'PROCESSING'
+  | 'RESULT_ENTERED'
+  | 'VERIFIED'
+  | 'RELEASED'
+  | 'CANCELLED';
 export type SpecimenStatus = 'COLLECTED' | 'RECEIVED' | 'ACCEPTED' | 'REJECTED';
 
 export interface LabOrder extends ScopedEntity {
@@ -437,7 +474,8 @@ export interface LabTestItem {
 // 9. MODULE 4: RIS (RADIOLOGY INFORMATION SYSTEM) & PACS
 // =============================================================================
 
-export type RadiologyStatus = 'REQUESTED' | 'SCHEDULED' | 'ACQUIRED' | 'INTERPRETING' | 'REPORTED' | 'VERIFIED' | 'AMENDED';
+export type RadiologyStatus =
+  'REQUESTED' | 'SCHEDULED' | 'ACQUIRED' | 'INTERPRETING' | 'REPORTED' | 'VERIFIED' | 'AMENDED';
 
 export interface RadiologyOrder extends ScopedEntity {
   orderNumber: string;
@@ -467,7 +505,12 @@ export interface RadiologyReport {
 // 10. MODULE 5: EMERGENCY DEPARTMENT (ED)
 // =============================================================================
 
-export type TriageAcuity = 'ESI_1_RESUSCITATION' | 'ESI_2_EMERGENT' | 'ESI_3_URGENT' | 'ESI_4_LESS_URGENT' | 'ESI_5_NON_URGENT';
+export type TriageAcuity =
+  | 'ESI_1_RESUSCITATION'
+  | 'ESI_2_EMERGENT'
+  | 'ESI_3_URGENT'
+  | 'ESI_4_LESS_URGENT'
+  | 'ESI_5_NON_URGENT';
 
 export interface EmergencyEncounter extends ScopedEntity {
   emergencyNumber: string;
@@ -479,7 +522,8 @@ export interface EmergencyEncounter extends ScopedEntity {
   mlcNumber?: string;
   triageNurseId: UUID;
   attendingPhysicianId?: UUID;
-  disposition?: 'ADMIT_IPD' | 'ADMIT_ICU' | 'TRANSFER_OT' | 'DISCHARGE' | 'REFERRAL' | 'EXPIRED' | 'LAMA';
+  disposition?:
+    'ADMIT_IPD' | 'ADMIT_ICU' | 'TRANSFER_OT' | 'DISCHARGE' | 'REFERRAL' | 'EXPIRED' | 'LAMA';
   dispositionAt?: ISODateString;
 }
 
@@ -487,7 +531,15 @@ export interface EmergencyEncounter extends ScopedEntity {
 // 11. MODULE 6: OT (OPERATING THEATRE MANAGEMENT)
 // =============================================================================
 
-export type OtCaseStatus = 'SCHEDULED' | 'PRE_OP' | 'IN_THEATRE' | 'ANESTHESIA_INDUCED' | 'SURGERY_IN_PROGRESS' | 'RECOVERY' | 'COMPLETED' | 'CANCELLED';
+export type OtCaseStatus =
+  | 'SCHEDULED'
+  | 'PRE_OP'
+  | 'IN_THEATRE'
+  | 'ANESTHESIA_INDUCED'
+  | 'SURGERY_IN_PROGRESS'
+  | 'RECOVERY'
+  | 'COMPLETED'
+  | 'CANCELLED';
 
 export interface SurgeryCase extends ScopedEntity {
   caseNumber: string;
@@ -527,7 +579,8 @@ export interface IcuEpisode extends ScopedEntity {
 // 13. MODULE 8: PHARMACY MANAGEMENT & INVENTORY
 // =============================================================================
 
-export type DispenseStatus = 'PENDING' | 'VERIFIED' | 'PARTIALLY_DISPENSED' | 'DISPENSED' | 'REJECTED';
+export type DispenseStatus =
+  'PENDING' | 'VERIFIED' | 'PARTIALLY_DISPENSED' | 'DISPENSED' | 'REJECTED';
 
 export interface PharmacyDispenseOrder extends ScopedEntity {
   dispenseNumber: string;
@@ -587,15 +640,7 @@ export interface EmrTimelineItem {
   summary: string;
   /** Owning domain, e.g. `hims_lab`. */
   sourceModule:
-    | 'OPD'
-    | 'IPD'
-    | 'LIS'
-    | 'RIS'
-    | 'EMERGENCY'
-    | 'OT'
-    | 'ICU'
-    | 'PHARMACY'
-    | (string & {});
+    'OPD' | 'IPD' | 'LIS' | 'RIS' | 'EMERGENCY' | 'OT' | 'ICU' | 'PHARMACY' | (string & {});
   sourceId: UUID;
   practitionerName?: string;
   departmentName?: string;
@@ -642,7 +687,16 @@ export interface Patient360Record {
 // 15. MODULE 10: INSURANCE, CLAIMS & TPA
 // =============================================================================
 
-export type ClaimStatus = 'DRAFT' | 'PRE_AUTH_SUBMITTED' | 'PRE_AUTH_APPROVED' | 'PRE_AUTH_REJECTED' | 'CLAIM_SUBMITTED' | 'QUERY_RAISED' | 'APPROVED' | 'SETTLED' | 'REJECTED';
+export type ClaimStatus =
+  | 'DRAFT'
+  | 'PRE_AUTH_SUBMITTED'
+  | 'PRE_AUTH_APPROVED'
+  | 'PRE_AUTH_REJECTED'
+  | 'CLAIM_SUBMITTED'
+  | 'QUERY_RAISED'
+  | 'APPROVED'
+  | 'SETTLED'
+  | 'REJECTED';
 
 export interface InsuranceClaim extends ScopedEntity {
   claimNumber: string;
@@ -806,10 +860,34 @@ export interface DomainEventEnvelope<T = unknown> {
   data: T;
 }
 
-export interface AuditLogEntry extends ScopedEntity {
+/**
+ * `facilityId` is deliberately **not** inherited from {@link ScopedEntity}.
+ *
+ * `ScopedEntity` requires a facility because a bed, an encounter or an invoice
+ * belongs to exactly one. An audit event does not: `hims_audit.audit_events.facility_id`
+ * is a nullable foreign key, and `logBreakGlass` writes `ctx.facilityId ?? null`
+ * because a break-glass can be raised before a facility is known. Typing it as
+ * required would force the mapper to invent an identifier, and a fabricated one
+ * in an audit trail is worse than an honest gap.
+ *
+ * `Omit` rather than a redeclared property because TypeScript rejects widening
+ * an inherited required member to optional (TS2430).
+ */
+export interface AuditLogEntry extends Omit<ScopedEntity, 'facilityId'> {
+  /** Absent for tenant-scoped events raised before a facility was established. */
+  facilityId?: UUID | null;
   actorUserId: UUID;
   actorRole: string;
-  action: 'READ' | 'CREATE' | 'UPDATE' | 'DELETE' | 'FINALIZE' | 'SIGN' | 'DISPENSE' | 'BREAK_GLASS' | 'EXPORT';
+  action:
+    | 'READ'
+    | 'CREATE'
+    | 'UPDATE'
+    | 'DELETE'
+    | 'FINALIZE'
+    | 'SIGN'
+    | 'DISPENSE'
+    | 'BREAK_GLASS'
+    | 'EXPORT';
   resourceType: string;
   resourceId: UUID;
   patientId?: UUID;
@@ -955,10 +1033,7 @@ export interface ReportGenerateJob extends JobScope {
 }
 
 export type DocumentOperation =
-  | 'VERIFY_CHECKSUM'
-  | 'MALWARE_SCAN'
-  | 'RENDER_PREVIEW'
-  | 'AMEND_EMR_INDEX';
+  'VERIFY_CHECKSUM' | 'MALWARE_SCAN' | 'RENDER_PREVIEW' | 'AMEND_EMR_INDEX';
 
 export interface DocumentProcessJob extends JobScope {
   documentId: UUID;
@@ -1247,8 +1322,7 @@ export const HIMS_EVENT_TYPES = {
   ],
 } as const;
 
-export type HimsEventType =
-  (typeof HIMS_EVENT_TYPES)[keyof typeof HIMS_EVENT_TYPES][number];
+export type HimsEventType = (typeof HIMS_EVENT_TYPES)[keyof typeof HIMS_EVENT_TYPES][number];
 
 /**
  * Every catalogue event name, flattened once at module load.
@@ -1256,9 +1330,7 @@ export type HimsEventType =
  * A `Set` rather than an array `includes`: the relay calls this for every event
  * it claims, and an array is a linear scan across 160 strings per event.
  */
-const ALL_EVENT_TYPES: ReadonlySet<string> = new Set(
-  Object.values(HIMS_EVENT_TYPES).flat(),
-);
+const ALL_EVENT_TYPES: ReadonlySet<string> = new Set(Object.values(HIMS_EVENT_TYPES).flat());
 
 /**
  * Narrow an arbitrary string to a catalogue event type.

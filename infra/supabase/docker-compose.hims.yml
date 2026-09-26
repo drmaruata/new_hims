@@ -1,4 +1,0 @@
-services:
-  db:
-    volumes:
-      - ../../../supabase/migrations/20260925000000_hims_baseline.sql:/docker-entrypoint-initdb.d/init-scripts/zz-hims-baseline.sql:ro

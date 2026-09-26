@@ -2,8 +2,15 @@ import { z } from 'zod';
 
 export const GenderSchema = z.enum(['MALE', 'FEMALE', 'OTHER', 'UNKNOWN']);
 export const BloodGroupSchema = z.enum([
-  'A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE',
-  'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE', 'UNKNOWN'
+  'A_POSITIVE',
+  'A_NEGATIVE',
+  'B_POSITIVE',
+  'B_NEGATIVE',
+  'AB_POSITIVE',
+  'AB_NEGATIVE',
+  'O_POSITIVE',
+  'O_NEGATIVE',
+  'UNKNOWN',
 ]);
 
 export const RegisterPatientDtoSchema = z.object({
@@ -14,7 +21,7 @@ export const RegisterPatientDtoSchema = z.object({
   gender: GenderSchema,
   bloodGroup: BloodGroupSchema.optional(),
   mobile: z.string().regex(/^[6-9]\d{9}$/, 'Valid 10-digit Indian mobile number is required'),
-  email: z.string().email().optional().nullable(),
+  email: z.email().optional().nullable(),
   nationalIdType: z.enum(['AADHAAR', 'PAN', 'PASSPORT', 'VOTER_ID', 'ABHA', 'OTHER']).optional(),
   nationalIdNumber: z.string().optional().nullable(),
   abhaAddress: z.string().optional().nullable(),
@@ -108,7 +115,13 @@ export type CreateRadiologyOrderDto = z.infer<typeof CreateRadiologyOrderDtoSche
 export const TriageEmergencyDtoSchema = z.object({
   patientId: z.string().uuid(),
   arrivalMode: z.enum(['WALK_IN', 'AMBULANCE', 'POLICE', 'TRANSFER']),
-  triageAcuity: z.enum(['ESI_1_RESUSCITATION', 'ESI_2_EMERGENT', 'ESI_3_URGENT', 'ESI_4_LESS_URGENT', 'ESI_5_NON_URGENT']),
+  triageAcuity: z.enum([
+    'ESI_1_RESUSCITATION',
+    'ESI_2_EMERGENT',
+    'ESI_3_URGENT',
+    'ESI_4_LESS_URGENT',
+    'ESI_5_NON_URGENT',
+  ]),
   isMlc: z.boolean().default(false),
   mlcNumber: z.string().optional(),
   chiefComplaint: z.string().min(1),
@@ -132,7 +145,12 @@ export type CreateSurgeryCaseDto = z.infer<typeof CreateSurgeryCaseDtoSchema>;
 
 export const BreakGlassDtoSchema = z.object({
   patientId: z.string().uuid(),
-  reason: z.string().min(10, 'A valid clinical justification of at least 10 characters is required for break-glass emergency access'),
+  reason: z
+    .string()
+    .min(
+      10,
+      'A valid clinical justification of at least 10 characters is required for break-glass emergency access'
+    ),
 });
 
 export type BreakGlassDto = z.infer<typeof BreakGlassDtoSchema>;

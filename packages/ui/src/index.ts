@@ -8,4 +8,3 @@ export * from './components/clinical-alert';
 export * from './components/vitals-panel';
 export * from './components/bed-board';
 export * from './components/command-center-widget';
-

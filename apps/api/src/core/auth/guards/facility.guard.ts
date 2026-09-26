@@ -1,9 +1,4 @@
-﻿import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+﻿import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 
 import type { AuthenticatedUser } from '../auth.types.js';
 
@@ -30,11 +25,10 @@ export class FacilityGuard implements CanActivate {
 
     if (!user.activeFacilityId) {
       throw new ForbiddenException(
-        'This operation requires an active facility scope. Send X-Facility-Id for a facility you have access to.',
+        'This operation requires an active facility scope. Send X-Facility-Id for a facility you have access to.'
       );
     }
 
     return true;
   }
 }
-

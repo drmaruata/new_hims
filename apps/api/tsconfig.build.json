@@ -1,5 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
+  "compilerOptions": {
+    // Set here rather than in `tsconfig.json` because it only describes the
+    // emitted layout, and this is the config that emits: with `test/` and the
+    // specs excluded, `./src` is the only root that can contain every input, so
+    // `main.js` lands at `dist/main.js` rather than `dist/src/main.js`.
+    "rootDir": "./src"
+  },
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts", "src/test-setup.ts"]
 }

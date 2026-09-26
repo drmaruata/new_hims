@@ -43,8 +43,7 @@ export class TokenService {
   private readonly issuer: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.audience =
-      this.configService.get<string>('SUPABASE_JWT_AUDIENCE', 'authenticated');
+    this.audience = this.configService.get<string>('SUPABASE_JWT_AUDIENCE', 'authenticated');
     this.issuer =
       this.configService.get<string>('SUPABASE_JWT_ISSUER') ??
       `${this.configService.get<string>('SUPABASE_URL', 'http://localhost:54321').replace(/\/$/, '')}/auth/v1`;
@@ -61,11 +60,11 @@ export class TokenService {
       if (secret) {
         this.jwtSecret = new TextEncoder().encode(secret);
         this.logger.warn(
-          'SUPABASE_JWKS_URL is not set; falling back to HS256 verification with SUPABASE_JWT_SECRET. Prefer JWKS so keys can rotate.',
+          'SUPABASE_JWKS_URL is not set; falling back to HS256 verification with SUPABASE_JWT_SECRET. Prefer JWKS so keys can rotate.'
         );
       } else {
         this.logger.warn(
-          'No SUPABASE_JWKS_URL or SUPABASE_JWT_SECRET configured. All access tokens will be rejected until one is provided.',
+          'No SUPABASE_JWKS_URL or SUPABASE_JWT_SECRET configured. All access tokens will be rejected until one is provided.'
         );
       }
     }

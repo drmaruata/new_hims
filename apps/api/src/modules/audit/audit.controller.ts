@@ -1,14 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { z } from 'zod';
@@ -40,8 +32,9 @@ export class AuditController {
     summary: 'Query immutable audit log events (access, mutations, break-glass)',
   })
   async getEvents(
-    @Query('resourceId', new ZodValidationPipe(z.string().uuid().optional())) resourceId: string | undefined,
-    @DbContext() ctx: DatabaseContext,
+    @Query('resourceId', new ZodValidationPipe(z.string().uuid().optional()))
+    resourceId: string | undefined,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.auditService.getEvents(resourceId, ctx);
   }
@@ -49,13 +42,14 @@ export class AuditController {
   @Post('break-glass')
   @RequirePermissions('SYSTEM:BREAK_GLASS:USE:FACILITY')
   @ApiOperation({
-    summary: 'Log emergency break-glass clinical record access with required clinical justification',
+    summary:
+      'Log emergency break-glass clinical record access with required clinical justification',
   })
   async logBreakGlass(
     @Body(new ZodValidationPipe(BreakGlassDtoSchema)) input: BreakGlassDto,
     @CurrentUser() user: AuthenticatedUser,
     @ActiveFacilityId() facilityId: string,
-    @Req() request: Request,
+    @Req() request: Request
   ) {
     return this.auditService.logBreakGlass({
       patientId: input.patientId,
@@ -67,7 +61,9 @@ export class AuditController {
         isTenantAdmin: user.isTenantAdmin,
       },
       actorRole: user.roles[0] ?? 'UNKNOWN',
-      correlationId: String((request as Request & { correlationId?: string }).correlationId ?? randomUUID()),
+      correlationId: String(
+        (request as Request & { correlationId?: string }).correlationId ?? randomUUID()
+      ),
       ipAddress: request.ip,
       userAgent: request.get('user-agent') ?? undefined,
     });

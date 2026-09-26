@@ -8,4 +8,3 @@ import { CommandCenterService } from './command-center.service.js';
   exports: [CommandCenterService],
 })
 export class CommandCenterModule {}
-

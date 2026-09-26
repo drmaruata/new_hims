@@ -33,8 +33,6 @@ describe('ClinicalSafetyEngine', () => {
 
   it('does not flag an unrelated medication', () => {
     const unrelated = { ...item, drugName: 'Paracetamol' };
-    expect(
-      ClinicalSafetyEngine.checkPrescriptionAllergies([allergy], [unrelated]),
-    ).toHaveLength(0);
+    expect(ClinicalSafetyEngine.checkPrescriptionAllergies([allergy], [unrelated])).toHaveLength(0);
   });
 });

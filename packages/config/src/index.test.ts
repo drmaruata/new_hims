@@ -23,13 +23,13 @@ describe('loadEnv', () => {
 
   it('rejects missing tenant-sensitive hashing configuration', () => {
     expect(() => loadEnv({ ...base, PATIENT_IDENTIFIER_HASH_KEY: undefined })).toThrow(
-      'PATIENT_IDENTIFIER_HASH_KEY',
+      'PATIENT_IDENTIFIER_HASH_KEY'
     );
   });
 
   it('rejects production use of the development auth fallback', () => {
-    expect(() =>
-      loadEnv({ ...base, NODE_ENV: 'production', AUTH_DEV_FALLBACK: 'true' }),
-    ).toThrow('AUTH_DEV_FALLBACK');
+    expect(() => loadEnv({ ...base, NODE_ENV: 'production', AUTH_DEV_FALLBACK: 'true' })).toThrow(
+      'AUTH_DEV_FALLBACK'
+    );
   });
 });

@@ -2,7 +2,10 @@
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateRadiologyOrderDtoSchema, type CreateRadiologyOrderDto } from '@hims/validation';
 import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js';
-import { ActiveFacilityId, CurrentUser } from '../../core/auth/decorators/current-user.decorator.js';
+import {
+  ActiveFacilityId,
+  CurrentUser,
+} from '../../core/auth/decorators/current-user.decorator.js';
 import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
 import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
 import { SubmitRadiologyReportSchema, type SubmitRadiologyReportInput } from './dto/ris.dto.js';
@@ -27,7 +30,7 @@ export class RisController {
   async createOrder(
     @Body(new ZodValidationPipe(CreateRadiologyOrderDtoSchema)) input: CreateRadiologyOrderDto,
     @CurrentUser() user: AuthenticatedUser,
-    @ActiveFacilityId() facilityId: string,
+    @ActiveFacilityId() facilityId: string
   ) {
     const order = await this.risService.createOrder(input, user.tenantId, facilityId, user.userId);
     return order;
@@ -38,12 +41,9 @@ export class RisController {
   async submitReport(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(SubmitRadiologyReportSchema)) input: SubmitRadiologyReportInput,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     const order = await this.risService.submitReport(id, input, user.userId);
     return order;
   }
 }
-
-
-

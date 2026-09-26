@@ -25,7 +25,9 @@ export class CommandCenterService {
 
   async getMetrics(ctx: DatabaseContext): Promise<CommandCenterMetrics> {
     if (!ctx.tenantId) {
-      throw new ServiceUnavailableException('A tenant must be resolved to read command centre metrics');
+      throw new ServiceUnavailableException(
+        'A tenant must be resolved to read command centre metrics'
+      );
     }
 
     // The facility drives both the facility filter and the timezone, so it is
@@ -59,7 +61,7 @@ export class CommandCenterService {
 
   private async resolveFacility(
     ctx: DatabaseContext,
-    requestedId: string | null,
+    requestedId: string | null
   ): Promise<{ id: string; name: string; timezone: string }> {
     const facility = await this.db.one<{ id: string; name: string; timezone: string }>(
       `SELECT id, name, timezone
@@ -70,14 +72,14 @@ export class CommandCenterService {
         ORDER BY name
         LIMIT 1`,
       [ctx.tenantId, requestedId],
-      ctx,
+      ctx
     );
 
     if (!facility) {
       // Falling back to a tenant-wide roll-up would silently mix facilities and
       // present a number as a single site's. Failing is the honest answer.
       throw new ServiceUnavailableException(
-        'No active facility is available for this scope; command centre metrics are facility-scoped',
+        'No active facility is available for this scope; command centre metrics are facility-scoped'
       );
     }
 
@@ -95,7 +97,7 @@ export class CommandCenterService {
    */
   private async readOccupancy(
     ctx: DatabaseContext,
-    facilityId: string,
+    facilityId: string
   ): Promise<CommandCenterMetrics['occupancy']> {
     const row = await this.db.one<{
       totalBeds: number;
@@ -115,7 +117,7 @@ export class CommandCenterService {
           AND facility_id = $2
           AND status = 'ACTIVE'`,
       [ctx.tenantId, facilityId],
-      ctx,
+      ctx
     );
 
     const totalBeds = row?.totalBeds ?? 0;
@@ -126,8 +128,7 @@ export class CommandCenterService {
       occupiedBeds,
       // A division by zero on an unconfigured facility would be `NaN`, which
       // serialises to `null` and renders as a blank tile. Zero is the truth.
-      occupancyRate:
-        totalBeds === 0 ? 0 : Math.round((occupiedBeds / totalBeds) * 1000) / 10,
+      occupancyRate: totalBeds === 0 ? 0 : Math.round((occupiedBeds / totalBeds) * 1000) / 10,
       icuBedsOccupied: row?.icuBedsOccupied ?? 0,
       icuBedsTotal: row?.icuBedsTotal ?? 0,
     };
@@ -136,7 +137,7 @@ export class CommandCenterService {
   private async readOpd(
     ctx: DatabaseContext,
     facilityId: string,
-    timezone: string,
+    timezone: string
   ): Promise<CommandCenterMetrics['opd']> {
     const row = await this.db.one<{
       registeredToday: number;
@@ -169,7 +170,7 @@ export class CommandCenterService {
              AND q.consultation_started_at IS NOT NULL
              AND q.consultation_started_at >= (($3::text)::date::timestamp AT TIME ZONE $3)) AS "avgWaitTimeMinutes"`,
       [ctx.tenantId, facilityId, timezone],
-      ctx,
+      ctx
     );
 
     return {
@@ -178,16 +179,17 @@ export class CommandCenterService {
       waitingInQueue: row?.waitingInQueue ?? 0,
       // `null` means "nothing measured yet", which is different from zero and
       // must not be rendered as an average wait of zero minutes.
-      avgWaitTimeMinutes: row?.avgWaitTimeMinutes === null || row === null
-        ? null
-        : Math.round(row.avgWaitTimeMinutes * 10) / 10,
+      avgWaitTimeMinutes:
+        row?.avgWaitTimeMinutes === null || row === null
+          ? null
+          : Math.round(row.avgWaitTimeMinutes * 10) / 10,
     };
   }
 
   private async readEmergency(
     ctx: DatabaseContext,
     facilityId: string,
-    timezone: string,
+    timezone: string
   ): Promise<CommandCenterMetrics['emergency']> {
     const row = await this.db.one<{
       activePatients: number;
@@ -220,7 +222,7 @@ export class CommandCenterService {
              AND EXISTS (SELECT 1 FROM hims_clinical.encounters c
                           WHERE c.id = e.encounter_id AND c.facility_id = $2))    AS "avgTriageTimeMinutes"`,
       [ctx.tenantId, facilityId, timezone],
-      ctx,
+      ctx
     );
 
     return {
@@ -237,7 +239,7 @@ export class CommandCenterService {
   private async readOt(
     ctx: DatabaseContext,
     facilityId: string,
-    timezone: string,
+    timezone: string
   ): Promise<CommandCenterMetrics['ot']> {
     const row = await this.db.one<{
       casesScheduledToday: number;
@@ -271,7 +273,7 @@ export class CommandCenterService {
             FROM hims_ot.ot_rooms r
            WHERE r.tenant_id = $1 AND r.facility_id = $2 AND r.status = 'ACTIVE') AS "theatresTotal"`,
       [ctx.tenantId, facilityId, timezone],
-      ctx,
+      ctx
     );
 
     return {
@@ -291,7 +293,7 @@ export class CommandCenterService {
    * rather than being averaged into the pending count.
    */
   private async readDiagnostics(
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<CommandCenterMetrics['diagnostics']> {
     const row = await this.db.one<{
       pendingLabSamples: number;
@@ -314,7 +316,7 @@ export class CommandCenterService {
            WHERE i.tenant_id = $1
              AND i.status NOT IN ('COMPLETED', 'CANCELLED'))                    AS "pendingRadiologyReads"`,
       [ctx.tenantId],
-      ctx,
+      ctx
     );
 
     return {
@@ -335,7 +337,7 @@ export class CommandCenterService {
   private async readRevenue(
     ctx: DatabaseContext,
     facilityId: string,
-    timezone: string,
+    timezone: string
   ): Promise<CommandCenterMetrics['revenue']> {
     const dayStart = `(($3::text)::date::timestamp AT TIME ZONE $3)`;
 
@@ -369,7 +371,7 @@ export class CommandCenterService {
              AND EXISTS (SELECT 1 FROM hims_clinical.encounters c
                           WHERE c.id = p.encounter_id AND c.facility_id = $2))  AS "preAuthPending"`,
       [ctx.tenantId, facilityId, timezone],
-      ctx,
+      ctx
     );
 
     return {

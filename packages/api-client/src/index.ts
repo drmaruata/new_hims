@@ -17,7 +17,7 @@ import type {
   QualityIndicatorMeasurement,
   IncidentReport,
   ClinicalVitals,
-  PatientIdentifier
+  PatientIdentifier,
 } from '@hims/domain-types';
 
 /**
@@ -130,7 +130,7 @@ export class HimsApiClient {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
       // Ties the browser's failure to the server's log line. The server bounds
       // and sanitises whatever arrives on this header before echoing it.
       'X-Correlation-Id': crypto.randomUUID(),
@@ -164,10 +164,15 @@ export class HimsApiClient {
 
   // 1. Patient & Patient 360
   public patients = {
-    search: (query: string) => this.request<ApiResponse<Patient[]>>(`/patients?search=${encodeURIComponent(query)}`),
+    search: (query: string) =>
+      this.request<ApiResponse<Patient[]>>(`/patients?search=${encodeURIComponent(query)}`),
     getById: (id: string) => this.request<ApiResponse<Patient>>(`/patients/${id}`),
     get360: (id: string) => this.request<ApiResponse<Patient360Record>>(`/patients/${id}/360`),
-    register: (data: JsonRequestBody) => this.request<ApiResponse<Patient>>('/patients', { method: 'POST', body: JSON.stringify(data) }),
+    register: (data: JsonRequestBody) =>
+      this.request<ApiResponse<Patient>>('/patients', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     /**
      * The plaintext identifier is sent in the path so the server can HMAC it
      * against `patient_identifiers.value_hash`. That is a deliberate trade:
@@ -177,7 +182,7 @@ export class HimsApiClient {
      */
     findByIdentifier: (type: string, value: string) =>
       this.request<ApiResponse<Patient>>(
-        `/patients/identifier/${encodeURIComponent(type)}/${encodeURIComponent(value)}`,
+        `/patients/identifier/${encodeURIComponent(type)}/${encodeURIComponent(value)}`
       ),
     listIdentifiers: (id: string) =>
       this.request<ApiResponse<PatientIdentifier[]>>(`/patients/${id}/identifiers`),
@@ -202,7 +207,7 @@ export class HimsApiClient {
       if (params?.status) query.set('status', params.status);
       const suffix = query.toString();
       return this.request<ApiResponse<OpdAppointment[]>>(
-        `/opd/appointments${suffix ? `?${suffix}` : ''}`,
+        `/opd/appointments${suffix ? `?${suffix}` : ''}`
       );
     },
     checkIn: (id: string, date: string) =>
@@ -214,38 +219,71 @@ export class HimsApiClient {
 
   // 3. IPD Module
   public ipd = {
-    getBeds: (wardId?: string) => this.request<ApiResponse<Bed[]>>(`/ipd/beds?wardId=${wardId || ''}`),
+    getBeds: (wardId?: string) =>
+      this.request<ApiResponse<Bed[]>>(`/ipd/beds?wardId=${wardId || ''}`),
     getAdmissions: () => this.request<ApiResponse<IpdAdmission[]>>('/ipd/admissions'),
-    admit: (data: JsonRequestBody) => this.request<ApiResponse<IpdAdmission>>('/ipd/admissions', { method: 'POST', body: JSON.stringify(data) }),
-    recordVitals: (data: JsonRequestBody) => this.request<ApiResponse<ClinicalVitals>>('/ipd/vitals', { method: 'POST', body: JSON.stringify(data) }),
+    admit: (data: JsonRequestBody) =>
+      this.request<ApiResponse<IpdAdmission>>('/ipd/admissions', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    recordVitals: (data: JsonRequestBody) =>
+      this.request<ApiResponse<ClinicalVitals>>('/ipd/vitals', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   // 4. LIS Module
   public lis = {
-    getOrders: (status?: string) => this.request<ApiResponse<LabOrder[]>>(`/lab/orders?status=${status || ''}`),
-    createOrder: (data: JsonRequestBody) => this.request<ApiResponse<LabOrder>>('/lab/orders', { method: 'POST', body: JSON.stringify(data) }),
-    verifyResult: (orderId: string, testCode: string, resultData: JsonRequestBody) => 
-      this.request<ApiResponse<LabOrder>>(`/lab/orders/${orderId}/tests/${testCode}/verify`, { method: 'POST', body: JSON.stringify(resultData) }),
+    getOrders: (status?: string) =>
+      this.request<ApiResponse<LabOrder[]>>(`/lab/orders?status=${status || ''}`),
+    createOrder: (data: JsonRequestBody) =>
+      this.request<ApiResponse<LabOrder>>('/lab/orders', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    verifyResult: (orderId: string, testCode: string, resultData: JsonRequestBody) =>
+      this.request<ApiResponse<LabOrder>>(`/lab/orders/${orderId}/tests/${testCode}/verify`, {
+        method: 'POST',
+        body: JSON.stringify(resultData),
+      }),
   };
 
   // 5. RIS Module
   public ris = {
     getWorklist: () => this.request<ApiResponse<RadiologyOrder[]>>('/radiology/worklist'),
-    createOrder: (data: JsonRequestBody) => this.request<ApiResponse<RadiologyOrder>>('/radiology/orders', { method: 'POST', body: JSON.stringify(data) }),
-    submitReport: (orderId: string, reportData: JsonRequestBody) => 
-      this.request<ApiResponse<RadiologyOrder>>(`/radiology/orders/${orderId}/report`, { method: 'POST', body: JSON.stringify(reportData) }),
+    createOrder: (data: JsonRequestBody) =>
+      this.request<ApiResponse<RadiologyOrder>>('/radiology/orders', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    submitReport: (orderId: string, reportData: JsonRequestBody) =>
+      this.request<ApiResponse<RadiologyOrder>>(`/radiology/orders/${orderId}/report`, {
+        method: 'POST',
+        body: JSON.stringify(reportData),
+      }),
   };
 
   // 6. Emergency Department
   public emergency = {
     getActiveCases: () => this.request<ApiResponse<EmergencyEncounter[]>>('/emergency/cases'),
-    triage: (data: JsonRequestBody) => this.request<ApiResponse<EmergencyEncounter>>('/emergency/triage', { method: 'POST', body: JSON.stringify(data) }),
+    triage: (data: JsonRequestBody) =>
+      this.request<ApiResponse<EmergencyEncounter>>('/emergency/triage', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   // 7. OT Management
   public ot = {
-    getSchedule: (date?: string) => this.request<ApiResponse<SurgeryCase[]>>(`/ot/schedule?date=${date || ''}`),
-    bookCase: (data: JsonRequestBody) => this.request<ApiResponse<SurgeryCase>>('/ot/cases', { method: 'POST', body: JSON.stringify(data) }),
+    getSchedule: (date?: string) =>
+      this.request<ApiResponse<SurgeryCase[]>>(`/ot/schedule?date=${date || ''}`),
+    bookCase: (data: JsonRequestBody) =>
+      this.request<ApiResponse<SurgeryCase>>('/ot/cases', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   // 8. ICU Module
@@ -255,24 +293,43 @@ export class HimsApiClient {
 
   // 9. Pharmacy Module
   public pharmacy = {
-    getDispenseQueue: () => this.request<ApiResponse<PharmacyDispenseOrder[]>>('/pharmacy/dispense-queue'),
-    dispense: (orderId: string, data: JsonRequestBody) => this.request<ApiResponse<PharmacyDispenseOrder>>(`/pharmacy/dispense/${orderId}`, { method: 'POST', body: JSON.stringify(data) }),
+    getDispenseQueue: () =>
+      this.request<ApiResponse<PharmacyDispenseOrder[]>>('/pharmacy/dispense-queue'),
+    dispense: (orderId: string, data: JsonRequestBody) =>
+      this.request<ApiResponse<PharmacyDispenseOrder>>(`/pharmacy/dispense/${orderId}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   // 10. Insurance & Billing
   public billing = {
-    getInvoices: (patientId?: string) => this.request<ApiResponse<Invoice[]>>(`/billing/invoices?patientId=${patientId || ''}`),
-    createInvoice: (data: JsonRequestBody) => this.request<ApiResponse<Invoice>>('/billing/invoices', { method: 'POST', body: JSON.stringify(data) }),
+    getInvoices: (patientId?: string) =>
+      this.request<ApiResponse<Invoice[]>>(`/billing/invoices?patientId=${patientId || ''}`),
+    createInvoice: (data: JsonRequestBody) =>
+      this.request<ApiResponse<Invoice>>('/billing/invoices', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   public insurance = {
     getClaims: () => this.request<ApiResponse<InsuranceClaim[]>>('/insurance/claims'),
-    submitPreAuth: (data: JsonRequestBody) => this.request<ApiResponse<InsuranceClaim>>('/insurance/pre-auth', { method: 'POST', body: JSON.stringify(data) }),
+    submitPreAuth: (data: JsonRequestBody) =>
+      this.request<ApiResponse<InsuranceClaim>>('/insurance/pre-auth', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 
   // Quality OS
   public quality = {
-    getIndicators: () => this.request<ApiResponse<QualityIndicatorMeasurement[]>>('/quality/indicators'),
-    reportIncident: (data: JsonRequestBody) => this.request<ApiResponse<IncidentReport>>('/quality/incidents', { method: 'POST', body: JSON.stringify(data) }),
+    getIndicators: () =>
+      this.request<ApiResponse<QualityIndicatorMeasurement[]>>('/quality/indicators'),
+    reportIncident: (data: JsonRequestBody) =>
+      this.request<ApiResponse<IncidentReport>>('/quality/incidents', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 }

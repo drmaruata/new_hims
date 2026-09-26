@@ -30,7 +30,8 @@ function mapAuditRow(row: AuditRow): AuditLogEntry {
     patientId: row.patient_id ?? undefined,
     reason: typeof row.metadata_jsonb.reason === 'string' ? row.metadata_jsonb.reason : undefined,
     correlationId: row.correlation_id ?? '',
-    ipAddress: typeof row.metadata_jsonb.ipAddress === 'string' ? row.metadata_jsonb.ipAddress : undefined,
+    ipAddress:
+      typeof row.metadata_jsonb.ipAddress === 'string' ? row.metadata_jsonb.ipAddress : undefined,
     createdAt: row.occurred_at,
     updatedAt: row.occurred_at,
     version: 1,
@@ -41,10 +42,7 @@ function mapAuditRow(row: AuditRow): AuditLogEntry {
 export class AuditService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getEvents(
-    resourceId: string | undefined,
-    ctx: DatabaseContext,
-  ): Promise<AuditLogEntry[]> {
+  async getEvents(resourceId: string | undefined, ctx: DatabaseContext): Promise<AuditLogEntry[]> {
     const { rows } = await this.db.query<AuditRow>(
       `SELECT event_id,
               tenant_id,
@@ -63,7 +61,7 @@ export class AuditService {
         ORDER BY occurred_at DESC
         LIMIT 500`,
       [resourceId ?? null],
-      ctx,
+      ctx
     );
 
     return rows.map(mapAuditRow);
@@ -106,7 +104,7 @@ export class AuditService {
           patientId,
           JSON.stringify(metadata),
           correlationId,
-        ],
+        ]
       );
 
       await client.query(
@@ -116,7 +114,7 @@ export class AuditService {
          VALUES
           ($1, $2, $3, 'BREAK_GLASS', 'EMERGENCY',
            'AUDIT', NULL, true)`,
-        [ctx.tenantId, ctx.userId, patientId],
+        [ctx.tenantId, ctx.userId, patientId]
       );
 
       return mapAuditRow(audit.rows[0]);

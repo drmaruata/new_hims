@@ -7,15 +7,19 @@ import type { CreateInvoiceInput, InvoiceLineInput } from './dto/billing.dto.js'
 export class BillingService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getInvoices(patientId?: string, tenantId?: string, facilityId?: string | null): Promise<Invoice[]> {
+  async getInvoices(
+    patientId?: string,
+    tenantId?: string,
+    facilityId?: string | null
+  ): Promise<Invoice[]> {
     return [
       {
-        id: '18181818-1818-1818-1818-181818181801',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '18181818-1818-4818-8818-181818181801',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         invoiceNumber: 'INV-2026-00912',
-        patientId: patientId || '99999999-9999-9999-9999-999999999901',
-        encounterId: '77777777-7777-7777-7777-777777777701',
+        patientId: patientId || '99999999-9999-4999-8999-999999999901',
+        encounterId: '77777777-7777-4777-8777-777777777701',
         totalGrossAmount: 1250,
         discountAmount: 0,
         taxAmount: 0,
@@ -27,7 +31,7 @@ export class BillingService {
           {
             serviceCode: 'OPD_CONSULT',
             description: 'General Medicine Consultation Fee',
-            departmentId: '33333333-3333-3333-3333-333333333301',
+            departmentId: '33333333-3333-4333-8333-333333333301',
             quantity: 1,
             unitPrice: 500,
             netAmount: 500,
@@ -35,7 +39,7 @@ export class BillingService {
           {
             serviceCode: 'LAB_CBC',
             description: 'Complete Blood Count (CBC)',
-            departmentId: '33333333-3333-3333-3333-333333333307',
+            departmentId: '33333333-3333-4333-8333-333333333307',
             quantity: 1,
             unitPrice: 350,
             netAmount: 350,
@@ -43,7 +47,7 @@ export class BillingService {
           {
             serviceCode: 'RAD_XRAY_CHEST',
             description: 'Chest PA View X-Ray',
-            departmentId: '33333333-3333-3333-3333-333333333308',
+            departmentId: '33333333-3333-4333-8333-333333333308',
             quantity: 1,
             unitPrice: 400,
             netAmount: 400,
@@ -60,12 +64,12 @@ export class BillingService {
     data: CreateInvoiceInput,
     tenantId: string,
     facilityId: string,
-    cashierId: string,
+    cashierId: string
   ): Promise<Invoice> {
     const invoiceNumber = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     const total = data.items.reduce(
       (acc, item: InvoiceLineInput) => acc + item.quantity * item.unitPrice,
-      0,
+      0
     );
 
     return {
@@ -101,4 +105,3 @@ export class BillingService {
     };
   }
 }
-

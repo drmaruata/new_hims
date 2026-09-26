@@ -15,7 +15,7 @@ function readWorkerConcurrency(): number {
   const parsed = Number(raw);
   if (!Number.isInteger(parsed) || parsed < 1) {
     throw new Error(
-      `WORKER_CONCURRENCY must be a positive integer; got "${raw}". BullMQ would silently treat this as 1 and the queue would appear merely slow.`,
+      `WORKER_CONCURRENCY must be a positive integer; got "${raw}". BullMQ would silently treat this as 1 and the queue would appear merely slow.`
     );
   }
 

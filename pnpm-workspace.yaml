@@ -1,7 +1,7 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "supabase/*"
+  - 'apps/*'
+  - 'packages/*'
+  - 'supabase/*'
 
 # ---------------------------------------------------------------------------
 # Every version in the monorepo is pinned in `catalog:` below and referenced
@@ -30,7 +30,7 @@ overrides:
   # published (the 24.x line stops at 24.1.0), which makes the dependency tree
   # unresolvable. @types/node is types-only and 26.x is the line the toolchain
   # already targets, so forcing a single copy is both the fix and the intent.
-  "@types/node": ^26.6.2
+  '@types/node': ^26.6.2
 
   # The Expo SDK 57 animation/runtime trio, held on the React Native 0.86.3
   # line.
@@ -47,13 +47,13 @@ overrides:
   #
   # A wrong metro-config fails as a native link error, not an install error, so
   # an override is the only place this can be expressed.
-  "react-native-reanimated": ~4.5.1
-  "react-native-worklets": 0.10.1
-  "@react-native/metro-config": 0.86.3
+  'react-native-reanimated': ~4.5.1
+  'react-native-worklets': 0.10.1
+  '@react-native/metro-config': 0.86.3
   # Same cause: expo-router's optional dependency resolves gesture-handler to
   # 3.3.0, while SDK 57 bundles 2.32.x. 2.32.0 satisfies every dependent
   # (`react-native-drawer-layout` asks for `>= 2.0.0`).
-  "react-native-gesture-handler": ~2.32.0
+  'react-native-gesture-handler': ~2.32.0
 
 catalog:
   # Core runtime
@@ -65,19 +65,19 @@ catalog:
   neverthrow: ^8.2.0
 
   # Backend
-  "@nestjs/common": ^12.1.0
-  "@nestjs/core": ^12.1.0
-  "@nestjs/platform-express": ^12.1.0
-  "@nestjs/jwt": ^12.0.2
-  "@nestjs/passport": ^12.0.0
-  "@nestjs/swagger": ^12.0.2
-  "@nestjs/config": ^12.0.1
-  "@nestjs/microservices": ^12.1.0
-  "@nestjs/bullmq": ^12.0.0
-  "@nestjs/throttler": ^6.7.1
-  "@nestjs/terminus": ^12.1.0
-  "@nestjs/schematics": ^12.0.5
-  "@nestjs/testing": ^12.1.0
+  '@nestjs/common': ^12.1.0
+  '@nestjs/core': ^12.1.0
+  '@nestjs/platform-express': ^12.1.0
+  '@nestjs/jwt': ^12.0.2
+  '@nestjs/passport': ^12.0.0
+  '@nestjs/swagger': ^12.0.2
+  '@nestjs/config': ^12.0.1
+  '@nestjs/microservices': ^12.1.0
+  '@nestjs/bullmq': ^12.0.0
+  '@nestjs/throttler': ^6.7.1
+  '@nestjs/terminus': ^12.1.0
+  '@nestjs/schematics': ^12.0.5
+  '@nestjs/testing': ^12.1.0
   reflect-metadata: ^0.2.2
   rxjs: ^7.8.2
   passport: ^0.7.0
@@ -90,7 +90,7 @@ catalog:
   ioredis: ^6.0.0
   pg: ^8.23.0
   jose: ^6.2.12
-  "@supabase/supabase-js": ^2.117.2
+  '@supabase/supabase-js': ^2.117.2
   nats: ^2.29.3
   kafkajs: ^2.2.4
   pino: ^10.3.1
@@ -99,14 +99,14 @@ catalog:
   next: ^16.3.6
   react: ^19.3.0
   react-dom: ^19.3.0
-  "@tanstack/react-query": ^5.103.2
-  "@tanstack/react-table": ^9.2.4
-  "react-hook-form": ^7.88.0
-  "@hookform/resolvers": ^5.9.1
+  '@tanstack/react-query': ^5.103.2
+  '@tanstack/react-table': ^9.2.4
+  'react-hook-form': ^7.88.0
+  '@hookform/resolvers': ^5.9.1
   tailwindcss: ^4.3.3
-  "@tailwindcss/postcss": ^4.3.3
-  "@tailwindcss/forms": ^0.5.11
-  "@tailwindcss/typography": ^0.5.20
+  '@tailwindcss/postcss': ^4.3.3
+  '@tailwindcss/forms': ^0.5.11
+  '@tailwindcss/typography': ^0.5.20
   clsx: ^2.1.1
   tailwind-merge: ^3.7.0
   lucide-react: ^1.48.0
@@ -115,54 +115,54 @@ catalog:
   vaul: ^1.1.2
   embla-carousel-react: ^8.6.0
   recharts: ^3.10.1
-  "react-day-picker": ^10.0.1
-  "input-otp": ^1.5.0
-  "next-themes": ^0.4.6
+  'react-day-picker': ^10.0.1
+  'input-otp': ^1.5.0
+  'next-themes': ^0.4.6
 
   # Mobile — Expo SDK 57 (react-native 0.86.3)
   expo: ^57.0.25
-  "expo-router": ^57.0.23
-  "react-native": 0.86.3
-  "react-native-gesture-handler": ~2.32.0
-  "react-native-reanimated": ~4.5.1
+  'expo-router': ^57.0.23
+  'react-native': 0.86.3
+  'react-native-gesture-handler': ~2.32.0
+  'react-native-reanimated': ~4.5.1
   # Reanimated 4 declares an exact peer on worklets 0.10.x, and the SDK pins
   # worklets to an exact 0.10.1. Note the 0.10.x line stops at 0.10.4, so a
   # hand-written "latest-looking" 0.10.x is a version that never existed.
-  "react-native-worklets": 0.10.1
-  "react-native-safe-area-context": ~5.7.0
-  "react-native-screens": ~4.26.0
-  "react-native-web": ^0.21.3
-  "@react-native-async-storage/async-storage": 2.2.0
-  "expo-secure-store": ~57.0.4
-  "expo-local-authentication": ~57.0.3
-  "expo-notifications": ~57.0.21
-  "expo-device": ~57.0.2
-  "expo-constants": ~57.0.19
-  "expo-status-bar": ~57.0.1
-  "expo-font": ~57.0.4
-  "expo-linking": ~57.0.11
-  "expo-web-browser": ~57.0.3
-  "expo-auth-session": ~57.0.13
-  "expo-image": ~57.0.5
-  "expo-file-system": ~57.0.7
-  "expo-sharing": ~57.0.22
-  "expo-haptics": ~57.0.3
-  "expo-network": ~57.0.2
-  "expo-crypto": ~57.0.3
+  'react-native-worklets': 0.10.1
+  'react-native-safe-area-context': ~5.7.0
+  'react-native-screens': ~4.26.0
+  'react-native-web': ^0.21.3
+  '@react-native-async-storage/async-storage': 2.2.0
+  'expo-secure-store': ~57.0.4
+  'expo-local-authentication': ~57.0.3
+  'expo-notifications': ~57.0.21
+  'expo-device': ~57.0.2
+  'expo-constants': ~57.0.19
+  'expo-status-bar': ~57.0.1
+  'expo-font': ~57.0.4
+  'expo-linking': ~57.0.11
+  'expo-web-browser': ~57.0.3
+  'expo-auth-session': ~57.0.13
+  'expo-image': ~57.0.5
+  'expo-file-system': ~57.0.7
+  'expo-sharing': ~57.0.22
+  'expo-haptics': ~57.0.3
+  'expo-network': ~57.0.2
+  'expo-crypto': ~57.0.3
   # Replaces the retired `expo-barcode-scanner`: SDK 57 ships barcode and QR
   # scanning inside expo-camera, and the old package is not in the SDK's
   # bundledNativeModules.json, so it can only fail to link.
-  "expo-camera": ~57.0.5
-  "expo-image-picker": ~57.0.20
-  "@react-native-community/netinfo": 12.0.1
-  "@expo/metro-runtime": ~57.0.16
-  "@expo/vector-icons": ^15.0.2
+  'expo-camera': ~57.0.5
+  'expo-image-picker': ~57.0.20
+  '@react-native-community/netinfo': 12.0.1
+  '@expo/metro-runtime': ~57.0.16
+  '@expo/vector-icons': ^15.0.2
 
   # Testing
   vitest: ^5.0.2
-  "@vitest/ui": ^5.0.2
+  '@vitest/ui': ^5.0.2
   playwright: ^1.63.0
-  "@playwright/test": ^1.63.0
+  '@playwright/test': ^1.63.0
   msw: ^2.15.0
   supertest: ^7.3.0
   jest: ^30.5.2
@@ -172,47 +172,47 @@ catalog:
   # that generates types from openapi.yaml and never reads a tsconfig, so the
   # unmet peer is inert. `pnpm peers check` reports it; that is expected.
   openapi-typescript: ^7.13.0
-  "@testing-library/react": ^16.3.3
-  "@testing-library/jest-dom": ^7.0.1
-  "@testing-library/user-event": ^14.6.7
+  '@testing-library/react': ^16.3.3
+  '@testing-library/jest-dom': ^7.0.1
+  '@testing-library/user-event': ^14.6.7
   jsdom: ^30.1.1
 
   # Dev tools
-  "@types/node": ^26.6.2
-  "@types/react": ^19.3.0
-  "@types/react-dom": ^19.3.0
+  '@types/node': ^26.6.2
+  '@types/react': ^19.3.0
+  '@types/react-dom': ^19.3.0
   # No @types/react-native: React Native ships its own types since 0.71.
-  "@types/pg": ^8.23.1
-  "@types/passport-jwt": ^4.0.1
-  "@types/compression": ^1.8.1
-  "@types/supertest": ^7.2.1
-  "@types/jest": ^30.0.0
-  "@types/js-yaml": ^4.0.9
-  "@types/express": ^5.0.6
+  '@types/pg': ^8.23.1
+  '@types/passport-jwt': ^4.0.1
+  '@types/compression': ^1.8.1
+  '@types/supertest': ^7.2.1
+  '@types/jest': ^30.0.0
+  '@types/js-yaml': ^4.0.9
+  '@types/express': ^5.0.6
   # ESLint is 9.39.5, not 10.11.0 — see the exceptions block at the top of this
   # file. One ESLint major across the workspace is worth more than the newest
   # one, because the alternative is apps/web pinning its own older eslint and
   # maintaining a second flat config.
   eslint: ~9.39.5
   # Published in lockstep with ESLint majors; 9.x latest is 9.39.2.
-  "@eslint/js": ~9.39.2
+  '@eslint/js': ~9.39.2
   # Next 16's own flat config. Next 16 removed `next lint`, so this is the only
   # supported way to lint a Next app. It hard-depends on eslint-plugin-react,
   # -jsx-a11y and -import, all of which cap their eslint peer at ^9 and have no
   # newer release. That, not a choice made here, is what holds ESLint at 9.
   eslint-config-next: ^16.3.6
-  "typescript-eslint": ^8.70.1
-  "eslint-config-prettier": ^10.1.8
-  "eslint-plugin-unused-imports": ^4.4.1
+  'typescript-eslint': ^8.70.1
+  'eslint-config-prettier': ^10.1.8
+  'eslint-plugin-unused-imports': ^4.4.1
   # Loaded by eslint.config.base.mjs, not by any package's own config, so they
   # are root dependencies. The React plugin resolves the installed React version
   # rather than being told one, so a React bump needs no change here.
-  "eslint-plugin-react": ^7.37.5
-  "eslint-plugin-react-hooks": ^7.1.1
-  "eslint-plugin-jsx-a11y": ^6.10.2
+  'eslint-plugin-react': ^7.37.5
+  'eslint-plugin-react-hooks': ^7.1.1
+  'eslint-plugin-jsx-a11y': ^6.10.2
   globals: ^17.12.0
   prettier: ^3.9.9
-  "prettier-plugin-tailwindcss": ^0.8.1
+  'prettier-plugin-tailwindcss': ^0.8.1
   lint-staged: ^17.5.1
   husky: ^9.1.7
   turbo: ^2.11.4
@@ -222,14 +222,14 @@ catalog:
   concurrently: ^10.0.5
 
   # Observability
-  "@opentelemetry/api": ^1.9.1
-  "@opentelemetry/sdk-node": ^0.222.0
-  "@opentelemetry/auto-instrumentations-node": ^0.80.0
-  "@opentelemetry/exporter-trace-otlp-grpc": ^0.222.0
-  "@opentelemetry/exporter-metrics-otlp-grpc": ^0.222.0
-  "@opentelemetry/resources": ^2.11.0
-  "@opentelemetry/semantic-conventions": ^1.43.0
-  "@sentry/node": ^11.0.0
+  '@opentelemetry/api': ^1.9.1
+  '@opentelemetry/sdk-node': ^0.222.0
+  '@opentelemetry/auto-instrumentations-node': ^0.80.0
+  '@opentelemetry/exporter-trace-otlp-grpc': ^0.222.0
+  '@opentelemetry/exporter-metrics-otlp-grpc': ^0.222.0
+  '@opentelemetry/resources': ^2.11.0
+  '@opentelemetry/semantic-conventions': ^1.43.0
+  '@sentry/node': ^11.0.0
 
   # Utilities
   axios: ^1.20.0

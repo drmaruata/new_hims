@@ -25,7 +25,7 @@ import { OutboxRelayService } from './outbox-relay.service.js';
       { name: HIMS_QUEUES.EMR },
       { name: HIMS_QUEUES.AI },
       { name: HIMS_QUEUES.BULK_IMPORT },
-      { name: HIMS_QUEUES.INTEGRATION },
+      { name: HIMS_QUEUES.INTEGRATION }
     ),
   ],
   providers: [OutboxRelayService, DocumentsProcessor],

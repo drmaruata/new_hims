@@ -150,15 +150,21 @@ export function CommandCenterDashboard() {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-slate-500">Pending Lab Samples</span>
-              <span className="font-bold text-rose-600">{metrics.diagnostics.pendingLabSamples}</span>
+              <span className="font-bold text-rose-600">
+                {metrics.diagnostics.pendingLabSamples}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Critical Lab Alerts</span>
-              <span className="font-bold text-amber-600">{metrics.diagnostics.criticalLabAlerts}</span>
+              <span className="font-bold text-amber-600">
+                {metrics.diagnostics.criticalLabAlerts}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Pending Radiology Reads</span>
-              <span className="font-bold text-blue-600">{metrics.diagnostics.pendingRadiologyReads}</span>
+              <span className="font-bold text-blue-600">
+                {metrics.diagnostics.pendingRadiologyReads}
+              </span>
             </div>
           </div>
         </div>

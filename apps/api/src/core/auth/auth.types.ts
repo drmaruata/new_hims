@@ -37,7 +37,7 @@ export type PermissionPattern = string;
 
 export function matchesPermission(
   granted: readonly string[],
-  required: PermissionPattern,
+  required: PermissionPattern
 ): boolean {
   if (granted.length === 0) return false;
   if (granted.includes('*')) return true;

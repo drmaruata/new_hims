@@ -8,22 +8,14 @@ import { StateMachine } from '../../core/state-machine/state-machine.js';
  * closed encounter is rejected without needing a special case.
  */
 
-export const ENCOUNTER_STATES = [
-  'OPEN',
-  'IN_PROGRESS',
-  'SIGNED',
-  'CLOSED',
-] as const;
+export const ENCOUNTER_STATES = ['OPEN', 'IN_PROGRESS', 'SIGNED', 'CLOSED'] as const;
 export type EncounterState = (typeof ENCOUNTER_STATES)[number];
 
-export const encounterMachine = new StateMachine<EncounterState, string>(
-  'encounter',
-  [
-    { event: 'start', from: ['OPEN'], to: 'IN_PROGRESS' },
-    { event: 'sign', from: ['IN_PROGRESS'], to: 'SIGNED' },
-    { event: 'close', from: ['SIGNED'], to: 'CLOSED' },
-  ],
-);
+export const encounterMachine = new StateMachine<EncounterState, string>('encounter', [
+  { event: 'start', from: ['OPEN'], to: 'IN_PROGRESS' },
+  { event: 'sign', from: ['IN_PROGRESS'], to: 'SIGNED' },
+  { event: 'close', from: ['SIGNED'], to: 'CLOSED' },
+]);
 
 export const APPOINTMENT_STATES = [
   'SCHEDULED',
@@ -37,18 +29,15 @@ export const APPOINTMENT_STATES = [
 ] as const;
 export type AppointmentState = (typeof APPOINTMENT_STATES)[number];
 
-export const appointmentMachine = new StateMachine<AppointmentState, string>(
-  'appointment',
-  [
-    { event: 'confirm', from: ['SCHEDULED'], to: 'CONFIRMED' },
-    { event: 'checkIn', from: ['CONFIRMED', 'SCHEDULED'], to: 'CHECKED_IN' },
-    { event: 'queue', from: ['CHECKED_IN'], to: 'IN_QUEUE' },
-    { event: 'startConsultation', from: ['IN_QUEUE'], to: 'IN_CONSULTATION' },
-    { event: 'complete', from: ['IN_CONSULTATION'], to: 'COMPLETED' },
-    { event: 'cancel', from: ['SCHEDULED', 'CONFIRMED'], to: 'CANCELLED' },
-    { event: 'noShow', from: ['SCHEDULED', 'CONFIRMED'], to: 'NO_SHOW' },
-  ],
-);
+export const appointmentMachine = new StateMachine<AppointmentState, string>('appointment', [
+  { event: 'confirm', from: ['SCHEDULED'], to: 'CONFIRMED' },
+  { event: 'checkIn', from: ['CONFIRMED', 'SCHEDULED'], to: 'CHECKED_IN' },
+  { event: 'queue', from: ['CHECKED_IN'], to: 'IN_QUEUE' },
+  { event: 'startConsultation', from: ['IN_QUEUE'], to: 'IN_CONSULTATION' },
+  { event: 'complete', from: ['IN_CONSULTATION'], to: 'COMPLETED' },
+  { event: 'cancel', from: ['SCHEDULED', 'CONFIRMED'], to: 'CANCELLED' },
+  { event: 'noShow', from: ['SCHEDULED', 'CONFIRMED'], to: 'NO_SHOW' },
+]);
 
 export const LAB_SPECIMEN_STATES = [
   'ORDERED',
@@ -59,15 +48,12 @@ export const LAB_SPECIMEN_STATES = [
 ] as const;
 export type LabSpecimenState = (typeof LAB_SPECIMEN_STATES)[number];
 
-export const labSpecimenMachine = new StateMachine<LabSpecimenState, string>(
-  'lab specimen',
-  [
-    { event: 'collect', from: ['ORDERED'], to: 'COLLECTED' },
-    { event: 'receive', from: ['COLLECTED'], to: 'RECEIVED' },
-    { event: 'process', from: ['RECEIVED'], to: 'PROCESSING' },
-    { event: 'complete', from: ['PROCESSING'], to: 'COMPLETED' },
-  ],
-);
+export const labSpecimenMachine = new StateMachine<LabSpecimenState, string>('lab specimen', [
+  { event: 'collect', from: ['ORDERED'], to: 'COLLECTED' },
+  { event: 'receive', from: ['COLLECTED'], to: 'RECEIVED' },
+  { event: 'process', from: ['RECEIVED'], to: 'PROCESSING' },
+  { event: 'complete', from: ['PROCESSING'], to: 'COMPLETED' },
+]);
 
 export const CLAIM_STATES = [
   'DRAFT',

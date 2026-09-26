@@ -13,25 +13,25 @@ export class AiController {
   constructor(private readonly aiService: AiGatewayService) {}
 
   @Post('copilot/doctor')
-  @ApiOperation({ summary: 'Execute Doctor Copilot clinical summary & differential diagnosis suggestion' })
+  @ApiOperation({
+    summary: 'Execute Doctor Copilot clinical summary & differential diagnosis suggestion',
+  })
   async doctorCopilot(
     @Body() promptDto: { patientId: string; chiefComplaint: string },
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
-    const response = await this.aiService.executeDoctorCopilot(promptDto.patientId, promptDto.chiefComplaint, user.userId);
+    const response = await this.aiService.executeDoctorCopilot(
+      promptDto.patientId,
+      promptDto.chiefComplaint,
+      user.userId
+    );
     return response;
   }
 
   @Post('copilot/nursing-handover')
   @ApiOperation({ summary: 'Generate structured SBAR nursing shift handover summary' })
-  async nursingHandover(
-    @Body() body: { wardId: string },
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
+  async nursingHandover(@Body() body: { wardId: string }, @CurrentUser() user: AuthenticatedUser) {
     const response = await this.aiService.generateNursingHandover(body.wardId, user.userId);
     return response;
   }
 }
-
-
-

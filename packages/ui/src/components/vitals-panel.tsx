@@ -38,31 +38,42 @@ export function VitalsPanel({ vitals }: VitalsPanelProps) {
             <span className="text-xs text-slate-500 flex items-center justify-center gap-1">
               <Heart className="h-3 w-3 text-rose-500" /> Pulse
             </span>
-            <span className="text-lg font-bold text-slate-800">{vitals.pulseBpm ?? '—'} <span className="text-xs font-normal text-slate-500">bpm</span></span>
+            <span className="text-lg font-bold text-slate-800">
+              {vitals.pulseBpm ?? '—'}{' '}
+              <span className="text-xs font-normal text-slate-500">bpm</span>
+            </span>
           </div>
           <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
             <span className="text-xs text-slate-500 flex items-center justify-center gap-1">
               <Activity className="h-3 w-3 text-blue-500" /> BP
             </span>
             <span className="text-lg font-bold text-slate-800">
-              {vitals.systolicBp && vitals.diastolicBp ? `${vitals.systolicBp}/${vitals.diastolicBp}` : '—'} <span className="text-xs font-normal text-slate-500">mmHg</span>
+              {vitals.systolicBp && vitals.diastolicBp
+                ? `${vitals.systolicBp}/${vitals.diastolicBp}`
+                : '—'}{' '}
+              <span className="text-xs font-normal text-slate-500">mmHg</span>
             </span>
           </div>
           <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
             <span className="text-xs text-slate-500 flex items-center justify-center gap-1">
               <Droplet className="h-3 w-3 text-sky-500" /> SpO₂
             </span>
-            <span className="text-lg font-bold text-slate-800">{vitals.oxygenSaturationSpO2 ?? '—'} <span className="text-xs font-normal text-slate-500">%</span></span>
+            <span className="text-lg font-bold text-slate-800">
+              {vitals.oxygenSaturationSpO2 ?? '—'}{' '}
+              <span className="text-xs font-normal text-slate-500">%</span>
+            </span>
           </div>
           <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
             <span className="text-xs text-slate-500 flex items-center justify-center gap-1">
               <Thermometer className="h-3 w-3 text-amber-500" /> Temp
             </span>
-            <span className="text-lg font-bold text-slate-800">{vitals.temperatureCelsius ?? '—'} <span className="text-xs font-normal text-slate-500">°C</span></span>
+            <span className="text-lg font-bold text-slate-800">
+              {vitals.temperatureCelsius ?? '—'}{' '}
+              <span className="text-xs font-normal text-slate-500">°C</span>
+            </span>
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
-

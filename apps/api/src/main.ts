@@ -4,21 +4,12 @@ import { Logger } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import compression from 'compression';
-import helmet from 'helmet';
 
 import { loadEnv } from '@hims/config';
 
 import { AppModule } from './app.module.js';
+import { configureApp, GLOBAL_PREFIX } from './http-app.config.js';
 import { setupSentry } from './core/observability/sentry.js';
-
-/**
- * API version lives in the global prefix rather than Nest's URI versioning, so
- * the path a client is written against is fixed at `/api/v1` and a future
- * `/api/v2` is added by mounting a second prefix, not by a decorator that can
- * be forgotten on a new controller.
- */
-const GLOBAL_PREFIX = 'api/v1';
 
 const SWAGGER_TAGS: ReadonlyArray<[string, string]> = [
   ['Platform', 'Tenant, facility, department, user and role management'],
@@ -69,56 +60,9 @@ async function bootstrap(): Promise<void> {
   const nodeEnv = env.NODE_ENV;
   const isProduction = nodeEnv === 'production';
 
-  // The API terminates TLS at the ingress but sits behind one or more proxies.
-  // Without this, `req.ip` is the proxy's address, which collapses every
-  // client's rate-limit bucket into one and makes client IPs in the audit log
-  // useless. The hop count is configuration because the deployment decides how
-  // many proxies there are; 0 means the app is exposed directly.
-  app.set('trust proxy', env.TRUST_PROXY_HOPS);
-
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          scriptSrc: ["'self'"],
-          imgSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'", 'https:', 'wss:'],
-          fontSrc: ["'self'"],
-          objectSrc: ["'none'"],
-          frameAncestors: ["'none'"],
-        },
-      },
-      // Required so the Swagger UI page can load its inline stylesheet; the API
-      // itself serves no user content, so this does not weaken the CSP above.
-      crossOriginEmbedderPolicy: false,
-    }),
-  );
-
-  app.use(compression());
-
-  app.enableCors({
-    // An explicit allow-list, never `*`: the browser sends the Supabase session
-    // cookie and a wildcard origin is rejected outright when credentials are on.
-    origin: env.CORS_ORIGIN.split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean),
-    credentials: env.CORS_CREDENTIALS,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Correlation-Id',
-      'X-Facility-Id',
-      'Idempotency-Key',
-      'If-Match',
-    ],
-    exposedHeaders: ['X-Correlation-Id', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
-    maxAge: 600,
-  });
-
-  app.setGlobalPrefix(GLOBAL_PREFIX);
+  // Shared with the integration suite in `test/`, so the paths, headers and CORS
+  // behaviour asserted there are the ones this process actually serves.
+  configureApp(app, env);
 
   // No global ValidationPipe: every route validates its own Zod schema through
   // ZodValidationPipe, and a global class-validator pass would be a second,
@@ -154,7 +98,7 @@ function buildOpenApiConfig() {
     .setVersion('1.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'supabase-jwt',
+      'supabase-jwt'
     );
 
   for (const [tag, description] of SWAGGER_TAGS) {
@@ -168,6 +112,9 @@ bootstrap().catch((error: unknown) => {
   // Without this, a failure during config validation or module resolution is an
   // unhandled rejection: the process exits with no explanation in the platform
   // logs, which is exactly the failure this needs to make diagnosable.
-  new Logger('Bootstrap').error('Failed to start the API', error instanceof Error ? error.stack : error);
+  new Logger('Bootstrap').error(
+    'Failed to start the API',
+    error instanceof Error ? error.stack : error
+  );
   process.exit(1);
 });

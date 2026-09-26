@@ -1,11 +1,6 @@
 ﻿import { createHmac, randomBytes } from 'node:crypto';
 
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { PoolClient } from 'pg';
 
@@ -38,13 +33,7 @@ const UHID_COLLISION_RETRIES = 3;
  * index — a plaintext Aadhaar or ABHA number is a searchable identifier column,
  * which is precisely what a column-level redaction policy is meant to prevent.
  */
-type HashedIdentifierType =
-  | 'ABHA'
-  | 'AADHAAR'
-  | 'VOTER_ID'
-  | 'PASSPORT'
-  | 'PAN'
-  | 'DL';
+type HashedIdentifierType = 'ABHA' | 'AADHAAR' | 'VOTER_ID' | 'PASSPORT' | 'PAN' | 'DL';
 
 /**
  * The one projection every patient read uses.
@@ -100,7 +89,7 @@ export class PatientService {
 
   constructor(
     private readonly db: DatabaseService,
-    config: ConfigService,
+    config: ConfigService
   ) {
     this.identifierHashKey = config.getOrThrow<string>('PATIENT_IDENTIFIER_HASH_KEY');
   }
@@ -121,11 +110,7 @@ export class PatientService {
    * An empty term returns the 50 most recently touched patients rather than
    * the whole tenant, which is what the reception desk wants on first paint.
    */
-  async search(
-    term: string | undefined,
-    ctx: DatabaseContext,
-    limit?: number,
-  ): Promise<Patient[]> {
+  async search(term: string | undefined, ctx: DatabaseContext, limit?: number): Promise<Patient[]> {
     const trimmed = (term ?? '').trim();
     const capped = Math.min(limit ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 
@@ -150,16 +135,14 @@ export class PatientService {
         ORDER BY p.updated_at DESC, p.uhid ASC
         LIMIT $3`,
       [prefix, asMobile, capped],
-      ctx,
+      ctx
     );
 
     // Identifier hits are resolved with a second query rather than a join: a
     // patient may hold several documents, so joining would duplicate the row
     // and blow the limit with one person. The two result sets are merged and
     // de-duplicated by id, because the same patient can match both.
-    const byIdentifier = digest
-      ? await this.findByIdentifierHash(digest, ctx, capped)
-      : [];
+    const byIdentifier = digest ? await this.findByIdentifierHash(digest, ctx, capped) : [];
 
     const merged = new Map<string, Patient>();
     for (const row of [...rows.map(toPatient), ...byIdentifier]) {
@@ -176,7 +159,7 @@ export class PatientService {
          FROM hims_patient.patients p
         WHERE p.id = $1`,
       [id],
-      ctx,
+      ctx
     );
 
     // 404 is identical whether the row is absent or hidden by RLS, so this
@@ -200,7 +183,7 @@ export class PatientService {
   async findByIdentifier(
     identifierType: HashedIdentifierType,
     value: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient | null> {
     const row = await this.db.one<PatientRow>(
       `SELECT ${PATIENT_PROJECTION}
@@ -214,7 +197,7 @@ export class PatientService {
         ORDER BY i.is_primary DESC, i.verified_at DESC NULLS LAST
         LIMIT 1`,
       [ctx.tenantId, identifierType, this.hashIdentifier(value)],
-      ctx,
+      ctx
     );
 
     return row ? toPatient(row) : null;
@@ -244,7 +227,7 @@ export class PatientService {
         WHERE patient_id = $1
         ORDER BY is_primary DESC, identifier_type`,
       [patientId],
-      ctx,
+      ctx
     );
 
     return rows;
@@ -263,15 +246,14 @@ export class PatientService {
     const patient = await this.getById(id, ctx);
 
     return this.db.transaction<Patient360Record>(async (client) => {
-      const [allergies, contacts, conditions, encounters, vitals, timeline] =
-        await Promise.all([
-          this.readAllergies(client, id, ctx),
-          this.readContacts(client, id, ctx),
-          this.readConditions(client, id, ctx),
-          this.readOpenEncounters(client, id, ctx),
-          this.readRecentVitals(client, id, ctx),
-          this.readTimeline(client, id, ctx),
-        ]);
+      const [allergies, contacts, conditions, encounters, vitals, timeline] = await Promise.all([
+        this.readAllergies(client, id, ctx),
+        this.readContacts(client, id, ctx),
+        this.readConditions(client, id, ctx),
+        this.readOpenEncounters(client, id, ctx),
+        this.readRecentVitals(client, id, ctx),
+        this.readTimeline(client, id, ctx),
+      ]);
 
       return {
         patient: { ...patient, allergies, contacts },
@@ -298,14 +280,13 @@ export class PatientService {
    * accepting a client-supplied value would let the searchable name drift from
    * the structured name parts.
    */
-  async register(
-    input: RegisterPatientInput,
-    ctx: DatabaseContext,
-  ): Promise<Patient> {
+  async register(input: RegisterPatientInput, ctx: DatabaseContext): Promise<Patient> {
     if (!ctx.tenantId || !ctx.userId) {
       // Reaching here means a guard was bypassed. Failing closed is the only
       // safe response: `tenant_id` is `NOT NULL` and is RLS-checked.
-      throw new BadRequestException('A resolved tenant and user are required to register a patient');
+      throw new BadRequestException(
+        'A resolved tenant and user are required to register a patient'
+      );
     }
 
     const displayName = buildDisplayName(input);
@@ -317,7 +298,10 @@ export class PatientService {
         try {
           return await this.insertPatient(client, { ...input, uhid, displayName }, ctx);
         } catch (error) {
-          if (!isUniqueViolation(error, 'ux_patients_tenant_uhid') || attempt === UHID_COLLISION_RETRIES) {
+          if (
+            !isUniqueViolation(error, 'ux_patients_tenant_uhid') ||
+            attempt === UHID_COLLISION_RETRIES
+          ) {
             throw error;
           }
           this.logger.warn(`UHID collision on attempt ${attempt}, retrying`);
@@ -332,7 +316,7 @@ export class PatientService {
   private async insertPatient(
     client: PoolClient,
     input: RegisterPatientInput & { uhid: string; displayName: string },
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient> {
     const { rows } = await client.query<PatientRow>(
       `INSERT INTO hims_patient.patients (
@@ -371,7 +355,7 @@ export class PatientService {
         input.preferredLanguage ?? null,
         input.communicationPreference ?? null,
         ctx.userId,
-      ],
+      ]
     );
 
     const created = rows[0];
@@ -394,7 +378,7 @@ export class PatientService {
     client: PoolClient,
     patientId: string,
     identifiers: readonly NewPatientIdentifier[],
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<void> {
     for (const [index, identifier] of identifiers.entries()) {
       await client.query(
@@ -410,7 +394,7 @@ export class PatientService {
           this.hashIdentifier(identifier.value),
           // The first identifier is the primary one; an explicit flag wins.
           identifier.isPrimary ?? index === 0,
-        ],
+        ]
       );
     }
   }
@@ -418,7 +402,7 @@ export class PatientService {
   private async readAllergies(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient360Record['allergies']> {
     const { rows } = await client.query<{
       id: string;
@@ -444,7 +428,7 @@ export class PatientService {
           CASE verification_status WHEN 'UNVERIFIED' THEN 0 ELSE 1 END,
           severity DESC NULLS LAST,
           recorded_at DESC`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
     return rows.map((row) => ({
@@ -461,7 +445,7 @@ export class PatientService {
   private async readContacts(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient360Record['contacts']> {
     const { rows } = await client.query<{
       id: string;
@@ -475,7 +459,7 @@ export class PatientService {
          FROM hims_patient.patient_contacts
         WHERE tenant_id = $1 AND patient_id = $2
         ORDER BY emergency_contact_flag DESC, name`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
     // A contact with no number cannot be reached in an emergency, and
@@ -496,7 +480,7 @@ export class PatientService {
   private async readOpenEncounters(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Encounter[]> {
     const { rows } = await client.query<{
       id: string;
@@ -537,7 +521,7 @@ export class PatientService {
           AND e.status NOT IN ('CANCELLED', 'DISCHARGED', 'COMPLETED')
         ORDER BY e.started_at DESC
         LIMIT 25`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
     // `attending_practitioner_id` is nullable in the schema but `Encounter`
@@ -563,7 +547,7 @@ export class PatientService {
   private async readRecentVitals(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient360Record['recentVitals']> {
     const { rows } = await client.query<{
       id: string;
@@ -600,33 +584,35 @@ export class PatientService {
         GROUP BY o.patient_id, o.observed_at
         ORDER BY o.observed_at DESC
         LIMIT 20`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
-    return rows
-      // Same nullable-column problem as the attending practitioner: the schema
-      // allows observations with no performer (a monitor relaying from a
-      // device), and `ClinicalVitals.recordedBy` is not optional.
-      .filter((row) => row.encounterId !== null && row.recordedBy !== null)
-      .map((row) => ({
-        id: row.id,
-        encounterId: row.encounterId as string,
-        patientId: row.patientId,
-        recordedAt: row.recordedAt,
-        recordedBy: row.recordedBy as string,
-        temperatureCelsius: row.temperatureCelsius ?? undefined,
-        pulseBpm: row.pulseBpm ?? undefined,
-        systolicBp: row.systolicBp ?? undefined,
-        diastolicBp: row.diastolicBp ?? undefined,
-        respiratoryRate: row.respiratoryRate ?? undefined,
-        oxygenSaturationSpO2: row.oxygenSaturationSpO2 ?? undefined,
-      }));
+    return (
+      rows
+        // Same nullable-column problem as the attending practitioner: the schema
+        // allows observations with no performer (a monitor relaying from a
+        // device), and `ClinicalVitals.recordedBy` is not optional.
+        .filter((row) => row.encounterId !== null && row.recordedBy !== null)
+        .map((row) => ({
+          id: row.id,
+          encounterId: row.encounterId as string,
+          patientId: row.patientId,
+          recordedAt: row.recordedAt,
+          recordedBy: row.recordedBy as string,
+          temperatureCelsius: row.temperatureCelsius ?? undefined,
+          pulseBpm: row.pulseBpm ?? undefined,
+          systolicBp: row.systolicBp ?? undefined,
+          diastolicBp: row.diastolicBp ?? undefined,
+          respiratoryRate: row.respiratoryRate ?? undefined,
+          oxygenSaturationSpO2: row.oxygenSaturationSpO2 ?? undefined,
+        }))
+    );
   }
 
   private async readConditions(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient360Record['conditions']> {
     const { rows } = await client.query<{
       id: string;
@@ -651,7 +637,7 @@ export class PatientService {
           -- must not outrank something the clinician has to act on today.
           CASE status WHEN 'ACTIVE' THEN 0 WHEN 'CHRONIC' THEN 1 ELSE 2 END,
           onset_date DESC NULLS LAST`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
     return rows;
@@ -660,7 +646,7 @@ export class PatientService {
   private async readTimeline(
     client: PoolClient,
     patientId: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<Patient360Record['timeline']> {
     const { rows } = await client.query<{
       id: string;
@@ -686,7 +672,7 @@ export class PatientService {
         WHERE tenant_id = $1 AND patient_id = $2
         ORDER BY occurred_at DESC, id DESC
         LIMIT 100`,
-      [ctx.tenantId, patientId],
+      [ctx.tenantId, patientId]
     );
 
     return rows.map((row) => ({
@@ -704,7 +690,7 @@ export class PatientService {
   private async findByIdentifierHash(
     digest: string,
     ctx: DatabaseContext,
-    limit: number,
+    limit: number
   ): Promise<Patient[]> {
     const { rows } = await this.db.query<PatientRow>(
       `SELECT DISTINCT ${PATIENT_PROJECTION}
@@ -715,7 +701,7 @@ export class PatientService {
           AND i.value_hash = $2
         LIMIT $3`,
       [ctx.tenantId, digest, limit],
-      ctx,
+      ctx
     );
 
     return rows.map(toPatient);

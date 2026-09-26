@@ -22,7 +22,9 @@ const nodeEnv = z.enum(['development', 'test', 'staging', 'production']);
  */
 const booleanish = z
   .union([z.boolean(), z.string()])
-  .transform((v) => (typeof v === 'boolean' ? v : ['1', 'true', 'yes', 'on'].includes(v.toLowerCase())));
+  .transform((v) =>
+    typeof v === 'boolean' ? v : ['1', 'true', 'yes', 'on'].includes(v.toLowerCase())
+  );
 
 const port = z.coerce.number().int().positive().max(65535);
 
@@ -227,7 +229,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
 
   if (!env.SUPABASE_JWKS_URL && !env.SUPABASE_JWT_SECRET) {
     throw new Error(
-      'Set SUPABASE_JWKS_URL (preferred) or SUPABASE_JWT_SECRET so access tokens can be verified',
+      'Set SUPABASE_JWKS_URL (preferred) or SUPABASE_JWT_SECRET so access tokens can be verified'
     );
   }
 

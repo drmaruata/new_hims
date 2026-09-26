@@ -82,7 +82,7 @@ export class FacilityService {
    */
   async list(
     ctx: DatabaseContext,
-    options: { isTenantAdmin: boolean; facilityIds: string[]; limit: number; status?: string },
+    options: { isTenantAdmin: boolean; facilityIds: string[]; limit: number; status?: string }
   ): Promise<PaginatedResult<FacilityRecord>> {
     const params: unknown[] = [ctx.tenantId];
     const filters = ['tenant_id = $1'];
@@ -109,7 +109,7 @@ export class FacilityService {
         ORDER BY name
         LIMIT $${params.length}`,
       params,
-      ctx,
+      ctx
     );
 
     return this.toPage(rows, options.limit);
@@ -119,7 +119,7 @@ export class FacilityService {
     const facility = await this.db.one<FacilityRecord>(
       `SELECT ${FACILITY_COLUMNS} FROM hims_core.facilities WHERE id = $1`,
       [id],
-      ctx,
+      ctx
     );
     if (!facility) throw new NotFoundException('Facility not found');
     return facility;
@@ -145,13 +145,13 @@ export class FacilityService {
           JSON.stringify(input.settings ?? {}),
           ctx.userId ?? null,
         ],
-        ctx,
+        ctx
       )
       .catch((error: unknown) => {
         // 23505 = unique_violation on (tenant_id, facility_code)
         if ((error as { code?: string }).code === '23505') {
           throw new ConflictException(
-            `Facility code "${input.facilityCode}" is already in use in this tenant`,
+            `Facility code "${input.facilityCode}" is already in use in this tenant`
           );
         }
         throw error;
@@ -163,7 +163,7 @@ export class FacilityService {
   async update(
     id: string,
     input: UpdateFacilityInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<FacilityRecord> {
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -177,9 +177,12 @@ export class FacilityService {
     if (input.hfrId !== undefined) push('hfr_id', input.hfrId);
     if (input.timezone !== undefined) push('timezone', input.timezone);
     if (input.status !== undefined) push('status', input.status);
-    if (input.address !== undefined) push('address_jsonb', JSON.stringify(input.address), '::jsonb');
-    if (input.contact !== undefined) push('contact_jsonb', JSON.stringify(input.contact), '::jsonb');
-    if (input.settings !== undefined) push('settings_jsonb', JSON.stringify(input.settings), '::jsonb');
+    if (input.address !== undefined)
+      push('address_jsonb', JSON.stringify(input.address), '::jsonb');
+    if (input.contact !== undefined)
+      push('contact_jsonb', JSON.stringify(input.contact), '::jsonb');
+    if (input.settings !== undefined)
+      push('settings_jsonb', JSON.stringify(input.settings), '::jsonb');
     if (input.version !== undefined) push('version', input.version);
 
     if (sets.length === 0) return this.getById(id, ctx);
@@ -192,7 +195,7 @@ export class FacilityService {
         WHERE id = $${params.length}
         RETURNING ${FACILITY_COLUMNS}`,
       params,
-      ctx,
+      ctx
     );
 
     if (!facility) throw new NotFoundException('Facility not found');
@@ -202,7 +205,7 @@ export class FacilityService {
   async listDepartments(
     facilityId: string,
     ctx: DatabaseContext,
-    limit: number,
+    limit: number
   ): Promise<PaginatedResult<DepartmentRecord>> {
     const { rows } = await this.db.query<DepartmentRecord>(
       `SELECT id, tenant_id AS "tenantId", facility_id AS "facilityId",
@@ -215,7 +218,7 @@ export class FacilityService {
         ORDER BY name
         LIMIT $2`,
       [facilityId, limit + 1],
-      ctx,
+      ctx
     );
     return this.toPage(rows, limit);
   }
@@ -223,7 +226,7 @@ export class FacilityService {
   async listLocations(
     facilityId: string,
     ctx: DatabaseContext,
-    limit: number,
+    limit: number
   ): Promise<PaginatedResult<LocationRecord>> {
     const { rows } = await this.db.query<LocationRecord>(
       `SELECT id, facility_id AS "facilityId", parent_location_id AS "parentLocationId",
@@ -234,7 +237,7 @@ export class FacilityService {
         ORDER BY code
         LIMIT $2`,
       [facilityId, limit + 1],
-      ctx,
+      ctx
     );
     return this.toPage(rows, limit);
   }

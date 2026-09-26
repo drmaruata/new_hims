@@ -1,16 +1,8 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  Pool,
-  PoolClient,
-  QueryResult,
-  QueryResultRow,
-} from 'pg';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+
+import { assertDatabaseContext } from './context.js';
 
 /**
  * Tenant scope for one unit of work.
@@ -69,11 +61,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
      * different size sets it in its own `ConfigModule` and gets a different
      * pool from its own instantiation of this provider.
      */
-    poolSizeKey = 'DATABASE_POOL_MAX',
+    poolSizeKey = 'DATABASE_POOL_MAX'
   ) {
     const databaseUrl = this.configService.get<string>('DATABASE_URL');
     if (!databaseUrl) {
-      throw new Error('DATABASE_URL is required; refusing to fall back to a privileged PostgreSQL account');
+      throw new Error(
+        'DATABASE_URL is required; refusing to fall back to a privileged PostgreSQL account'
+      );
     }
 
     this.pool = new Pool({
@@ -91,9 +85,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       const client = await this.pool.connect();
       try {
-        const { rows } = await client.query<{ version: string }>(
-          'SELECT version()',
-        );
+        const { rows } = await client.query<{ version: string }>('SELECT version()');
         this.logger.log(`Connected to ${rows[0].version.split(',')[0]}`);
         this.ready = true;
       } finally {
@@ -103,9 +95,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       // Do not crash the process: `/health/ready` reports the degraded state
       // and the rest of the platform (auth JWKS, redis, integrations) still
       // boots. A crash here would turn a database blip into a restart loop.
-      this.logger.warn(
-        `Initial database connection failed: ${(error as Error).message}`,
-      );
+      this.logger.warn(`Initial database connection failed: ${(error as Error).message}`);
     }
   }
 
@@ -143,24 +133,15 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    * makes the isolation hold even when application code forgets an explicit
    * `WHERE tenant_id = $1`.
    */
-  private async applyTenantContext(
-    client: PoolClient,
-    ctx: DatabaseContext,
-  ): Promise<void> {
+  private async applyTenantContext(client: PoolClient, ctx: DatabaseContext): Promise<void> {
     assertDatabaseContext(ctx);
 
-    await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [
-      ctx.tenantId,
-    ]);
+    await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [ctx.tenantId]);
     if (ctx.userId) {
-      await client.query(`SELECT set_config('app.user_id', $1, true)`, [
-        ctx.userId,
-      ]);
+      await client.query(`SELECT set_config('app.user_id', $1, true)`, [ctx.userId]);
     }
     if (ctx.facilityId) {
-      await client.query(`SELECT set_config('app.facility_id', $1, true)`, [
-        ctx.facilityId,
-      ]);
+      await client.query(`SELECT set_config('app.facility_id', $1, true)`, [ctx.facilityId]);
     }
     if (ctx.facilityIds) {
       await client.query(`SELECT set_config('app.facility_ids', $1, true)`, [
@@ -183,13 +164,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    * property, not an accident: forgetting the tenant makes the query return
    * nothing rather than everything.
    */
-  private async applyUserContext(
-    client: PoolClient,
-    userId: string,
-  ): Promise<void> {
+  private async applyUserContext(client: PoolClient, userId: string): Promise<void> {
     if (!userId) {
       throw new Error(
-        'queryForUser requires a userId. It scopes on app.user_id, so an empty value would match no rows and look like a missing record rather than a bug.',
+        'queryForUser requires a userId. It scopes on app.user_id, so an empty value would match no rows and look like a missing record rather than a bug.'
       );
     }
     await client.query(`SELECT set_config('app.user_id', $1, true)`, [userId]);
@@ -199,12 +177,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params: readonly unknown[] = [],
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<QueryResult<T>> {
-    return this.transaction(
-      async (client) => client.query<T>(text, params as unknown[]),
-      ctx,
-    );
+    return this.transaction(async (client) => client.query<T>(text, params as unknown[]), ctx);
   }
 
   /**
@@ -215,14 +190,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    * is not overhead, it is the only way the GUCs can be set transaction-locally
    * and guaranteed not to survive onto the next borrower of the connection.
    */
-  async transaction<T>(
-    fn: (client: PoolClient) => Promise<T>,
-    ctx: DatabaseContext,
-  ): Promise<T> {
-    return this.withConnection(
-      (client) => this.applyTenantContext(client, ctx),
-      fn,
-    );
+  async transaction<T>(fn: (client: PoolClient) => Promise<T>, ctx: DatabaseContext): Promise<T> {
+    return this.withConnection((client) => this.applyTenantContext(client, ctx), fn);
   }
 
   /**
@@ -243,11 +212,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async queryForUser<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params: readonly unknown[],
-    userId: string,
+    userId: string
   ): Promise<QueryResult<T>> {
     return this.withConnection(
       (client) => this.applyUserContext(client, userId),
-      (client) => client.query<T>(text, params as unknown[]),
+      (client) => client.query<T>(text, params as unknown[])
     );
   }
 
@@ -258,7 +227,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    */
   private async withConnection<T>(
     applyContext: (client: PoolClient) => Promise<void>,
-    fn: (client: PoolClient) => Promise<T>,
+    fn: (client: PoolClient) => Promise<T>
   ): Promise<T> {
     const client = await this.pool.connect();
     try {
@@ -279,7 +248,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async one<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params: readonly unknown[] = [],
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<T | null> {
     const { rows } = await this.query<T>(text, params, ctx);
     return rows[0] ?? null;

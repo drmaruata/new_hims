@@ -8,4 +8,3 @@ import { IntegrationService } from './integration.service.js';
   exports: [IntegrationService],
 })
 export class IntegrationModule {}
-

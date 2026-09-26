@@ -1,4 +1,13 @@
-﻿import { BadRequestException, Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+﻿import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
@@ -31,9 +40,7 @@ const RegisterQuerySchema = z
   })
   .strict();
 
-const CheckInSchema = z
-  .object({ date: BusinessDateSchema })
-  .strict();
+const CheckInSchema = z.object({ date: BusinessDateSchema }).strict();
 
 @ApiTags('OPD')
 @ApiBearerAuth()
@@ -53,7 +60,7 @@ export class OpdController {
   })
   async getAppointments(
     @Query(new ZodValidationPipe(RegisterQuerySchema)) query: RegisterQueryInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.opdService.getAppointments(query.date, query.departmentId, ctx);
   }
@@ -70,11 +77,11 @@ export class OpdController {
     @Param('id', new ZodValidationPipe(z.uuid())) id: string,
     @Body(new ZodValidationPipe(CheckInSchema)) body: CheckInInput,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() _user: AuthenticatedUser,
+    @CurrentUser() _user: AuthenticatedUser
   ) {
     if (!ctx.facilityIds?.length) {
       throw new BadRequestException(
-        'Checking a patient in requires a facility scope; send X-Facility-Id',
+        'Checking a patient in requires a facility scope; send X-Facility-Id'
       );
     }
 

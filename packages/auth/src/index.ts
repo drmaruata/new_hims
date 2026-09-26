@@ -19,7 +19,7 @@ export class PolicyEngine {
 
   public static hasAnyPermission(context: UserAuthContext, permissionCodes: string[]): boolean {
     if (context.isTenantAdmin) return true;
-    return permissionCodes.some(code => this.hasPermission(context, code));
+    return permissionCodes.some((code) => this.hasPermission(context, code));
   }
 
   public static hasRole(context: UserAuthContext, roleCode: string): boolean {
@@ -32,7 +32,6 @@ export class PolicyEngine {
     return context.facilityId === targetFacilityId;
   }
 }
-
 
 /**
  * Browser Supabase Auth client factory.

@@ -23,10 +23,7 @@ import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe.js';
 import { DEFAULT_PAGE_SIZE } from '../../core/interfaces/paginated-result.js';
 import type { AuthenticatedUser } from '../../core/auth/auth.types.js';
 import type { DatabaseContext } from '@hims/database';
-import {
-  CreateDepartmentDtoSchema,
-  UpdateDepartmentDtoSchema,
-} from './dto/department.dto.js';
+import { CreateDepartmentDtoSchema, UpdateDepartmentDtoSchema } from './dto/department.dto.js';
 
 @ApiTags('Platform')
 @ApiBearerAuth()
@@ -42,7 +39,7 @@ export class DepartmentController {
     @DbContext() ctx: DatabaseContext,
     @Query('facilityId') facilityId: string | undefined,
     @Query('status') status: string | undefined,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.departmentService.list(ctx, {
       facilityId,
@@ -56,7 +53,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Create a department' })
   async create(
     @Body(new ZodValidationPipe(CreateDepartmentDtoSchema)) body: unknown,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.departmentService.create(body as never, ctx);
   }
@@ -67,7 +64,7 @@ export class DepartmentController {
   async get(
     @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     const department = await this.departmentService.getById(departmentId, ctx);
 
@@ -87,7 +84,7 @@ export class DepartmentController {
   async update(
     @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
     @Body(new ZodValidationPipe(UpdateDepartmentDtoSchema)) body: unknown,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.departmentService.update(departmentId, body as never, ctx);
   }

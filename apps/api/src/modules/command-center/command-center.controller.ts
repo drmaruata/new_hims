@@ -32,10 +32,7 @@ export class CommandCenterController {
       "facility's own timezone. No cache: a stale command centre number is worse " +
       'than a slow one.',
   })
-  async getMetrics(
-    @DbContext() ctx: DatabaseContext,
-    @CurrentUser() _user: AuthenticatedUser,
-  ) {
+  async getMetrics(@DbContext() ctx: DatabaseContext, @CurrentUser() _user: AuthenticatedUser) {
     return this.commandCenterService.getMetrics(ctx);
   }
 }

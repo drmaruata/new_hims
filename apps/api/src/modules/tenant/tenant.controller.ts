@@ -33,7 +33,7 @@ export class TenantController {
   async get(
     @Param('tenantId', new ParseUUIDPipe()) tenantId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     // A caller may only read the tenant their membership resolved to.
     this.assertOwn(tenantId, user);
@@ -46,7 +46,7 @@ export class TenantController {
   async getSettings(
     @Param('tenantId', new ParseUUIDPipe()) tenantId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     this.assertOwn(tenantId, user);
     return this.tenantService.getSettings(tenantId, ctx);
@@ -59,7 +59,7 @@ export class TenantController {
     @Param('tenantId', new ParseUUIDPipe()) tenantId: string,
     @Body(new ZodValidationPipe(UpdateTenantDtoSchema)) dto: UpdateTenantDto,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     this.assertOwn(tenantId, user);
     return this.tenantService.updateOwn(tenantId, dto, ctx);
@@ -71,7 +71,7 @@ export class TenantController {
   async facilities(
     @Param('tenantId', new ParseUUIDPipe()) tenantId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     this.assertOwn(tenantId, user);
     return this.tenantService.listFacilities(tenantId, ctx);

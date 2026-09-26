@@ -13,12 +13,11 @@ export class IcuController {
   constructor(private readonly icuService: IcuService) {}
 
   @Get('episodes')
-  @ApiOperation({ summary: 'Get active ICU patient episodes, flowsheet data and ventilator monitoring' })
+  @ApiOperation({
+    summary: 'Get active ICU patient episodes, flowsheet data and ventilator monitoring',
+  })
   async getEpisodes(@CurrentUser() user: AuthenticatedUser) {
     const episodes = await this.icuService.getEpisodes(user.tenantId, user.activeFacilityId);
     return episodes;
   }
 }
-
-
-

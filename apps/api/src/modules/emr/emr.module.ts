@@ -8,4 +8,3 @@ import { EmrService } from './emr.service.js';
   exports: [EmrService],
 })
 export class EmrModule {}
-

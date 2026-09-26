@@ -1,9 +1,4 @@
-﻿import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+﻿import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator.js';
@@ -22,10 +17,10 @@ export class PermissionsGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const required = this.reflector.getAllAndOverride<PermissionPattern[]>(
-      PERMISSIONS_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const required = this.reflector.getAllAndOverride<PermissionPattern[]>(PERMISSIONS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (!required || required.length === 0) return true;
 
@@ -42,16 +37,13 @@ export class PermissionsGuard implements CanActivate {
     if (user.isTenantAdmin) return true;
 
     const missing = required.filter(
-      (permission) => !matchesPermission(user.permissions, permission),
+      (permission) => !matchesPermission(user.permissions, permission)
     );
 
     if (missing.length > 0) {
-      throw new ForbiddenException(
-        `Missing required permission: ${missing.join(', ')}`,
-      );
+      throw new ForbiddenException(`Missing required permission: ${missing.join(', ')}`);
     }
 
     return true;
   }
 }
-

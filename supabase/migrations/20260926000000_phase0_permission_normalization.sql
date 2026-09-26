@@ -75,7 +75,7 @@ WHERE code IN (
 );
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'DOCTOR'
   AND p.code IN (
@@ -88,7 +88,7 @@ WHERE r.code = 'DOCTOR'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'NURSE'
   AND p.code IN (
@@ -99,28 +99,28 @@ WHERE r.code = 'NURSE'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'PHARMACIST'
   AND p.code IN ('PATIENT:DEMOGRAPHICS:READ:FACILITY','PHARMACY:DISPENSE:EXECUTE:FACILITY','QUALITY:INCIDENT:REPORT:FACILITY')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'PATHOLOGIST'
   AND p.code IN ('PATIENT:DEMOGRAPHICS:READ:FACILITY','LAB:RESULT:VERIFY:FACILITY','QUALITY:INCIDENT:REPORT:FACILITY')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'RADIOLOGIST'
   AND p.code IN ('PATIENT:DEMOGRAPHICS:READ:FACILITY','RADIOLOGY:REPORT:SIGN:FACILITY','QUALITY:INCIDENT:REPORT:FACILITY')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
-SELECT '11111111-1111-1111-1111-111111111111', r.id, p.code
+SELECT '11111111-1111-4111-8111-111111111111', r.id, p.code
 FROM hims_core.roles r, hims_core.permissions p
 WHERE r.code = 'ADMIN'
   AND p.code IN (

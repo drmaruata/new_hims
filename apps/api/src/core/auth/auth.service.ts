@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { DatabaseService } from '@hims/database';
@@ -59,13 +54,13 @@ export class AuthService {
 
   constructor(
     private readonly db: DatabaseService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async resolve(
     claims: SupabaseJwtClaims,
     requestedTenantId?: string,
-    requestedFacilityId?: string,
+    requestedFacilityId?: string
   ): Promise<AuthenticatedUser> {
     const userId = claims.sub;
     if (!userId) {
@@ -75,9 +70,7 @@ export class AuthService {
     const memberships = await this.loadMemberships(userId);
 
     if (memberships.length === 0) {
-      throw new ForbiddenException(
-        'This account is not a member of any HIMS tenant',
-      );
+      throw new ForbiddenException('This account is not a member of any HIMS tenant');
     }
 
     const membership = requestedTenantId
@@ -99,14 +92,13 @@ export class AuthService {
     // loader below runs with an explicit `{ tenantId, userId }` context rather
     // than relying on an ambient one.
 
-    const [roles, permissions, facilities, departments, profile] =
-      await Promise.all([
-        this.loadRoles(userId, tenantId),
-        this.loadPermissions(userId, tenantId),
-        this.loadFacilities(userId, tenantId),
-        this.loadDepartments(userId, tenantId),
-        this.loadProfile(userId, tenantId),
-      ]);
+    const [roles, permissions, facilities, departments, profile] = await Promise.all([
+      this.loadRoles(userId, tenantId),
+      this.loadPermissions(userId, tenantId),
+      this.loadFacilities(userId, tenantId),
+      this.loadDepartments(userId, tenantId),
+      this.loadProfile(userId, tenantId),
+    ]);
 
     const facilityIds = facilities.map((f) => f.facility_id);
 
@@ -115,9 +107,7 @@ export class AuthService {
     }
 
     if (facilityIds.length === 0 && !membership.is_tenant_admin) {
-      this.logger.debug(
-        `User ${userId} has no explicit facility grants in tenant ${tenantId}`,
-      );
+      this.logger.debug(`User ${userId} has no explicit facility grants in tenant ${tenantId}`);
     }
 
     return {
@@ -162,15 +152,12 @@ export class AuthService {
           AND t.status = 'ACTIVE'
         ORDER BY m.tenant_id`,
       [userId],
-      userId,
+      userId
     );
     return rows;
   }
 
-  private async loadRoles(
-    userId: string,
-    tenantId: string,
-  ): Promise<string[]> {
+  private async loadRoles(userId: string, tenantId: string): Promise<string[]> {
     const { rows } = await this.db.query<RoleRow>(
       `SELECT DISTINCT r.code AS role_code
          FROM hims_core.user_roles ur
@@ -183,15 +170,12 @@ export class AuthService {
           AND (ur.active_to IS NULL OR ur.active_to > now())
         ORDER BY r.code`,
       [tenantId, userId],
-      { tenantId, userId },
+      { tenantId, userId }
     );
     return rows.map((r) => r.role_code);
   }
 
-  private async loadPermissions(
-    userId: string,
-    tenantId: string,
-  ): Promise<string[]> {
+  private async loadPermissions(userId: string, tenantId: string): Promise<string[]> {
     const { rows } = await this.db.query<PermissionRow>(
       `SELECT DISTINCT rp.permission_code
          FROM hims_core.user_roles ur
@@ -205,52 +189,43 @@ export class AuthService {
           AND (ur.active_to IS NULL OR ur.active_to > now())
         ORDER BY rp.permission_code`,
       [tenantId, userId],
-      { tenantId, userId },
+      { tenantId, userId }
     );
     return rows.map((p) => p.permission_code);
   }
 
-  private async loadFacilities(
-    userId: string,
-    tenantId: string,
-  ): Promise<FacilityRow[]> {
+  private async loadFacilities(userId: string, tenantId: string): Promise<FacilityRow[]> {
     const { rows } = await this.db.query<FacilityRow>(
       `SELECT facility_id
          FROM hims_core.user_facility_access
         WHERE tenant_id = $1 AND user_id = $2
         ORDER BY facility_id`,
       [tenantId, userId],
-      { tenantId, userId },
+      { tenantId, userId }
     );
     return rows;
   }
 
-  private async loadDepartments(
-    userId: string,
-    tenantId: string,
-  ): Promise<DepartmentRow[]> {
+  private async loadDepartments(userId: string, tenantId: string): Promise<DepartmentRow[]> {
     const { rows } = await this.db.query<DepartmentRow>(
       `SELECT department_id
          FROM hims_core.user_department_access
         WHERE tenant_id = $1 AND user_id = $2
         ORDER BY department_id`,
       [tenantId, userId],
-      { tenantId, userId },
+      { tenantId, userId }
     );
     return rows;
   }
 
-  private async loadProfile(
-    userId: string,
-    tenantId: string,
-  ): Promise<ProfileRow | null> {
+  private async loadProfile(userId: string, tenantId: string): Promise<ProfileRow | null> {
     return this.db.one<ProfileRow>(
       `SELECT display_name, email
          FROM hims_core.user_profiles
         WHERE tenant_id = $1 AND user_id = $2
         LIMIT 1`,
       [tenantId, userId],
-      { tenantId, userId },
+      { tenantId, userId }
     );
   }
 
@@ -263,19 +238,18 @@ export class AuthService {
     if (!this.configService.get<string>('AUTH_DEV_FALLBACK')) return null;
 
     return {
-      userId: '11111111-1111-1111-1111-111111111111',
+      userId: '11111111-1111-4111-8111-111111111111',
       email: 'dev.user@hims.local',
       displayName: 'Development User',
-      tenantId: '11111111-1111-1111-1111-111111111111',
+      tenantId: '11111111-1111-4111-8111-111111111111',
       tenantCode: 'HIMS-DEV',
       roles: ['TENANT_ADMIN'],
       permissions: ['*'],
-      facilityIds: ['22222222-2222-2222-2222-222222222221'],
+      facilityIds: ['22222222-2222-4222-8222-222222222221'],
       departmentIds: [],
-      activeFacilityId: '22222222-2222-2222-2222-222222222221',
+      activeFacilityId: '22222222-2222-4222-8222-222222222221',
       isTenantAdmin: true,
       mfaVerified: false,
     };
   }
 }
-

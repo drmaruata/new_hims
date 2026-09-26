@@ -26,12 +26,9 @@ export class PharmacyController {
   async dispense(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(DispenseMedicationSchema)) input: DispenseMedicationInput,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     const order = await this.pharmacyService.dispense(id, input, user.userId);
     return order;
   }
 }
-
-
-

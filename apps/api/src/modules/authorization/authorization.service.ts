@@ -66,7 +66,7 @@ export class AuthorizationService {
    */
   async listUsers(
     ctx: DatabaseContext,
-    options: { limit: number; search?: string; status?: string },
+    options: { limit: number; search?: string; status?: string }
   ): Promise<PaginatedResult<UserSummary>> {
     const params: unknown[] = [ctx.tenantId];
     const filters = ['m.tenant_id = $1'];
@@ -83,7 +83,7 @@ export class AuthorizationService {
         `(p.display_name ILIKE $${p}
           OR p.email ILIKE $${p}
           OR p.mobile ILIKE $${p}
-          OR p.employee_code ILIKE $${p})`,
+          OR p.employee_code ILIKE $${p})`
       );
     }
 
@@ -122,7 +122,7 @@ export class AuthorizationService {
         ORDER BY COALESCE(p.display_name, m.user_id::text)
         LIMIT $${params.length}`,
       params,
-      ctx,
+      ctx
     );
 
     const hasMore = rows.length > options.limit;
@@ -165,7 +165,7 @@ export class AuthorizationService {
            ON p.tenant_id = m.tenant_id AND p.user_id = m.user_id
         WHERE m.tenant_id = $1 AND m.user_id = $2`,
       [ctx.tenantId, userId],
-      ctx,
+      ctx
     );
 
     if (rows.length === 0) throw new NotFoundException('User not found');
@@ -182,14 +182,14 @@ export class AuthorizationService {
   async setMembershipStatus(
     userId: string,
     status: 'ACTIVE' | 'SUSPENDED' | 'REVOKED',
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<UserSummary> {
     const { rowCount } = await this.db.query(
       `UPDATE hims_core.tenant_memberships
           SET membership_status = $1
         WHERE tenant_id = $2 AND user_id = $3`,
       [status, ctx.tenantId, userId],
-      ctx,
+      ctx
     );
 
     if (rowCount === 0) throw new NotFoundException('User is not a member of this tenant');
@@ -203,29 +203,26 @@ export class AuthorizationService {
             SET status = 'INACTIVE', active_to = now()
           WHERE tenant_id = $1 AND user_id = $2 AND status = 'ACTIVE'`,
         [ctx.tenantId, userId],
-        ctx,
+        ctx
       );
       await this.db.query(
         `DELETE FROM hims_core.user_facility_access
           WHERE tenant_id = $1 AND user_id = $2`,
         [ctx.tenantId, userId],
-        ctx,
+        ctx
       );
       await this.db.query(
         `DELETE FROM hims_core.user_department_access
           WHERE tenant_id = $1 AND user_id = $2`,
         [ctx.tenantId, userId],
-        ctx,
+        ctx
       );
     }
 
     return this.getUser(userId, ctx);
   }
 
-  async listRoles(
-    ctx: DatabaseContext,
-    limit: number,
-  ): Promise<PaginatedResult<RoleSummary>> {
+  async listRoles(ctx: DatabaseContext, limit: number): Promise<PaginatedResult<RoleSummary>> {
     const { rows } = await this.db.query<RoleSummary>(
       `SELECT r.id,
               r.code,
@@ -241,7 +238,7 @@ export class AuthorizationService {
         ORDER BY r.code
         LIMIT $2`,
       [ctx.tenantId, limit + 1],
-      ctx,
+      ctx
     );
 
     const hasMore = rows.length > limit;
@@ -256,7 +253,7 @@ export class AuthorizationService {
          RETURNING id, code, name, description,
                    system_role AS "systemRole", status, 0 AS "permissionCount"`,
         [ctx.tenantId, input.code, input.name, input.description ?? null],
-        ctx,
+        ctx
       )
       .catch((error: unknown) => {
         if ((error as { code?: string }).code === '23505') {
@@ -271,7 +268,7 @@ export class AuthorizationService {
   async updateRole(
     roleId: string,
     patch: { name?: string; description?: string | null; status?: 'ACTIVE' | 'INACTIVE' },
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<RoleSummary> {
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -294,7 +291,7 @@ export class AuthorizationService {
         WHERE tenant_id = $${params.length - 1} AND id = $${params.length}
         RETURNING id, code, name, description, system_role AS "systemRole", status, 0 AS "permissionCount"`,
       params,
-      ctx,
+      ctx
     );
 
     if (!role) throw new NotFoundException('Role not found');
@@ -305,14 +302,14 @@ export class AuthorizationService {
   async setRolePermissions(
     roleId: string,
     input: SetPermissionsInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<{ roleId: string; permissions: string[] }> {
     return this.db.transaction(async (client) => {
       const existing = await client.query<{ system_role: boolean }>(
         `SELECT system_role FROM hims_core.roles
           WHERE id = $1 AND tenant_id = $2
           FOR UPDATE`,
-        [roleId, ctx.tenantId],
+        [roleId, ctx.tenantId]
       );
 
       if (existing.rows.length === 0) throw new NotFoundException('Role not found');
@@ -320,21 +317,21 @@ export class AuthorizationService {
         // A system role defines the meaning of every permission string, so its
         // grant set must not be edited per-tenant.
         throw new ConflictException(
-          'System role permissions cannot be modified; fork the role instead',
+          'System role permissions cannot be modified; fork the role instead'
         );
       }
 
       await client.query(
         `DELETE FROM hims_core.role_permissions
           WHERE tenant_id = $1 AND role_id = $2`,
-        [ctx.tenantId, roleId],
+        [ctx.tenantId, roleId]
       );
 
       if (input.permissionCodes.length > 0) {
         await client.query(
           `INSERT INTO hims_core.role_permissions (tenant_id, role_id, permission_code)
            SELECT $1, $2, unnest($3::text[])`,
-          [ctx.tenantId, roleId, input.permissionCodes],
+          [ctx.tenantId, roleId, input.permissionCodes]
         );
       }
 
@@ -344,7 +341,7 @@ export class AuthorizationService {
 
   async listPermissions(
     limit: number,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<PaginatedResult<PermissionSummary>> {
     // `hims_core.permissions` is global reference data with no `tenant_id`
     // column, so the baseline enables no RLS policy on it. `ctx` is still
@@ -356,7 +353,7 @@ export class AuthorizationService {
         ORDER BY code
         LIMIT $1`,
       [limit + 1],
-      ctx,
+      ctx
     );
 
     const hasMore = rows.length > limit;
@@ -376,12 +373,12 @@ export class AuthorizationService {
           input.facilityId ?? null,
           input.departmentId ?? null,
         ],
-        ctx,
+        ctx
       );
     } catch (error) {
       if ((error as { code?: string }).code === '23505') {
         throw new ConflictException(
-          'That role is already assigned at this exact facility/department scope',
+          'That role is already assigned at this exact facility/department scope'
         );
       }
       if ((error as { code?: string }).code === '23503') {
@@ -393,17 +390,13 @@ export class AuthorizationService {
     return this.getUser(input.userId, ctx);
   }
 
-  async revokeRole(
-    userId: string,
-    roleId: string,
-    ctx: DatabaseContext,
-  ): Promise<UserSummary> {
+  async revokeRole(userId: string, roleId: string, ctx: DatabaseContext): Promise<UserSummary> {
     const { rowCount } = await this.db.query(
       `UPDATE hims_core.user_roles
           SET status = 'INACTIVE', active_to = now()
         WHERE tenant_id = $1 AND user_id = $2 AND role_id = $3 AND status = 'ACTIVE'`,
       [ctx.tenantId, userId, roleId],
-      ctx,
+      ctx
     );
 
     if (rowCount === 0) throw new NotFoundException('Active role assignment not found');
@@ -414,20 +407,20 @@ export class AuthorizationService {
   async setFacilityAccess(
     userId: string,
     input: UpsertFacilityAccessInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<UserSummary> {
     await this.db.transaction(async (client) => {
       await client.query(
         `DELETE FROM hims_core.user_facility_access
           WHERE tenant_id = $1 AND user_id = $2`,
-        [ctx.tenantId, userId],
+        [ctx.tenantId, userId]
       );
 
       if (input.facilityIds.length > 0) {
         await client.query(
           `INSERT INTO hims_core.user_facility_access (tenant_id, user_id, facility_id)
            SELECT $1, $2, unnest($3::uuid[])`,
-          [ctx.tenantId, userId, input.facilityIds],
+          [ctx.tenantId, userId, input.facilityIds]
         );
       }
     }, ctx);
@@ -438,20 +431,20 @@ export class AuthorizationService {
   async setDepartmentAccess(
     userId: string,
     departmentIds: string[],
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<UserSummary> {
     await this.db.transaction(async (client) => {
       await client.query(
         `DELETE FROM hims_core.user_department_access
           WHERE tenant_id = $1 AND user_id = $2`,
-        [ctx.tenantId, userId],
+        [ctx.tenantId, userId]
       );
 
       if (departmentIds.length > 0) {
         await client.query(
           `INSERT INTO hims_core.user_department_access (tenant_id, user_id, department_id)
            SELECT $1, $2, unnest($3::uuid[])`,
-          [ctx.tenantId, userId, departmentIds],
+          [ctx.tenantId, userId, departmentIds]
         );
       }
     }, ctx);

@@ -3,13 +3,22 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "incremental": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    // `types` replaces the base's `["node"]`, so the Jest globals have to be
+    // named here. Specs, the integration suite and the Jest setup file are all
+    // part of this config's `include`; without this, `pnpm typecheck` fails on
+    // every `describe`/`it`/`expect` in them. The build config excludes them.
+    //
+    // `rootDir` is deliberately absent: it belongs to the build config, which
+    // excludes `test/`. Declaring it here would make this config claim files
+    // outside the root directory and fail `pnpm typecheck` with TS6059 the
+    // moment an integration spec was added under `test/`.
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist"]

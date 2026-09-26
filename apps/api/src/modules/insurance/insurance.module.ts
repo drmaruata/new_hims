@@ -8,4 +8,3 @@ import { InsuranceService } from './insurance.service.js';
   exports: [InsuranceService],
 })
 export class InsuranceModule {}
-

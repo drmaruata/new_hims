@@ -1,10 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
-import {
-  HealthCheck,
-  HealthCheckService,
-  HealthIndicatorService,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService, HealthIndicatorService } from '@nestjs/terminus';
 
 import { DatabaseService } from '@hims/database';
 import { Public } from '../auth/decorators/public.decorator.js';
@@ -27,7 +23,7 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly indicators: HealthIndicatorService,
-    private readonly db: DatabaseService,
+    private readonly db: DatabaseService
   ) {}
 
   @Get()

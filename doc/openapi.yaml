@@ -5,48 +5,48 @@ info:
   description: Machine-readable baseline contract for the multi-tenant HIMS. Field-level
     domain rules are defined in API_CONTRACT.md.
 servers:
-- url: https://api.example.invalid/api/v1
+  - url: https://api.example.invalid/api/v1
 tags:
-- name: AI
-- name: Analytics
-- name: Billing
-- name: Catalog
-- name: Clinical
-- name: Clinical-Notes
-- name: Documents
-- name: EMR
-- name: Emergency
-- name: ICU
-- name: IPD
-- name: Insurance
-- name: Integration
-- name: LIS
-- name: OPD
-- name: OT
-- name: Patient
-- name: Pharmacy
-- name: Platform
-- name: Quality
-- name: RCM
-- name: RIS
-- name: Workflow
+  - name: AI
+  - name: Analytics
+  - name: Billing
+  - name: Catalog
+  - name: Clinical
+  - name: Clinical-Notes
+  - name: Documents
+  - name: EMR
+  - name: Emergency
+  - name: ICU
+  - name: IPD
+  - name: Insurance
+  - name: Integration
+  - name: LIS
+  - name: OPD
+  - name: OT
+  - name: Patient
+  - name: Pharmacy
+  - name: Platform
+  - name: Quality
+  - name: RCM
+  - name: RIS
+  - name: Workflow
 security:
-- bearerAuth: []
+  - bearerAuth: []
 paths:
   /lab/results/{id}/amend:
     post:
       operationId: post_lab_results_id_amend
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -87,16 +87,16 @@ paths:
     post:
       operationId: post_radiology_reports_id_amend
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -137,16 +137,16 @@ paths:
     post:
       operationId: post_clinical_notes_id_amend
       tags:
-      - Clinical-Notes
+        - Clinical-Notes
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -187,16 +187,16 @@ paths:
     get:
       operationId: get_tenants_tenantId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: tenantId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -217,16 +217,16 @@ paths:
     patch:
       operationId: patch_tenants_tenantId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: tenantId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -255,16 +255,16 @@ paths:
     get:
       operationId: get_tenants_tenantId_settings
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: tenantId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -285,16 +285,16 @@ paths:
     patch:
       operationId: patch_tenants_tenantId_settings
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: tenantId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -323,9 +323,9 @@ paths:
     get:
       operationId: get_facilities
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -347,9 +347,9 @@ paths:
     post:
       operationId: post_facilities
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -391,16 +391,16 @@ paths:
     get:
       operationId: get_facilities_facilityId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: facilityId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: facilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -421,16 +421,16 @@ paths:
     patch:
       operationId: patch_facilities_facilityId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: facilityId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: facilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -459,16 +459,16 @@ paths:
     get:
       operationId: get_facilities_facilityId_departments
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: facilityId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: facilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -490,16 +490,16 @@ paths:
     get:
       operationId: get_facilities_facilityId_locations
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: facilityId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: facilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -521,9 +521,9 @@ paths:
     get:
       operationId: get_departments
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -545,9 +545,9 @@ paths:
     post:
       operationId: post_departments
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -589,16 +589,16 @@ paths:
     get:
       operationId: get_departments_departmentId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: departmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: departmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -619,16 +619,16 @@ paths:
     patch:
       operationId: patch_departments_departmentId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: departmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: departmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -657,9 +657,9 @@ paths:
     get:
       operationId: get_users
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -682,9 +682,9 @@ paths:
     post:
       operationId: post_users_invite
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -726,16 +726,16 @@ paths:
     get:
       operationId: get_users_userId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -756,16 +756,16 @@ paths:
     patch:
       operationId: patch_users_userId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -794,16 +794,16 @@ paths:
     post:
       operationId: post_users_userId_deactivate
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -844,16 +844,16 @@ paths:
     post:
       operationId: post_users_userId_reactivate
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -894,9 +894,9 @@ paths:
     get:
       operationId: get_roles
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -918,9 +918,9 @@ paths:
     post:
       operationId: post_roles
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -962,16 +962,16 @@ paths:
     patch:
       operationId: patch_roles_roleId
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1000,16 +1000,16 @@ paths:
     put:
       operationId: put_roles_roleId_permissions
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: roleId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1038,9 +1038,9 @@ paths:
     get:
       operationId: get_permissions
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -1063,16 +1063,16 @@ paths:
     put:
       operationId: put_users_userId_facility_access
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1101,16 +1101,16 @@ paths:
     put:
       operationId: put_users_userId_department_access
       tags:
-      - Platform
+        - Platform
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1139,9 +1139,9 @@ paths:
     get:
       operationId: get_patients
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -1163,9 +1163,9 @@ paths:
     post:
       operationId: post_patients
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -1207,16 +1207,16 @@ paths:
     get:
       operationId: get_patients_patientId
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1237,16 +1237,16 @@ paths:
     patch:
       operationId: patch_patients_patientId
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1275,16 +1275,16 @@ paths:
     get:
       operationId: get_patients_patientId_identifiers
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1305,16 +1305,16 @@ paths:
     post:
       operationId: post_patients_patientId_identifiers
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1355,22 +1355,22 @@ paths:
     patch:
       operationId: patch_patients_patientId_identifiers_identifierId
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: identifierId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: identifierId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1399,16 +1399,16 @@ paths:
     get:
       operationId: get_patients_patientId_contacts
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1429,16 +1429,16 @@ paths:
     post:
       operationId: post_patients_patientId_contacts
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1479,22 +1479,22 @@ paths:
     patch:
       operationId: patch_patients_patientId_contacts_contactId
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: contactId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1523,16 +1523,16 @@ paths:
     get:
       operationId: get_patients_patientId_allergies
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1553,16 +1553,16 @@ paths:
     post:
       operationId: post_patients_patientId_allergies
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1603,22 +1603,22 @@ paths:
     patch:
       operationId: patch_patients_patientId_allergies_allergyId
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: allergyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: allergyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1647,16 +1647,16 @@ paths:
     get:
       operationId: get_patients_patientId_conditions
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1677,16 +1677,16 @@ paths:
     post:
       operationId: post_patients_patientId_conditions
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1727,16 +1727,16 @@ paths:
     get:
       operationId: get_patients_patientId_history
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1758,16 +1758,16 @@ paths:
     get:
       operationId: get_patients_patientId_consents
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1788,16 +1788,16 @@ paths:
     post:
       operationId: post_patients_patientId_consents
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1838,22 +1838,22 @@ paths:
     post:
       operationId: post_patients_patientId_consents_consentId_withdraw
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: consentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: consentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1894,16 +1894,16 @@ paths:
     get:
       operationId: get_patients_patientId_merge_candidates
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1925,16 +1925,16 @@ paths:
     post:
       operationId: post_patients_patientId_merge
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -1975,16 +1975,16 @@ paths:
     get:
       operationId: get_patients_patientId_access_history
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2006,16 +2006,16 @@ paths:
     post:
       operationId: post_patients_patientId_export
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2056,9 +2056,9 @@ paths:
     get:
       operationId: get_practitioners
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2080,9 +2080,9 @@ paths:
     post:
       operationId: post_practitioners
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2124,16 +2124,16 @@ paths:
     get:
       operationId: get_practitioners_id
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2154,16 +2154,16 @@ paths:
     patch:
       operationId: patch_practitioners_id
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2192,9 +2192,9 @@ paths:
     get:
       operationId: get_specialties
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2217,9 +2217,9 @@ paths:
     get:
       operationId: get_services
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2241,9 +2241,9 @@ paths:
     post:
       operationId: post_services
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2285,9 +2285,9 @@ paths:
     get:
       operationId: get_medications
       tags:
-      - Catalog
+        - Catalog
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2310,9 +2310,9 @@ paths:
     get:
       operationId: get_lab_tests
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2335,9 +2335,9 @@ paths:
     get:
       operationId: get_radiology_procedures
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2360,9 +2360,9 @@ paths:
     get:
       operationId: get_tariffs
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2385,9 +2385,9 @@ paths:
     post:
       operationId: post_encounters
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2429,16 +2429,16 @@ paths:
     get:
       operationId: get_encounters_encounterId
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2459,16 +2459,16 @@ paths:
     patch:
       operationId: patch_encounters_encounterId
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2497,16 +2497,16 @@ paths:
     get:
       operationId: get_patients_patientId_encounters
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2528,16 +2528,16 @@ paths:
     post:
       operationId: post_encounters_encounterId_start
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2578,16 +2578,16 @@ paths:
     post:
       operationId: post_encounters_encounterId_sign
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2628,16 +2628,16 @@ paths:
     post:
       operationId: post_encounters_encounterId_close
       tags:
-      - Clinical
+        - Clinical
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2678,16 +2678,16 @@ paths:
     get:
       operationId: get_patients_patientId_timeline
       tags:
-      - Patient
+        - Patient
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2709,9 +2709,9 @@ paths:
     post:
       operationId: post_opd_appointments
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2752,9 +2752,9 @@ paths:
     get:
       operationId: get_opd_appointments
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -2777,16 +2777,16 @@ paths:
     get:
       operationId: get_opd_appointments_appointmentId
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2807,16 +2807,16 @@ paths:
     patch:
       operationId: patch_opd_appointments_appointmentId
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2845,16 +2845,16 @@ paths:
     post:
       operationId: post_opd_appointments_appointmentId_confirm
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2895,16 +2895,16 @@ paths:
     post:
       operationId: post_opd_appointments_appointmentId_check_in
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2945,16 +2945,16 @@ paths:
     post:
       operationId: post_opd_appointments_appointmentId_cancel
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -2995,16 +2995,16 @@ paths:
     post:
       operationId: post_opd_appointments_appointmentId_no_show
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: appointmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3045,9 +3045,9 @@ paths:
     get:
       operationId: get_opd_queues
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -3070,16 +3070,16 @@ paths:
     get:
       operationId: get_opd_queues_queueId_tickets
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: queueId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: queueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3100,16 +3100,16 @@ paths:
     post:
       operationId: post_opd_queues_queueId_tickets
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: queueId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: queueId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3150,16 +3150,16 @@ paths:
     post:
       operationId: post_opd_tickets_ticketId_call
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: ticketId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: ticketId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3200,16 +3200,16 @@ paths:
     post:
       operationId: post_opd_tickets_ticketId_start_consultation
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: ticketId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: ticketId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3250,16 +3250,16 @@ paths:
     post:
       operationId: post_opd_tickets_ticketId_complete
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: ticketId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: ticketId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3300,9 +3300,9 @@ paths:
     post:
       operationId: post_opd_encounters
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -3344,16 +3344,16 @@ paths:
     get:
       operationId: get_opd_encounters_encounterId
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3375,16 +3375,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_notes
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3425,16 +3425,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_diagnoses
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3475,16 +3475,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_observations
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3525,16 +3525,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_orders
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3575,16 +3575,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_prescriptions
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3625,16 +3625,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_referrals
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3675,16 +3675,16 @@ paths:
     post:
       operationId: post_opd_encounters_encounterId_admission_request
       tags:
-      - OPD
+        - OPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: encounterId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: encounterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3725,9 +3725,9 @@ paths:
     post:
       operationId: post_ipd_admission_requests
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -3768,9 +3768,9 @@ paths:
     get:
       operationId: get_ipd_admission_requests
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -3793,16 +3793,16 @@ paths:
     get:
       operationId: get_ipd_admission_requests_id
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3824,16 +3824,16 @@ paths:
     post:
       operationId: post_ipd_admission_requests_id_approve
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3874,9 +3874,9 @@ paths:
     post:
       operationId: post_ipd_admissions
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -3918,16 +3918,16 @@ paths:
     get:
       operationId: get_ipd_admissions_admissionId
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3949,16 +3949,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_admit
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -3999,16 +3999,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_transfer
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4049,16 +4049,16 @@ paths:
     get:
       operationId: get_ipd_admissions_admissionId_movements
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4080,9 +4080,9 @@ paths:
     get:
       operationId: get_ipd_beds
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -4105,9 +4105,9 @@ paths:
     get:
       operationId: get_ipd_beds_board
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -4130,16 +4130,16 @@ paths:
     post:
       operationId: post_ipd_beds_bedId_reserve
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: bedId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: bedId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4180,16 +4180,16 @@ paths:
     post:
       operationId: post_ipd_beds_bedId_assign
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: bedId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: bedId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4230,16 +4230,16 @@ paths:
     post:
       operationId: post_ipd_beds_bedId_release
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: bedId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: bedId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4280,16 +4280,16 @@ paths:
     post:
       operationId: post_ipd_beds_bedId_block
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: bedId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: bedId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4330,16 +4330,16 @@ paths:
     post:
       operationId: post_ipd_beds_bedId_unblock
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: bedId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: bedId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4380,16 +4380,16 @@ paths:
     get:
       operationId: get_ipd_wards_departmentId_workbench
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: departmentId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: departmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4411,16 +4411,16 @@ paths:
     get:
       operationId: get_ipd_admissions_admissionId_nursing_notes
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4441,16 +4441,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_nursing_notes
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4491,16 +4491,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_vitals
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4541,16 +4541,16 @@ paths:
     get:
       operationId: get_ipd_admissions_admissionId_tasks
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4571,16 +4571,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_tasks
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4621,16 +4621,16 @@ paths:
     post:
       operationId: post_ipd_tasks_taskId_complete
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: taskId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4671,16 +4671,16 @@ paths:
     get:
       operationId: get_ipd_admissions_admissionId_handover
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4702,16 +4702,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_handover_finalize
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4752,16 +4752,16 @@ paths:
     get:
       operationId: get_ipd_admissions_id_doctor_notes
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4782,16 +4782,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_doctor_notes
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4832,16 +4832,16 @@ paths:
     get:
       operationId: get_ipd_admissions_id_discharge_summary
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4863,16 +4863,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_discharge_summary_draft
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4913,16 +4913,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_discharge_summary_finalize
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -4963,16 +4963,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_discharge
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5013,16 +5013,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_icu_transfer_request
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5063,9 +5063,9 @@ paths:
     get:
       operationId: get_icu_transfer_requests
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5088,16 +5088,16 @@ paths:
     post:
       operationId: post_icu_transfer_requests_id_accept
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5138,16 +5138,16 @@ paths:
     post:
       operationId: post_icu_transfer_requests_id_reject
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5188,16 +5188,16 @@ paths:
     post:
       operationId: post_ipd_admissions_admissionId_ot_request
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: admissionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: admissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5238,9 +5238,9 @@ paths:
     post:
       operationId: post_lab_orders
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5282,16 +5282,16 @@ paths:
     get:
       operationId: get_lab_orders_labOrderId
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: labOrderId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: labOrderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5313,9 +5313,9 @@ paths:
     get:
       operationId: get_lab_worklists
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5338,16 +5338,16 @@ paths:
     post:
       operationId: post_lab_orders_labOrderId_collect
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: labOrderId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: labOrderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5388,16 +5388,16 @@ paths:
     post:
       operationId: post_lab_specimens_specimenId_receive
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: specimenId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: specimenId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5438,16 +5438,16 @@ paths:
     post:
       operationId: post_lab_specimens_specimenId_reject
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: specimenId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: specimenId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5488,16 +5488,16 @@ paths:
     get:
       operationId: get_lab_results_resultId
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5519,16 +5519,16 @@ paths:
     post:
       operationId: post_lab_results_resultId_enter
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5569,16 +5569,16 @@ paths:
     post:
       operationId: post_lab_results_resultId_verify
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5619,16 +5619,16 @@ paths:
     post:
       operationId: post_lab_results_resultId_release
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5669,16 +5669,16 @@ paths:
     post:
       operationId: post_lab_results_resultId_amend
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5719,16 +5719,16 @@ paths:
     post:
       operationId: post_lab_results_resultId_critical_acknowledgement
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: resultId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5769,9 +5769,9 @@ paths:
     get:
       operationId: get_lab_instruments
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5794,16 +5794,16 @@ paths:
     post:
       operationId: post_lab_instruments_id_test_connection
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -5844,9 +5844,9 @@ paths:
     get:
       operationId: get_lab_qc_runs
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5868,9 +5868,9 @@ paths:
     post:
       operationId: post_lab_qc_runs
       tags:
-      - LIS
+        - LIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5912,9 +5912,9 @@ paths:
     get:
       operationId: get_radiology_modalities
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5937,9 +5937,9 @@ paths:
     get:
       operationId: get_radiology_worklist
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -5962,9 +5962,9 @@ paths:
     post:
       operationId: post_radiology_orders
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -6006,16 +6006,16 @@ paths:
     get:
       operationId: get_radiology_orders_id
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6037,16 +6037,16 @@ paths:
     post:
       operationId: post_radiology_orders_id_schedule
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6087,16 +6087,16 @@ paths:
     post:
       operationId: post_radiology_orders_id_start
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6137,9 +6137,9 @@ paths:
     post:
       operationId: post_radiology_studies
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -6181,16 +6181,16 @@ paths:
     get:
       operationId: get_radiology_studies_id
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6211,16 +6211,16 @@ paths:
     patch:
       operationId: patch_radiology_studies_id
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6249,16 +6249,16 @@ paths:
     post:
       operationId: post_radiology_reports_studyId_draft
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: studyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6299,16 +6299,16 @@ paths:
     post:
       operationId: post_radiology_reports_studyId_verify
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: studyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6349,16 +6349,16 @@ paths:
     post:
       operationId: post_radiology_reports_studyId_release
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: studyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6399,16 +6399,16 @@ paths:
     post:
       operationId: post_radiology_reports_studyId_amend
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: studyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6449,16 +6449,16 @@ paths:
     post:
       operationId: post_radiology_studies_studyId_open_pacs
       tags:
-      - RIS
+        - RIS
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: studyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6499,9 +6499,9 @@ paths:
     post:
       operationId: post_emergency_encounters
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -6543,9 +6543,9 @@ paths:
     get:
       operationId: get_emergency_board
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -6568,16 +6568,16 @@ paths:
     get:
       operationId: get_emergency_encounters_id
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6599,16 +6599,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_triage
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6649,16 +6649,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_resuscitation
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6699,16 +6699,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_orders
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6749,16 +6749,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_observation
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6799,16 +6799,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_disposition_admit
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6849,16 +6849,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_disposition_icu
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6899,16 +6899,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_disposition_transfer
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6949,16 +6949,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_disposition_discharge
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -6999,16 +6999,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_mlc
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7049,16 +7049,16 @@ paths:
     post:
       operationId: post_emergency_encounters_id_close
       tags:
-      - Emergency
+        - Emergency
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7099,9 +7099,9 @@ paths:
     get:
       operationId: get_ot_rooms
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7124,9 +7124,9 @@ paths:
     get:
       operationId: get_ot_board
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7149,9 +7149,9 @@ paths:
     post:
       operationId: post_ot_surgery_requests
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7192,9 +7192,9 @@ paths:
     get:
       operationId: get_ot_surgery_requests
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7217,16 +7217,16 @@ paths:
     get:
       operationId: get_ot_surgery_requests_id
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7248,16 +7248,16 @@ paths:
     post:
       operationId: post_ot_surgery_requests_id_approve
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7298,16 +7298,16 @@ paths:
     post:
       operationId: post_ot_surgery_requests_id_schedule
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7348,9 +7348,9 @@ paths:
     post:
       operationId: post_ot_cases
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7392,16 +7392,16 @@ paths:
     get:
       operationId: get_ot_cases_caseId
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7423,16 +7423,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_sign_in
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7473,16 +7473,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_time_out
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7523,16 +7523,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_procedure_note
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7573,16 +7573,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_anaesthesia_record
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7623,16 +7623,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_sign_out
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7673,16 +7673,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_complete
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7723,16 +7723,16 @@ paths:
     post:
       operationId: post_ot_cases_caseId_specimens
       tags:
-      - OT
+        - OT
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: caseId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: caseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7773,9 +7773,9 @@ paths:
     get:
       operationId: get_icu_units
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7798,9 +7798,9 @@ paths:
     get:
       operationId: get_icu_board
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7823,9 +7823,9 @@ paths:
     post:
       operationId: post_icu_admissions
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -7867,16 +7867,16 @@ paths:
     get:
       operationId: get_icu_admissions_id
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7898,16 +7898,16 @@ paths:
     post:
       operationId: post_icu_admissions_id_flowsheet
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7948,16 +7948,16 @@ paths:
     post:
       operationId: post_icu_admissions_id_device
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -7998,16 +7998,16 @@ paths:
     post:
       operationId: post_icu_admissions_id_infusion
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8048,16 +8048,16 @@ paths:
     post:
       operationId: post_icu_admissions_id_transfer_out
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8098,16 +8098,16 @@ paths:
     post:
       operationId: post_icu_admissions_id_discharge
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8148,16 +8148,16 @@ paths:
     get:
       operationId: get_icu_admissions_id_handover
       tags:
-      - ICU
+        - ICU
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8179,9 +8179,9 @@ paths:
     get:
       operationId: get_pharmacy_prescriptions_queue
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8204,16 +8204,16 @@ paths:
     get:
       operationId: get_pharmacy_prescriptions_id
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8235,16 +8235,16 @@ paths:
     post:
       operationId: post_pharmacy_prescriptions_id_verify
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8285,16 +8285,16 @@ paths:
     post:
       operationId: post_pharmacy_prescriptions_id_dispense
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8335,16 +8335,16 @@ paths:
     post:
       operationId: post_pharmacy_dispensings_id_complete
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8385,16 +8385,16 @@ paths:
     post:
       operationId: post_pharmacy_dispensings_id_cancel
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8435,9 +8435,9 @@ paths:
     get:
       operationId: get_pharmacy_medication_orders_queue
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8460,9 +8460,9 @@ paths:
     get:
       operationId: get_pharmacy_stock
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8485,9 +8485,9 @@ paths:
     get:
       operationId: get_pharmacy_stock_expiring
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8510,9 +8510,9 @@ paths:
     post:
       operationId: post_pharmacy_stock_transfer
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8554,9 +8554,9 @@ paths:
     post:
       operationId: post_pharmacy_stock_adjustment
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8598,9 +8598,9 @@ paths:
     get:
       operationId: get_pharmacy_purchases
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8622,9 +8622,9 @@ paths:
     post:
       operationId: post_pharmacy_purchases
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8666,16 +8666,16 @@ paths:
     post:
       operationId: post_pharmacy_purchases_id_approve
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8716,9 +8716,9 @@ paths:
     post:
       operationId: post_pharmacy_goods_receipts
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8760,9 +8760,9 @@ paths:
     post:
       operationId: post_pharmacy_returns
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8804,9 +8804,9 @@ paths:
     post:
       operationId: post_pharmacy_recalls
       tags:
-      - Pharmacy
+        - Pharmacy
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -8848,16 +8848,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_summary
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8879,16 +8879,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_timeline
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8910,16 +8910,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_encounters
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8941,16 +8941,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_conditions
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -8972,16 +8972,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_allergies
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9003,16 +9003,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_medications
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9034,16 +9034,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_lab_results
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9065,16 +9065,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_imaging
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9096,16 +9096,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_procedures
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9127,16 +9127,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_surgeries
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9158,16 +9158,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_admissions
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9189,16 +9189,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_prescriptions
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9220,16 +9220,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_documents
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9251,16 +9251,16 @@ paths:
     get:
       operationId: get_emr_patients_patientId_access_history
       tags:
-      - EMR
+        - EMR
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9282,9 +9282,9 @@ paths:
     get:
       operationId: get_billing_services
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9307,9 +9307,9 @@ paths:
     get:
       operationId: get_billing_tariffs
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9331,9 +9331,9 @@ paths:
     post:
       operationId: post_billing_tariffs
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9375,9 +9375,9 @@ paths:
     get:
       operationId: get_billing_charges
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9399,9 +9399,9 @@ paths:
     post:
       operationId: post_billing_charges
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9443,9 +9443,9 @@ paths:
     post:
       operationId: post_billing_invoices
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9486,9 +9486,9 @@ paths:
     get:
       operationId: get_billing_invoices
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9511,16 +9511,16 @@ paths:
     get:
       operationId: get_billing_invoices_id
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9542,16 +9542,16 @@ paths:
     post:
       operationId: post_billing_invoices_id_finalize
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9592,9 +9592,9 @@ paths:
     post:
       operationId: post_billing_payments
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9636,16 +9636,16 @@ paths:
     post:
       operationId: post_billing_payments_id_reverse
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9686,9 +9686,9 @@ paths:
     post:
       operationId: post_billing_refunds
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9730,16 +9730,16 @@ paths:
     post:
       operationId: post_billing_refunds_id_approve
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9780,9 +9780,9 @@ paths:
     get:
       operationId: get_billing_outstanding
       tags:
-      - Billing
+        - Billing
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9805,9 +9805,9 @@ paths:
     get:
       operationId: get_rcm_workqueue
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9830,9 +9830,9 @@ paths:
     get:
       operationId: get_rcm_claims
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -9855,16 +9855,16 @@ paths:
     post:
       operationId: post_rcm_claims_id_prepare
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9905,16 +9905,16 @@ paths:
     post:
       operationId: post_rcm_claims_id_submit
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -9955,16 +9955,16 @@ paths:
     post:
       operationId: post_rcm_claims_id_resubmit
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10005,16 +10005,16 @@ paths:
     post:
       operationId: post_rcm_claims_id_reconcile
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10055,9 +10055,9 @@ paths:
     get:
       operationId: get_rcm_ageing
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10080,9 +10080,9 @@ paths:
     get:
       operationId: get_rcm_rejections
       tags:
-      - RCM
+        - RCM
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10105,9 +10105,9 @@ paths:
     get:
       operationId: get_insurance_payers
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10129,9 +10129,9 @@ paths:
     post:
       operationId: post_insurance_payers
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10173,9 +10173,9 @@ paths:
     get:
       operationId: get_insurance_plans
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10197,9 +10197,9 @@ paths:
     post:
       operationId: post_insurance_plans
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10241,16 +10241,16 @@ paths:
     get:
       operationId: get_insurance_policies_patientId
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: patientId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10272,9 +10272,9 @@ paths:
     post:
       operationId: post_insurance_policies_verify
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10316,9 +10316,9 @@ paths:
     post:
       operationId: post_insurance_eligibility_checks
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10360,9 +10360,9 @@ paths:
     post:
       operationId: post_insurance_preauthorizations
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10404,16 +10404,16 @@ paths:
     get:
       operationId: get_insurance_preauthorizations_id
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10435,16 +10435,16 @@ paths:
     post:
       operationId: post_insurance_preauthorizations_id_submit
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10485,16 +10485,16 @@ paths:
     post:
       operationId: post_insurance_preauthorizations_id_approve
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10535,9 +10535,9 @@ paths:
     post:
       operationId: post_insurance_claims
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10579,16 +10579,16 @@ paths:
     get:
       operationId: get_insurance_claims_id
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10610,16 +10610,16 @@ paths:
     post:
       operationId: post_insurance_claims_id_submit
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10660,16 +10660,16 @@ paths:
     post:
       operationId: post_insurance_claims_id_resubmit
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10710,16 +10710,16 @@ paths:
     post:
       operationId: post_insurance_claims_id_documents
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10760,9 +10760,9 @@ paths:
     post:
       operationId: post_insurance_remittances
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10804,16 +10804,16 @@ paths:
     post:
       operationId: post_insurance_remittances_id_reconcile
       tags:
-      - Insurance
+        - Insurance
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -10854,9 +10854,9 @@ paths:
     get:
       operationId: get_quality_indicators
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10878,9 +10878,9 @@ paths:
     post:
       operationId: post_quality_indicators
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10922,9 +10922,9 @@ paths:
     post:
       operationId: post_quality_indicator_observations
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10966,9 +10966,9 @@ paths:
     get:
       operationId: get_quality_dashboard
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -10991,9 +10991,9 @@ paths:
     post:
       operationId: post_quality_incidents
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11034,9 +11034,9 @@ paths:
     get:
       operationId: get_quality_incidents
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11059,16 +11059,16 @@ paths:
     get:
       operationId: get_quality_incidents_id
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11090,16 +11090,16 @@ paths:
     post:
       operationId: post_quality_incidents_id_investigate
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11140,16 +11140,16 @@ paths:
     post:
       operationId: post_quality_incidents_id_capa
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11190,16 +11190,16 @@ paths:
     post:
       operationId: post_quality_capas_id_actions
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11240,16 +11240,16 @@ paths:
     post:
       operationId: post_quality_capas_id_verify
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11290,16 +11290,16 @@ paths:
     post:
       operationId: post_quality_capas_id_close
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11340,9 +11340,9 @@ paths:
     post:
       operationId: post_quality_audits
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11384,16 +11384,16 @@ paths:
     get:
       operationId: get_quality_audits_id
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11415,16 +11415,16 @@ paths:
     post:
       operationId: post_quality_audits_id_findings
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11465,9 +11465,9 @@ paths:
     get:
       operationId: get_quality_accreditation_requirements
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11490,9 +11490,9 @@ paths:
     post:
       operationId: post_quality_accreditation_evidence
       tags:
-      - Quality
+        - Quality
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11534,9 +11534,9 @@ paths:
     post:
       operationId: post_documents_presign_upload
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11578,9 +11578,9 @@ paths:
     post:
       operationId: post_documents_complete_upload
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11622,16 +11622,16 @@ paths:
     get:
       operationId: get_documents_id
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11653,16 +11653,16 @@ paths:
     get:
       operationId: get_documents_id_download_url
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11684,16 +11684,16 @@ paths:
     post:
       operationId: post_documents_id_new_version
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11734,16 +11734,16 @@ paths:
     post:
       operationId: post_documents_id_sign
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11784,16 +11784,16 @@ paths:
     post:
       operationId: post_documents_id_amend
       tags:
-      - Documents
+        - Documents
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11834,9 +11834,9 @@ paths:
     get:
       operationId: get_workflows_definitions
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11858,9 +11858,9 @@ paths:
     post:
       operationId: post_workflows_definitions
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11902,16 +11902,16 @@ paths:
     get:
       operationId: get_workflows_instances_id
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -11933,9 +11933,9 @@ paths:
     post:
       operationId: post_workflows_instances
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -11977,9 +11977,9 @@ paths:
     get:
       operationId: get_tasks_my
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12002,16 +12002,16 @@ paths:
     post:
       operationId: post_tasks_id_claim
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12052,16 +12052,16 @@ paths:
     post:
       operationId: post_tasks_id_complete
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12102,9 +12102,9 @@ paths:
     post:
       operationId: post_approvals
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12146,16 +12146,16 @@ paths:
     post:
       operationId: post_approvals_id_approve
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12196,16 +12196,16 @@ paths:
     post:
       operationId: post_approvals_id_reject
       tags:
-      - Workflow
+        - Workflow
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12246,9 +12246,9 @@ paths:
     get:
       operationId: get_integrations
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12271,16 +12271,16 @@ paths:
     get:
       operationId: get_integrations_id
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12302,16 +12302,16 @@ paths:
     get:
       operationId: get_integrations_id_health
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12333,16 +12333,16 @@ paths:
     post:
       operationId: post_integrations_id_test
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12383,16 +12383,16 @@ paths:
     get:
       operationId: get_integrations_id_messages
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12414,16 +12414,16 @@ paths:
     post:
       operationId: post_integrations_messages_messageId_retry
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: messageId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12464,16 +12464,16 @@ paths:
     post:
       operationId: post_integrations_messages_messageId_replay
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: messageId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12514,9 +12514,9 @@ paths:
     get:
       operationId: get_integrations_dead_letters
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12539,16 +12539,16 @@ paths:
     post:
       operationId: post_integrations_dead_letters_id_replay
       tags:
-      - Integration
+        - Integration
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12589,16 +12589,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_icu_transfer_request
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12639,16 +12639,16 @@ paths:
     post:
       operationId: post_ipd_admissions_id_ot_request
       tags:
-      - IPD
+        - IPD
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -12689,9 +12689,9 @@ paths:
     get:
       operationId: get_dashboard_command_center
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12714,9 +12714,9 @@ paths:
     get:
       operationId: get_dashboard_opd
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12739,9 +12739,9 @@ paths:
     get:
       operationId: get_dashboard_ipd
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12764,9 +12764,9 @@ paths:
     get:
       operationId: get_dashboard_emergency
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12789,9 +12789,9 @@ paths:
     get:
       operationId: get_dashboard_icu
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12814,9 +12814,9 @@ paths:
     get:
       operationId: get_dashboard_ot
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12839,9 +12839,9 @@ paths:
     get:
       operationId: get_dashboard_lab
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12864,9 +12864,9 @@ paths:
     get:
       operationId: get_dashboard_radiology
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12889,9 +12889,9 @@ paths:
     get:
       operationId: get_dashboard_pharmacy
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12914,9 +12914,9 @@ paths:
     get:
       operationId: get_dashboard_rcm
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12939,9 +12939,9 @@ paths:
     get:
       operationId: get_dashboard_quality
       tags:
-      - Analytics
+        - Analytics
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -12964,9 +12964,9 @@ paths:
     post:
       operationId: post_ai_requests
       tags:
-      - AI
+        - AI
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters: []
       responses:
         '200':
@@ -13008,16 +13008,16 @@ paths:
     get:
       operationId: get_ai_requests_id
       tags:
-      - AI
+        - AI
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -13039,16 +13039,16 @@ paths:
     post:
       operationId: post_ai_requests_id_review
       tags:
-      - AI
+        - AI
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -13089,16 +13089,16 @@ paths:
     post:
       operationId: post_ai_requests_id_accept
       tags:
-      - AI
+        - AI
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -13139,16 +13139,16 @@ paths:
     post:
       operationId: post_ai_requests_id_reject
       tags:
-      - AI
+        - AI
       security:
-      - bearerAuth: []
+        - bearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Success
@@ -13200,7 +13200,7 @@ components:
           type: object
           additionalProperties: true
       required:
-      - data
+        - data
     ApiError:
       type: object
       properties:
@@ -13216,10 +13216,10 @@ components:
             correlationId:
               type: string
           required:
-          - code
-          - message
+            - code
+            - message
       required:
-      - error
+        - error
   responses:
     BadRequest:
       description: Bad request

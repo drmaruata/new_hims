@@ -50,23 +50,22 @@ This decision provides code ownership, accessibility-oriented primitives, visual
 
 ---
 
-
 ## 1.2 Audited Scope Baseline — Ten Core Departments/Modules
 
 The production product baseline is explicitly defined around the following ten core departmental/clinical modules. Cross-cutting platform services such as identity, Patient 360, orders, notifications, documents, audit, workflow, interoperability, analytics and AI are not counted as additional clinical departments; they are shared platform capabilities used by all ten modules.
 
-| # | Core module | Mandatory scope | Required cross-module links |
-|---|---|---|---|
-| 1 | OPD | Department-specific registration, appointments, queue, consultation, diagnosis, orders, prescription, OPD-to-IPD admission request | Patient 360, IPD, LIS, RIS, Pharmacy, Insurance, Billing, EMR |
-| 2 | IPD | Admission, department-wise bed pools, ward/nursing station, doctor notes, vitals, nursing notes, MAR, medication orders, lab/imaging orders, transfers, ICU transfer, discharge | Patient 360, LIS, RIS, Pharmacy, ICU, OT, Insurance, Billing, EMR |
-| 3 | LIS | Pre-analytical, analytical and post-analytical workflows; sample/accession/barcode, analyser interfaces, QC, result validation/release, critical values, pathology/microbiology where configured | OPD, IPD, Emergency, ICU, EMR, Billing, Insurance |
-| 4 | RIS | Imaging order, scheduling, modality worklist, acquisition status, radiologist reporting, report verification, DICOM/PACS integration, critical findings | OPD, IPD, Emergency, ICU, OT, EMR, Billing, Insurance |
-| 5 | Emergency | Rapid registration, triage, acuity, clinical care, orders, diagnostics, resuscitation, observation, admission/discharge/transfer, MLC workflows where configured | Patient 360, IPD, ICU, LIS, RIS, Pharmacy, Insurance, Billing, EMR |
-| 6 | OT Management | Surgical/procedure request, scheduling, OT resource management, pre-op, consent/checklist, anaesthesia, intra-op record, implants/consumables, recovery, cancellation and utilization analytics | IPD, OPD, Surgery/ENT/Dental and other specialties, Pharmacy, Inventory, LIS, RIS, Insurance, Billing, EMR |
-| 7 | ICU | ICU bed management, ICU admission/transfer from IPD/Emergency, observations, flowsheets, infusions, ventilator/device documentation, scores, critical events, discharge/step-down | IPD, Emergency, LIS, RIS, Pharmacy, OT, EMR, Insurance, Billing |
-| 8 | Pharmacy | Prescription/medication-order queues, verification, dispensing, batch/expiry/FEFO, substitutions, returns, stock, purchase, controlled/high-alert medicine workflows where configured | OPD, IPD, ICU, Emergency, OT, Inventory, Billing, Insurance, EMR |
-| 9 | EMR | Unified longitudinal record; all source data from OPD, IPD, Emergency, ICU, LIS, RIS, OT, Pharmacy and other configured clinical services with provenance and versioning | All modules |
-| 10 | Insurance | Government schemes (central/state), PM-JAY where applicable, private payers, eligibility, pre-authorisation, package/tariff rules, claims, query/rejection/resubmission, settlement and reconciliation | OPD, IPD, Emergency, OT, ICU, Pharmacy, LIS, RIS, Billing, EMR |
+| #   | Core module   | Mandatory scope                                                                                                                                                                                        | Required cross-module links                                                                                |
+| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| 1   | OPD           | Department-specific registration, appointments, queue, consultation, diagnosis, orders, prescription, OPD-to-IPD admission request                                                                     | Patient 360, IPD, LIS, RIS, Pharmacy, Insurance, Billing, EMR                                              |
+| 2   | IPD           | Admission, department-wise bed pools, ward/nursing station, doctor notes, vitals, nursing notes, MAR, medication orders, lab/imaging orders, transfers, ICU transfer, discharge                        | Patient 360, LIS, RIS, Pharmacy, ICU, OT, Insurance, Billing, EMR                                          |
+| 3   | LIS           | Pre-analytical, analytical and post-analytical workflows; sample/accession/barcode, analyser interfaces, QC, result validation/release, critical values, pathology/microbiology where configured       | OPD, IPD, Emergency, ICU, EMR, Billing, Insurance                                                          |
+| 4   | RIS           | Imaging order, scheduling, modality worklist, acquisition status, radiologist reporting, report verification, DICOM/PACS integration, critical findings                                                | OPD, IPD, Emergency, ICU, OT, EMR, Billing, Insurance                                                      |
+| 5   | Emergency     | Rapid registration, triage, acuity, clinical care, orders, diagnostics, resuscitation, observation, admission/discharge/transfer, MLC workflows where configured                                       | Patient 360, IPD, ICU, LIS, RIS, Pharmacy, Insurance, Billing, EMR                                         |
+| 6   | OT Management | Surgical/procedure request, scheduling, OT resource management, pre-op, consent/checklist, anaesthesia, intra-op record, implants/consumables, recovery, cancellation and utilization analytics        | IPD, OPD, Surgery/ENT/Dental and other specialties, Pharmacy, Inventory, LIS, RIS, Insurance, Billing, EMR |
+| 7   | ICU           | ICU bed management, ICU admission/transfer from IPD/Emergency, observations, flowsheets, infusions, ventilator/device documentation, scores, critical events, discharge/step-down                      | IPD, Emergency, LIS, RIS, Pharmacy, OT, EMR, Insurance, Billing                                            |
+| 8   | Pharmacy      | Prescription/medication-order queues, verification, dispensing, batch/expiry/FEFO, substitutions, returns, stock, purchase, controlled/high-alert medicine workflows where configured                  | OPD, IPD, ICU, Emergency, OT, Inventory, Billing, Insurance, EMR                                           |
+| 9   | EMR           | Unified longitudinal record; all source data from OPD, IPD, Emergency, ICU, LIS, RIS, OT, Pharmacy and other configured clinical services with provenance and versioning                               | All modules                                                                                                |
+| 10  | Insurance     | Government schemes (central/state), PM-JAY where applicable, private payers, eligibility, pre-authorisation, package/tariff rules, claims, query/rejection/resubmission, settlement and reconciliation | OPD, IPD, Emergency, OT, ICU, Pharmacy, LIS, RIS, Billing, EMR                                             |
 
 ### Mandatory departmental registration rule
 
@@ -373,6 +372,7 @@ The top-level information architecture shall use role-based workspaces over a co
 ## 11.1 Patient 360
 
 ### Purpose
+
 Provide a unified longitudinal patient identity and record.
 
 ### Core capabilities
@@ -438,7 +438,6 @@ The patient context header shall optionally display:
 Registration shall support a configurable hierarchy of facility → clinical department → service/clinic → practitioner/resource. The registration operator must select or resolve the service being accessed for the encounter. The encounter shall therefore carry the department context used for queueing, reporting, tariffs, clinical templates and authorization.
 
 Returning patients are identified by UHID/MPI search. A new registration transaction may create a new encounter but must not create a new patient master when a matching identity exists.
-
 
 Features:
 
@@ -564,7 +563,6 @@ The IPD order-entry workflow shall support medication, laboratory, imaging, proc
 
 An authorized IPD clinician shall be able to initiate an ICU transfer request directly from the IPD encounter. The workflow shall support indication, urgency, target ICU, accepting clinician, bed availability, transfer checklist, handover, movement event and financial/insurance implications.
 
-
 Capabilities:
 
 - Admission request.
@@ -603,7 +601,6 @@ The medication administration record shall support scheduled, PRN, STAT, infusio
 `IPD Transfer Request → ICU Assessment/Acceptance → ICU Bed Assignment → Patient Movement → ICU Encounter → ICU Orders/Flowsheets → Step-down/Discharge`
 
 The original clinical history remains linked; transfer does not create a new patient identity.
-
 
 ### Nursing workbench
 
@@ -648,7 +645,6 @@ System-generated handover must identify configured high-priority items such as u
 
 Emergency care shall support disposition to discharge, observation, IPD admission, ICU admission, OT/procedure pathway, referral/transfer, or death documentation as applicable. Admission must reuse the same patient/UHID and create the appropriate encounter/admission records without duplicate registration.
 
-
 Workflow:
 
 `Arrival → Registration → Triage → Acuity → Bed → Clinician → Orders → Treatment → Disposition`
@@ -682,7 +678,6 @@ OT must support requests from all configured surgical/procedural departments, in
 
 From the IPD patient record, an authorized user shall be able to create an OT request and propose/schedule an OT slot. The workflow shall carry patient, admission, diagnosis/procedure, surgeon, anaesthesia requirements, priority, expected duration, payer/authorization state and required resources into the OT board.
 
-
 Capabilities:
 
 - Surgery request.
@@ -714,7 +709,6 @@ The LIS shall cover the full laboratory lifecycle:
 `Order → Registration/Accession → Barcode → Collection → Acceptance/Rejection → Aliquoting → Processing → Analyzer/Manual Entry → QC → Technical Validation → Clinical Validation → Release → Critical Result Handling → Amended/Corrected Result`
 
 Supported capabilities shall include test catalogue, specimen types, collection rules, container/volume requirements, sample routing, worklists, batch processing, analyzer interfaces, auto-verification rules, reference ranges, age/sex-specific ranges, delta checks, panic/critical values, result comments, pathology/microbiology workflows where configured, report templates, result amendment/versioning, quality-control records, calibration/maintenance records, turnaround-time monitoring and complete auditability.
-
 
 ### LIS functionality
 
@@ -753,7 +747,6 @@ The RIS shall cover:
 `Order → Clinical screening → Scheduling → Modality Worklist → Procedure/Acquisition status → Reporting → Verification → Release → Follow-up/Communication`
 
 It shall support configurable imaging modalities, DICOM worklists, accession numbers, contrast/safety checks, reporting templates, critical findings, addenda/amendments, peer review where enabled, radiologist workload, turnaround times, PACS launch and DICOMweb integration. Imaging data shall remain accessible from the EMR through the RIS/PACS metadata and study reference.
-
 
 Capabilities:
 
@@ -794,7 +787,6 @@ Pharmacy inpatient medication queue
 ```
 
 The pharmacist shall not need to re-enter medication details. Dispensing shall validate medication, dose/quantity where applicable, available batches, expiry/FEFO, substitution rules and payer restrictions before finalization. For inpatient medications, pharmacy status shall remain linked to the originating medication order and MAR where configured.
-
 
 Capabilities:
 
@@ -877,7 +869,6 @@ Dispensing must capture the dispensing event, quantity, batch where configured, 
 ### Cross-module charge capture
 
 Charges shall be generated from authoritative service transactions where configured, including consultation, admission, room/bed occupancy, investigations, imaging, procedures, OT, pharmacy and other billable services. Manual charge entry remains available for authorized exceptions but must not be required for routine downstream workflows.
-
 
 ### Charge capture
 
@@ -1740,68 +1731,65 @@ Avoid unsupported claims such as "government certified", "NABH compliant", or "A
 
 The HIMS application shall be implemented with **self-hosted Supabase as the primary data platform** and external/self-hosted supporting services according to deployment profile.
 
-| Capability | Supabase provides | Additional service required? | Recommended deployment |
-|---|---|---|---|
-| Transactional PostgreSQL | Yes | No | Self-hosted Supabase PostgreSQL; production persistent Linux storage/HA strategy |
-| Authentication/JWT | Yes (Supabase Auth) | Not initially | Self-hosted; optional enterprise IdP/SSO later |
-| REST Data API | Yes (PostgREST) | No | Use selectively; NestJS remains canonical business API |
-| Realtime | Yes | No | Supabase Realtime for suitable UI subscriptions; durable events remain outbox-driven |
-| Object/file storage | Yes (Storage) | Prefer durable S3-compatible backing for production | Self-hosted Supabase Storage + MinIO/S3 where required |
-| Background jobs | No dedicated general-purpose queue | Yes | Redis + BullMQ, Docker/managed equivalent |
-| Durable event broker | No | Not initially; later at scale | NATS or Kafka, Docker/Kubernetes/managed equivalent |
-| Full-text/search | PostgreSQL search only | Eventually | OpenSearch, self-hosted or managed |
-| PACS/DICOM | No | Yes for radiology | Orthanc + PostgreSQL + object storage, Docker/Kubernetes |
-| FHIR server | No dedicated full FHIR server | Optional | HAPI FHIR or internal FHIR gateway; Docker/Kubernetes |
-| HL7 interface engine | No | Often | Interface engine such as NextGen Connect where external systems require it |
-| PDF/document rendering | No complete document-rendering platform | Yes | Gotenberg or equivalent, Docker |
-| OCR | No | Optional | Tesseract/OCR service, Docker |
-| Malware scanning | No | Recommended for file ingestion | ClamAV, Docker |
-| Secrets management | Environment secrets exist but not a full enterprise secrets platform | Recommended | HashiCorp Vault/self-hosted or cloud secret manager |
-| Monitoring | Basic Supabase logs/metrics vary by self-host deployment | Yes | OpenTelemetry + Prometheus/Grafana/Loki/Tempo, self-hosted |
-| Backup/DR/PITR | Managed-platform backup/PITR is not the same as self-hosted responsibility | Yes | pgBackRest/WAL archiving + off-host object storage; HA strategy later |
-| WAF/edge | No | Yes for public production | Cloud WAF/CDN or self-hosted reverse proxy with appropriate controls |
-| SMS/WhatsApp/email | No | Yes | External providers (not self-hosted for core delivery) |
-| Payments/UPI | No | Yes | Razorpay/PayU/other approved provider |
-| Push notifications | No | Yes | FCM/APNs |
-| Video consultation | No | Yes | Jitsi self-hosted or managed provider |
-| Enterprise SIEM | No | Recommended | Wazuh or managed SIEM |
+| Capability               | Supabase provides                                                          | Additional service required?                        | Recommended deployment                                                               |
+| ------------------------ | -------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Transactional PostgreSQL | Yes                                                                        | No                                                  | Self-hosted Supabase PostgreSQL; production persistent Linux storage/HA strategy     |
+| Authentication/JWT       | Yes (Supabase Auth)                                                        | Not initially                                       | Self-hosted; optional enterprise IdP/SSO later                                       |
+| REST Data API            | Yes (PostgREST)                                                            | No                                                  | Use selectively; NestJS remains canonical business API                               |
+| Realtime                 | Yes                                                                        | No                                                  | Supabase Realtime for suitable UI subscriptions; durable events remain outbox-driven |
+| Object/file storage      | Yes (Storage)                                                              | Prefer durable S3-compatible backing for production | Self-hosted Supabase Storage + MinIO/S3 where required                               |
+| Background jobs          | No dedicated general-purpose queue                                         | Yes                                                 | Redis + BullMQ, Docker/managed equivalent                                            |
+| Durable event broker     | No                                                                         | Not initially; later at scale                       | NATS or Kafka, Docker/Kubernetes/managed equivalent                                  |
+| Full-text/search         | PostgreSQL search only                                                     | Eventually                                          | OpenSearch, self-hosted or managed                                                   |
+| PACS/DICOM               | No                                                                         | Yes for radiology                                   | Orthanc + PostgreSQL + object storage, Docker/Kubernetes                             |
+| FHIR server              | No dedicated full FHIR server                                              | Optional                                            | HAPI FHIR or internal FHIR gateway; Docker/Kubernetes                                |
+| HL7 interface engine     | No                                                                         | Often                                               | Interface engine such as NextGen Connect where external systems require it           |
+| PDF/document rendering   | No complete document-rendering platform                                    | Yes                                                 | Gotenberg or equivalent, Docker                                                      |
+| OCR                      | No                                                                         | Optional                                            | Tesseract/OCR service, Docker                                                        |
+| Malware scanning         | No                                                                         | Recommended for file ingestion                      | ClamAV, Docker                                                                       |
+| Secrets management       | Environment secrets exist but not a full enterprise secrets platform       | Recommended                                         | HashiCorp Vault/self-hosted or cloud secret manager                                  |
+| Monitoring               | Basic Supabase logs/metrics vary by self-host deployment                   | Yes                                                 | OpenTelemetry + Prometheus/Grafana/Loki/Tempo, self-hosted                           |
+| Backup/DR/PITR           | Managed-platform backup/PITR is not the same as self-hosted responsibility | Yes                                                 | pgBackRest/WAL archiving + off-host object storage; HA strategy later                |
+| WAF/edge                 | No                                                                         | Yes for public production                           | Cloud WAF/CDN or self-hosted reverse proxy with appropriate controls                 |
+| SMS/WhatsApp/email       | No                                                                         | Yes                                                 | External providers (not self-hosted for core delivery)                               |
+| Payments/UPI             | No                                                                         | Yes                                                 | Razorpay/PayU/other approved provider                                                |
+| Push notifications       | No                                                                         | Yes                                                 | FCM/APNs                                                                             |
+| Video consultation       | No                                                                         | Yes                                                 | Jitsi self-hosted or managed provider                                                |
+| Enterprise SIEM          | No                                                                         | Recommended                                         | Wazuh or managed SIEM                                                                |
 
 The exact service list is deployment-dependent, but the following are considered **essential for a serious production HIMS even when Supabase is the data platform**: Redis/background jobs, durable backup/restore, monitoring/alerting, secrets management, secure ingress, document/PDF processing, and radiology PACS/DICOM infrastructure where RIS is deployed. Supabase's current self-hosting documentation explicitly states that high availability, backups/DR, monitoring and scalability are operator responsibilities, and that some managed-platform capabilities are unavailable in self-hosted deployments. (https://supabase.com/docs/guides/self-hosting)
-
-
 
 ## Appendix D — Audited Infrastructure Service Boundary
 
 The HIMS application shall be implemented with **self-hosted Supabase as the primary data platform** and external/self-hosted supporting services according to deployment profile.
 
-| Capability | Supabase provides | Additional service required? | Recommended deployment |
-|---|---|---|---|
-| Transactional PostgreSQL | Yes | No | Self-hosted Supabase PostgreSQL; production persistent Linux storage/HA strategy |
-| Authentication/JWT | Yes (Supabase Auth) | Not initially | Self-hosted; optional enterprise IdP/SSO later |
-| REST Data API | Yes (PostgREST) | No | Use selectively; NestJS remains canonical business API |
-| Realtime | Yes | No | Supabase Realtime for suitable UI subscriptions; durable events remain outbox-driven |
-| Object/file storage | Yes (Storage) | Prefer durable S3-compatible backing for production | Self-hosted Supabase Storage + MinIO/S3 where required |
-| Background jobs | No dedicated general-purpose queue | Yes | Redis + BullMQ, Docker/managed equivalent |
-| Durable event broker | No | Not initially; later at scale | NATS or Kafka, Docker/Kubernetes/managed equivalent |
-| Full-text/search | PostgreSQL search only | Eventually | OpenSearch, self-hosted or managed |
-| PACS/DICOM | No | Yes for radiology | Orthanc + PostgreSQL + object storage, Docker/Kubernetes |
-| FHIR server | No dedicated full FHIR server | Optional | HAPI FHIR or internal FHIR gateway; Docker/Kubernetes |
-| HL7 interface engine | No | Often | Interface engine such as NextGen Connect where external systems require it |
-| PDF/document rendering | No complete document-rendering platform | Yes | Gotenberg or equivalent, Docker |
-| OCR | No | Optional | Tesseract/OCR service, Docker |
-| Malware scanning | No | Recommended for file ingestion | ClamAV, Docker |
-| Secrets management | Environment secrets exist but not a full enterprise secrets platform | Recommended | HashiCorp Vault/self-hosted or cloud secret manager |
-| Monitoring | Basic Supabase logs/metrics vary by self-host deployment | Yes | OpenTelemetry + Prometheus/Grafana/Loki/Tempo, self-hosted |
-| Backup/DR/PITR | Managed-platform backup/PITR is not the same as self-hosted responsibility | Yes | pgBackRest/WAL archiving + off-host object storage; HA strategy later |
-| WAF/edge | No | Yes for public production | Cloud WAF/CDN or self-hosted reverse proxy with appropriate controls |
-| SMS/WhatsApp/email | No | Yes | External providers (not self-hosted for core delivery) |
-| Payments/UPI | No | Yes | Razorpay/PayU/other approved provider |
-| Push notifications | No | Yes | FCM/APNs |
-| Video consultation | No | Yes | Jitsi self-hosted or managed provider |
-| Enterprise SIEM | No | Recommended | Wazuh or managed SIEM |
+| Capability               | Supabase provides                                                          | Additional service required?                        | Recommended deployment                                                               |
+| ------------------------ | -------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Transactional PostgreSQL | Yes                                                                        | No                                                  | Self-hosted Supabase PostgreSQL; production persistent Linux storage/HA strategy     |
+| Authentication/JWT       | Yes (Supabase Auth)                                                        | Not initially                                       | Self-hosted; optional enterprise IdP/SSO later                                       |
+| REST Data API            | Yes (PostgREST)                                                            | No                                                  | Use selectively; NestJS remains canonical business API                               |
+| Realtime                 | Yes                                                                        | No                                                  | Supabase Realtime for suitable UI subscriptions; durable events remain outbox-driven |
+| Object/file storage      | Yes (Storage)                                                              | Prefer durable S3-compatible backing for production | Self-hosted Supabase Storage + MinIO/S3 where required                               |
+| Background jobs          | No dedicated general-purpose queue                                         | Yes                                                 | Redis + BullMQ, Docker/managed equivalent                                            |
+| Durable event broker     | No                                                                         | Not initially; later at scale                       | NATS or Kafka, Docker/Kubernetes/managed equivalent                                  |
+| Full-text/search         | PostgreSQL search only                                                     | Eventually                                          | OpenSearch, self-hosted or managed                                                   |
+| PACS/DICOM               | No                                                                         | Yes for radiology                                   | Orthanc + PostgreSQL + object storage, Docker/Kubernetes                             |
+| FHIR server              | No dedicated full FHIR server                                              | Optional                                            | HAPI FHIR or internal FHIR gateway; Docker/Kubernetes                                |
+| HL7 interface engine     | No                                                                         | Often                                               | Interface engine such as NextGen Connect where external systems require it           |
+| PDF/document rendering   | No complete document-rendering platform                                    | Yes                                                 | Gotenberg or equivalent, Docker                                                      |
+| OCR                      | No                                                                         | Optional                                            | Tesseract/OCR service, Docker                                                        |
+| Malware scanning         | No                                                                         | Recommended for file ingestion                      | ClamAV, Docker                                                                       |
+| Secrets management       | Environment secrets exist but not a full enterprise secrets platform       | Recommended                                         | HashiCorp Vault/self-hosted or cloud secret manager                                  |
+| Monitoring               | Basic Supabase logs/metrics vary by self-host deployment                   | Yes                                                 | OpenTelemetry + Prometheus/Grafana/Loki/Tempo, self-hosted                           |
+| Backup/DR/PITR           | Managed-platform backup/PITR is not the same as self-hosted responsibility | Yes                                                 | pgBackRest/WAL archiving + off-host object storage; HA strategy later                |
+| WAF/edge                 | No                                                                         | Yes for public production                           | Cloud WAF/CDN or self-hosted reverse proxy with appropriate controls                 |
+| SMS/WhatsApp/email       | No                                                                         | Yes                                                 | External providers (not self-hosted for core delivery)                               |
+| Payments/UPI             | No                                                                         | Yes                                                 | Razorpay/PayU/other approved provider                                                |
+| Push notifications       | No                                                                         | Yes                                                 | FCM/APNs                                                                             |
+| Video consultation       | No                                                                         | Yes                                                 | Jitsi self-hosted or managed provider                                                |
+| Enterprise SIEM          | No                                                                         | Recommended                                         | Wazuh or managed SIEM                                                                |
 
 The exact service list is deployment-dependent, but the following are considered **essential for a serious production HIMS even when Supabase is the data platform**: Redis/background jobs, durable backup/restore, monitoring/alerting, secrets management, secure ingress, document/PDF processing, and radiology PACS/DICOM infrastructure where RIS is deployed. Supabase's current self-hosting documentation explicitly states that high availability, backups/DR, monitoring and scalability are operator responsibilities, and that some managed-platform capabilities are unavailable in self-hosted deployments. (https://supabase.com/docs/guides/self-hosting)
-
 
 ## Appendix C — Primary Reference Sources
 
@@ -1814,4 +1802,3 @@ The exact service list is deployment-dependent, but the following are considered
 7. NHSRC Revised NQAS 2024: https://qps.nhsrcindia.org/national-quality-assurance-standards/quality-RNQAS
 8. NHSRC NQAS QA Directives: https://qps.nhsrcindia.org/repository-standard/quality-QA-Directives
 9. NHCX specifications: https://nhcx.abdm.gov.in/procedure-type
-

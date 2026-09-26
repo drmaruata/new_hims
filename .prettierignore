@@ -1,0 +1,16 @@
+# Files whose formatting is owned by another tool. Prettier's opinion here would
+# be undone by the next install or build, so `pnpm format:check` would be
+# permanently red on generated content.
+
+# Rewritten by pnpm on every install, in pnpm's own YAML style.
+pnpm-lock.yaml
+
+# Rewritten by Next.js on every `next dev` / `next build`.
+**/next-env.d.ts
+
+# Build, test and typecheck output.
+**/dist/**
+**/.next/**
+**/out/**
+**/coverage/**
+**/*.tsbuildinfo

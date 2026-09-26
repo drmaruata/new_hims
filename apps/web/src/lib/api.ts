@@ -39,7 +39,7 @@ export const apiClient = new HimsApiClient({ baseUrl: API_BASE_URL });
 export const browserApiClient = new HimsApiClient({
   baseUrl: API_BASE_URL,
   getAuthToken: async () => {
-    const { data } = await browserSupabase?.auth.getSession() ?? { data: { session: null } };
+    const { data } = (await browserSupabase?.auth.getSession()) ?? { data: { session: null } };
     return data.session?.access_token ?? null;
   },
   getFacilityId: () => window.localStorage.getItem('hims_facility_id'),
@@ -63,8 +63,7 @@ export function describeApiError(error: unknown): { title: string; detail: strin
     if (error.status === 403) {
       return {
         title: 'Not permitted',
-        detail:
-          'Your role does not include command centre analytics for this facility.',
+        detail: 'Your role does not include command centre analytics for this facility.',
       };
     }
     if (error.code === 'RATE_LIMITED') {

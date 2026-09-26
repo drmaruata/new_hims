@@ -8,4 +8,3 @@ import { AiGatewayService } from './ai.service.js';
   exports: [AiGatewayService],
 })
 export class AiModule {}
-

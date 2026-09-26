@@ -44,7 +44,7 @@ const REDACTED_QUERY_KEYS = [
 export function setupSentry(
   dsn: string,
   nodeEnv: string,
-  options: { serviceName?: string; tracesSampleRate?: number; enableProfiling?: boolean } = {},
+  options: { serviceName?: string; tracesSampleRate?: number; enableProfiling?: boolean } = {}
 ): void {
   const serviceName = options.serviceName ?? 'hims-api';
 
@@ -181,7 +181,8 @@ function scrubRequest(request: SentryRequestSummary | undefined): void {
 function scrubObject(value: Record<string, unknown>, depth = 0): void {
   if (depth > 6) return;
 
-  const identifying = /^(?:.*_)?(?:name|mobile|phone|email|address|dob|date_of_birth|aadhaar|abha|national_id|mrn|uhid|diagnosis|notes?|remark|body|payload|data|token|secret|password|pin)$/i;
+  const identifying =
+    /^(?:.*_)?(?:name|mobile|phone|email|address|dob|date_of_birth|aadhaar|abha|national_id|mrn|uhid|diagnosis|notes?|remark|body|payload|data|token|secret|password|pin)$/i;
 
   for (const [key, entry] of Object.entries(value)) {
     if (identifying.test(key)) {

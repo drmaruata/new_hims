@@ -44,7 +44,8 @@ function serialiseError(value: unknown): unknown {
       // `cause` is an ordinary property but holds the chain that actually
       // explains a wrapped failure, and it is the first thing missing from a
       // log line during an incident.
-      cause: value.cause instanceof Error ? `${value.cause.name}: ${value.cause.message}` : value.cause,
+      cause:
+        value.cause instanceof Error ? `${value.cause.name}: ${value.cause.message}` : value.cause,
       stack: value.stack,
     };
   }
@@ -64,7 +65,12 @@ export class TelemetryLogger {
    * would let a stray `meta.level` relabel an info line as an error, which in an
    * incident review is indistinguishable from a real one.
    */
-  private emit(level: LogLevel, message: string, meta: StructuredLogMeta, sink: (line: string) => void): void {
+  private emit(
+    level: LogLevel,
+    message: string,
+    meta: StructuredLogMeta,
+    sink: (line: string) => void
+  ): void {
     const envelope: LogEnvelope = {
       ...meta,
       level,

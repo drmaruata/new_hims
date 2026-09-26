@@ -57,7 +57,7 @@ export class TenantService {
     const tenant = await this.db.one<TenantRecord>(
       `SELECT ${TENANT_COLUMNS} FROM hims_core.tenants WHERE id = $1`,
       [tenantId],
-      ctx,
+      ctx
     );
 
     if (!tenant) {
@@ -66,10 +66,7 @@ export class TenantService {
     return tenant;
   }
 
-  async getSettings(
-    tenantId: string,
-    ctx: DatabaseContext,
-  ): Promise<Record<string, unknown>> {
+  async getSettings(tenantId: string, ctx: DatabaseContext): Promise<Record<string, unknown>> {
     const tenant = await this.getOwn(tenantId, ctx);
     return tenant.settings;
   }
@@ -82,7 +79,7 @@ export class TenantService {
   async updateOwn(
     tenantId: string,
     patch: UpdateTenantInput,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<TenantRecord> {
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -122,7 +119,7 @@ export class TenantService {
         WHERE id = $${params.length}
         RETURNING ${TENANT_COLUMNS}`,
       params,
-      ctx,
+      ctx
     );
 
     if (!tenant) {
@@ -143,7 +140,7 @@ export class TenantService {
         ORDER BY name
         LIMIT 500`,
       [tenantId],
-      ctx,
+      ctx
     );
 
     return { items: rows, hasMore: false, nextCursor: null };

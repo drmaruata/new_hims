@@ -1,15 +1,13 @@
-import {
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-} from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bullmq';
 import type { Queue } from 'bullmq';
 import { HIMS_QUEUES } from '@hims/domain-types';
 
-import { PlatformDatabaseService, type PlatformOutboxEvent } from '../core/database/platform-database.service.js';
+import {
+  PlatformDatabaseService,
+  type PlatformOutboxEvent,
+} from '../core/database/platform-database.service.js';
 import { routeEvent } from '../routing/event-router.js';
 import { EXPEDITED_JOB_OPTIONS } from './job-options.js';
 
@@ -100,7 +98,7 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     @InjectQueue(HIMS_QUEUES.BULK_IMPORT) private readonly bulkImport: Queue,
     @InjectQueue(HIMS_QUEUES.INTEGRATION) private readonly integration: Queue,
     private readonly platformDb: PlatformDatabaseService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     this.queues = new Map<ProducerQueueName, Queue>([
       [HIMS_QUEUES.NOTIFICATIONS, this.notifications],
@@ -123,7 +121,7 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     for (const name of PRODUCER_QUEUES) {
       if (!this.queues.has(name)) {
         throw new Error(
-          `Outbox relay has no injected queue for "${name}". Add it to the constructor and to this.queues.`,
+          `Outbox relay has no injected queue for "${name}". Add it to the constructor and to this.queues.`
         );
       }
     }
@@ -132,10 +130,7 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     this.pollIntervalMs = this.configService.get<number>('WORKER_OUTBOX_POLL_MS', 1_000);
     this.retentionDays = this.configService.get<number>('OUTBOX_RETENTION_DAYS', 30);
     this.stuckAfterMinutes = this.configService.get<number>('OUTBOX_STUCK_MINUTES', 5);
-    this.maxPublishAttempts = this.configService.get<number>(
-      'OUTBOX_MAX_PUBLISH_ATTEMPTS',
-      5,
-    );
+    this.maxPublishAttempts = this.configService.get<number>('OUTBOX_MAX_PUBLISH_ATTEMPTS', 5);
   }
 
   async onApplicationBootstrap(): Promise<void> {
@@ -152,7 +147,7 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     this.timer.unref();
 
     this.logger.log(
-      `Outbox relay started: batch=${this.batchSize} every ${this.pollIntervalMs}ms, retention=${this.retentionDays}d`,
+      `Outbox relay started: batch=${this.batchSize} every ${this.pollIntervalMs}ms, retention=${this.retentionDays}d`
     );
   }
 
@@ -175,10 +170,7 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     this.ticking = true;
 
     try {
-      const events = await this.platformDb.claimOutboxEvents(
-        this.batchSize,
-        'outbox-relay tick',
-      );
+      const events = await this.platformDb.claimOutboxEvents(this.batchSize, 'outbox-relay tick');
       if (events.length === 0) return;
 
       const published: string[] = [];
@@ -192,34 +184,27 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
           // back to PENDING (or to DEAD, once it has burned its attempts) with
           // the reason attached, and the batch carries on.
           const message = error instanceof Error ? error.message : String(error);
-          this.logger.error(
-            `Failed to relay ${event.event_type} (${event.event_id}): ${message}`,
-          );
+          this.logger.error(`Failed to relay ${event.event_type} (${event.event_id}): ${message}`);
           await this.platformDb.recordOutboxFailure(
             event.event_id,
             message,
             this.maxPublishAttempts,
-            'outbox-relay publish failure',
+            'outbox-relay publish failure'
           );
         }
       }
 
       if (published.length > 0) {
-        await this.platformDb.markOutboxEventsPublished(
-          published,
-          'outbox-relay tick complete',
-        );
+        await this.platformDb.markOutboxEventsPublished(published, 'outbox-relay tick complete');
       }
 
-      this.logger.debug(
-        `Relayed ${published.length}/${events.length} event(s) from the outbox`,
-      );
+      this.logger.debug(`Relayed ${published.length}/${events.length} event(s) from the outbox`);
     } catch (error) {
       // A database or Redis outage is not a reason to crash the worker. The
       // next tick retries, and the events stay PENDING because the claim
       // transaction never committed.
       this.logger.error(
-        `Outbox relay tick failed: ${error instanceof Error ? error.message : String(error)}`,
+        `Outbox relay tick failed: ${error instanceof Error ? error.message : String(error)}`
       );
     } finally {
       this.ticking = false;
@@ -236,14 +221,14 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
       // with `last_error` explaining itself. Silently marking it published
       // would drop a committed domain event with no trace anywhere.
       throw new Error(
-        `No route for event type "${event.event_type}". Add it to HIMS_EVENT_TYPES in @hims/domain-types and to EVENT_ROUTES in apps/worker.`,
+        `No route for event type "${event.event_type}". Add it to HIMS_EVENT_TYPES in @hims/domain-types and to EVENT_ROUTES in apps/worker.`
       );
     }
 
     const queue = this.queues.get(route.queue as ProducerQueueName);
     if (!queue) {
       throw new Error(
-        `Route for "${event.event_type}" names queue "${route.queue}", which this relay has no producer for.`,
+        `Route for "${event.event_type}" names queue "${route.queue}", which this relay has no producer for.`
       );
     }
 
@@ -277,11 +262,11 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
       {
         ...(route.expedite ? EXPEDITED_JOB_OPTIONS : {}),
         jobId: event.event_id,
-      },
+      }
     );
 
     this.logger.debug(
-      `Relayed ${event.event_type} -> ${route.queue}/${route.job} (${correlationId})`,
+      `Relayed ${event.event_type} -> ${route.queue}/${route.job} (${correlationId})`
     );
   }
 
@@ -296,26 +281,26 @@ export class OutboxRelayService implements OnApplicationBootstrap, OnApplication
     try {
       const requeued = await this.platformDb.requeueStuckOutboxEvents(
         this.stuckAfterMinutes,
-        'outbox-relay boot sweep',
+        'outbox-relay boot sweep'
       );
       if (requeued > 0) {
         this.logger.warn(
-          `Requeued ${requeued} outbox event(s) stranded in IN_FLIGHT for over ${this.stuckAfterMinutes} minutes`,
+          `Requeued ${requeued} outbox event(s) stranded in IN_FLIGHT for over ${this.stuckAfterMinutes} minutes`
         );
       }
 
       const pruned = await this.platformDb.pruneOutboxEvents(
         this.retentionDays,
-        'outbox-relay retention sweep',
+        'outbox-relay retention sweep'
       );
       if (pruned > 0) {
         this.logger.debug(
-          `Pruned ${pruned} published outbox event(s) older than ${this.retentionDays} days`,
+          `Pruned ${pruned} published outbox event(s) older than ${this.retentionDays} days`
         );
       }
     } catch (error) {
       this.logger.error(
-        `Outbox maintenance failed: ${error instanceof Error ? error.message : String(error)}`,
+        `Outbox maintenance failed: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }

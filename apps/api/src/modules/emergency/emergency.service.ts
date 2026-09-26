@@ -9,21 +9,21 @@ export class EmergencyService {
 
   async getActiveCases(
     tenantId?: string | null,
-    facilityId?: string | null,
+    facilityId?: string | null
   ): Promise<EmergencyEncounter[]> {
     return [
       {
         id: '80808080-8080-8080-8080-808080808001',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         emergencyNumber: 'ED-2026-0042',
-        patientId: '99999999-9999-9999-9999-999999999901',
+        patientId: '99999999-9999-4999-8999-999999999901',
         arrivedAt: new Date().toISOString(),
         arrivalMode: 'AMBULANCE',
         triageAcuity: 'ESI_2_EMERGENT',
         isMlc: false,
-        triageNurseId: '44444444-4444-4444-4444-444444444402',
-        attendingPhysicianId: '44444444-4444-4444-4444-444444444401',
+        triageNurseId: '44444444-4444-4444-8444-444444444402',
+        attendingPhysicianId: '44444444-4444-4444-8444-444444444401',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         version: 1,
@@ -35,7 +35,7 @@ export class EmergencyService {
     input: TriageEmergencyDto,
     tenantId: string,
     facilityId: string,
-    nurseId: string,
+    nurseId: string
   ): Promise<EmergencyEncounter> {
     const emergencyNumber = `ED-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -57,4 +57,3 @@ export class EmergencyService {
     };
   }
 }
-

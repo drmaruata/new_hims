@@ -14,7 +14,7 @@ const ianaTimezone = z.string().refine(
       return false;
     }
   },
-  { message: 'Must be a valid IANA timezone identifier' },
+  { message: 'Must be a valid IANA timezone identifier' }
 );
 
 export const UpdateTenantDtoSchema = z

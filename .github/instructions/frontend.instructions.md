@@ -1,6 +1,6 @@
 ---
-applyTo: "apps/web/**,packages/ui/**,packages/api-client/**,packages/auth/**,packages/localization/**"
-description: "Use when working on the Next.js web app, shared UI primitives, client-side data flows, auth, or localization."
+applyTo: 'apps/web/**,packages/ui/**,packages/api-client/**,packages/auth/**,packages/localization/**'
+description: 'Use when working on the Next.js web app, shared UI primitives, client-side data flows, auth, or localization.'
 ---
 
 # Frontend conventions

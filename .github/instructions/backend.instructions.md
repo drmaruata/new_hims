@@ -1,6 +1,6 @@
 ---
-applyTo: "apps/api/**,apps/worker/**,apps/integration-worker/**,packages/**,supabase/**"
-description: "Use when working on NestJS API modules, worker jobs, database behavior, validation, shared domain logic, or backend integrations."
+applyTo: 'apps/api/**,apps/worker/**,apps/integration-worker/**,packages/**,supabase/**'
+description: 'Use when working on NestJS API modules, worker jobs, database behavior, validation, shared domain logic, or backend integrations.'
 ---
 
 # Backend conventions

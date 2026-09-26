@@ -38,13 +38,17 @@ END
 $$;
 SQL
 
-psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 <<'SQL'
+# The probe row is written over the admin connection so RLS does not filter it,
+# but it is still scoped to the tenant under test rather than a copied literal:
+# a literal here would silently diverge from HIMS_TENANT_ID and the assertions
+# below would then measure the wrong tenant.
+psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 -v tenant="$HIMS_TENANT_ID" <<'SQL'
 INSERT INTO hims_core.departments
   (id, tenant_id, facility_id, department_code, name, department_type, clinical_service_flag)
 VALUES
-  ('33333333-3333-3333-3333-333333333399',
-   '11111111-1111-1111-1111-111111111111',
-   '22222222-2222-2222-2222-222222222222',
+  ('33333333-3333-4333-8333-333333333399',
+   :'tenant',
+   '22222222-2222-4222-8222-222222222222',
    'RLS_TEST',
    'RLS Test Department',
    'ADMIN',
@@ -53,13 +57,18 @@ ON CONFLICT (facility_id, department_code) DO NOTHING;
 SQL
 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v tenant="$HIMS_TENANT_ID" <<'SQL'
+-- psql does not interpolate :variables inside a dollar-quoted string, so the
+-- tenant id is published as a session GUC here (ordinary SQL, where
+-- interpolation does apply) and read back inside the DO block.
+SELECT set_config('hims.verify_tenant', :'tenant', false);
+
 DO $$
 DECLARE
   visible_count bigint;
   hidden_count bigint;
   facility_visible_count bigint;
   tenant_admin_count bigint;
-  target_tenant uuid := :'tenant'::uuid;
+  target_tenant uuid := current_setting('hims.verify_tenant')::uuid;
 BEGIN
   IF (SELECT rolsuper OR rolbypassrls FROM pg_roles WHERE rolname = current_user) THEN
     RAISE EXCEPTION 'RLS test must run as a non-superuser, non-BYPASSRLS role; current role is %', current_user;
@@ -67,7 +76,7 @@ BEGIN
 
   PERFORM set_config('app.tenant_id', target_tenant::text, true);
   PERFORM set_config('app.is_tenant_admin', 'false', true);
-  PERFORM set_config('app.facility_ids', '["22222222-2222-2222-2222-222222222221"]', true);
+  PERFORM set_config('app.facility_ids', '["22222222-2222-4222-8222-222222222221"]', true);
 
   SELECT count(*) INTO visible_count
   FROM hims_core.facilities
@@ -85,7 +94,7 @@ BEGIN
   END IF;
 
   PERFORM set_config('app.tenant_id', target_tenant::text, true);
-  PERFORM set_config('app.facility_ids', '["22222222-2222-2222-2222-222222222221"]', true);
+  PERFORM set_config('app.facility_ids', '["22222222-2222-4222-8222-222222222221"]', true);
   PERFORM set_config('app.is_tenant_admin', 'false', true);
 
   SELECT count(*) INTO facility_visible_count

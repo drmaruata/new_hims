@@ -8,4 +8,3 @@ import { OpdService } from './opd.service.js';
   exports: [OpdService],
 })
 export class OpdModule {}
-

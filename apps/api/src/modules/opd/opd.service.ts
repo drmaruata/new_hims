@@ -63,7 +63,7 @@ export class OpdService {
   async getAppointments(
     businessDate: string | undefined,
     departmentId: string | undefined,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<OpdAppointment[]> {
     const { rows } = await this.db.query<OpdAppointment & { queueToken: number | null }>(
       `SELECT ${APPOINTMENT_PROJECTION}
@@ -93,7 +93,7 @@ export class OpdService {
         ORDER BY a.scheduled_start, a.appointment_number
         LIMIT ${MAX_REGISTER_ROWS}`,
       [ctx.tenantId, departmentId ?? null, null, businessDate ?? null, 'Asia/Kolkata'],
-      ctx,
+      ctx
     );
 
     return rows;
@@ -115,10 +115,12 @@ export class OpdService {
   async checkIn(
     appointmentId: string,
     businessDate: string,
-    ctx: DatabaseContext,
+    ctx: DatabaseContext
   ): Promise<OpdAppointment> {
     if (!ctx.tenantId || !ctx.userId) {
-      throw new BadRequestException('A resolved tenant and user are required to check a patient in');
+      throw new BadRequestException(
+        'A resolved tenant and user are required to check a patient in'
+      );
     }
 
     return this.db.transaction<OpdAppointment>(async (client) => {
@@ -127,7 +129,7 @@ export class OpdService {
            FROM hims_opd.appointments
           WHERE id = $1 AND tenant_id = $2
           FOR UPDATE`,
-        [appointmentId, ctx.tenantId],
+        [appointmentId, ctx.tenantId]
       );
 
       const row = appointment.rows[0];
@@ -138,7 +140,7 @@ export class OpdService {
 
       if (row.status === 'CANCELLED' || row.status === 'NO_SHOW') {
         throw new BadRequestException(
-          `An appointment with status ${row.status} cannot be checked in`,
+          `An appointment with status ${row.status} cannot be checked in`
         );
       }
 
@@ -152,13 +154,13 @@ export class OpdService {
             AND status = 'ACTIVE'
           ORDER BY created_at DESC
           LIMIT 1`,
-        [ctx.tenantId, ctx.facilityIds?.[0] ?? null, row.departmentId, businessDate],
+        [ctx.tenantId, ctx.facilityIds?.[0] ?? null, row.departmentId, businessDate]
       );
 
       const target = queue.rows[0];
       if (!target) {
         throw new BadRequestException(
-          `No active OPD queue exists for this department on ${businessDate}; one must be opened before patients can be checked in`,
+          `No active OPD queue exists for this department on ${businessDate}; one must be opened before patients can be checked in`
         );
       }
 
@@ -171,12 +173,12 @@ export class OpdService {
         `UPDATE hims_opd.queues
             SET current_sequence = $1
           WHERE id = $2 AND tenant_id = $3 AND current_sequence = $4`,
-        [tokenNumber, target.id, ctx.tenantId, target.currentSequence],
+        [tokenNumber, target.id, ctx.tenantId, target.currentSequence]
       );
 
       if (advanced.rowCount === 0) {
         throw new BadRequestException(
-          'The queue was advanced by another check-in at the same moment; retry',
+          'The queue was advanced by another check-in at the same moment; retry'
         );
       }
 
@@ -188,7 +190,7 @@ export class OpdService {
            FROM hims_opd.appointments a
           WHERE a.id = $4 AND a.tenant_id = $1
          RETURNING id`,
-        [ctx.tenantId, target.id, tokenNumber, appointmentId],
+        [ctx.tenantId, target.id, tokenNumber, appointmentId]
       );
 
       if (!ticket.rows[0]) {
@@ -199,7 +201,7 @@ export class OpdService {
         `UPDATE hims_opd.appointments
             SET status = 'CHECKED_IN'
           WHERE id = $1 AND tenant_id = $2`,
-        [appointmentId, ctx.tenantId],
+        [appointmentId, ctx.tenantId]
       );
 
       const updated = await client.query<OpdAppointment & { queueToken: number | null }>(
@@ -219,7 +221,7 @@ export class OpdService {
               LIMIT 1
            ) qt ON true
           WHERE a.id = $1 AND a.tenant_id = $2`,
-        [appointmentId, ctx.tenantId],
+        [appointmentId, ctx.tenantId]
       );
 
       return updated.rows[0];

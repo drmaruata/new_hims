@@ -36,4 +36,3 @@ export class AuthController {
     return this.authService.listMemberships(user.userId);
   }
 }
-

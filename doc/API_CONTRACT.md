@@ -127,23 +127,23 @@ Tenant context is derived from the authenticated membership; there is no trusted
 
 ## 6. HTTP semantics
 
-| Status | Use |
-|---:|---|
-| 200 | successful read/update |
-| 201 | created |
-| 202 | accepted for asynchronous processing |
-| 204 | successful empty response |
-| 400 | malformed/invalid request |
-| 401 | authentication missing/invalid |
-| 403 | not authorized |
-| 404 | resource unavailable/not visible |
-| 409 | state or concurrency conflict |
-| 422 | semantic validation failure |
-| 429 | rate limited |
-| 500 | internal failure |
-| 502 | external dependency failed |
-| 503 | service temporarily unavailable |
-| 504 | external dependency timeout |
+| Status | Use                                  |
+| -----: | ------------------------------------ |
+|    200 | successful read/update               |
+|    201 | created                              |
+|    202 | accepted for asynchronous processing |
+|    204 | successful empty response            |
+|    400 | malformed/invalid request            |
+|    401 | authentication missing/invalid       |
+|    403 | not authorized                       |
+|    404 | resource unavailable/not visible     |
+|    409 | state or concurrency conflict        |
+|    422 | semantic validation failure          |
+|    429 | rate limited                         |
+|    500 | internal failure                     |
+|    502 | external dependency failed           |
+|    503 | service temporarily unavailable      |
+|    504 | external dependency timeout          |
 
 Cross-tenant lookup failures must not reveal whether the requested identifier exists.
 

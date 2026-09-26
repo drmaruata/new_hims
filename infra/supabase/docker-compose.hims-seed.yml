@@ -1,4 +1,0 @@
-services:
-  db:
-    volumes:
-      - ../../../supabase/seed/seed.sql:/docker-entrypoint-initdb.d/init-scripts/zz-hims-seed.sql:ro

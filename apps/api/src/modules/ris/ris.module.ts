@@ -8,4 +8,3 @@ import { RisService } from './ris.service.js';
   exports: [RisService],
 })
 export class RisModule {}
-

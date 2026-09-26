@@ -210,6 +210,7 @@ Production data must not be copied into non-production environments without appr
 ---
 
 # 6. Multi-Tenancy Requirements
+
 ## 6.1 Tenant topology
 
 The canonical shared-SaaS model shall be:
@@ -231,7 +232,6 @@ A user with tenant membership but no facility or department scope shall not auto
 Every tenant-owned table shall contain `tenant_id` unless a formally documented shared/global reference table is approved. RLS policies shall enforce tenant boundaries and, where applicable, facility/department boundaries. High-volume tables may be partitioned after measured scale thresholds are reached, but partitioning must not weaken RLS or auditability.
 
 ---
-
 
 The system shall support:
 
@@ -484,7 +484,7 @@ Supabase's self-hosting documentation explicitly places these responsibilities o
 **MPI-004** Patient merge shall preserve source identifiers and history.  
 **MPI-005** Unmerge/reversal, if supported, shall be restricted and audited.  
 **MPI-006** Search shall support configurable matching fields including phone, name, date of birth, identifier and other approved demographic fields.  
-**MPI-007** The system shall support patient identifiers across facilities within the same tenant.  
+**MPI-007** The system shall support patient identifiers across facilities within the same tenant.
 
 ---
 
@@ -1898,26 +1898,26 @@ Deliverables shall include:
 
 Supabase does not replace the complete operational stack required by a hospital HIMS.
 
-| Service | Requirement | Self-hosted option | Managed option |
-|---|---|---|---|
-| Redis | Required for cache, rate limits, distributed locks and BullMQ jobs | Docker/Kubernetes | AWS ElastiCache or equivalent |
-| Durable event broker | Optional initially; required as scale grows | NATS/Kafka | Managed Kafka/NATS equivalent |
-| Search | Required when PostgreSQL search is insufficient | OpenSearch | AWS OpenSearch or equivalent |
-| PACS/DICOM | Required for complete RIS | Orthanc | Vendor/managed PACS |
-| FHIR server | Optional based on external interoperability scope | HAPI FHIR | Managed FHIR service |
-| HL7 interface engine | Required where legacy/third-party HL7 integration exists | NextGen Connect/other approved engine | Integration platform |
-| PDF/document rendering | Required for reliable server-side document generation | Gotenberg | Managed document service |
-| OCR | Optional but useful for migration/scanned documents | Tesseract | Managed OCR |
-| Antivirus | Recommended for upload pipeline | ClamAV | Managed malware scanning |
-| Secrets | Required for production | HashiCorp Vault | AWS Secrets Manager/KMS or equivalent |
-| Observability | Required | OpenTelemetry + Prometheus/Grafana/Loki/Tempo | Managed observability |
-| Backup/DR | Required | pgBackRest + off-host object storage | Managed PostgreSQL backup/PITR |
-| Reverse proxy/WAF | Required for internet-facing deployment | Nginx/Traefik + firewall | Cloud WAF/CDN |
-| Messaging | Required for transactional notifications | Internal worker + provider API | SES/WhatsApp/SMS providers |
-| Payments | Required where online payment enabled | N/A | Razorpay/PayU/etc. |
-| Push | Required for mobile push | N/A | FCM/APNs |
-| Video | Required only for telemedicine | Jitsi | Managed video provider |
-| Security monitoring | Recommended for mature production | Wazuh | Managed SIEM |
+| Service                | Requirement                                                        | Self-hosted option                            | Managed option                        |
+| ---------------------- | ------------------------------------------------------------------ | --------------------------------------------- | ------------------------------------- |
+| Redis                  | Required for cache, rate limits, distributed locks and BullMQ jobs | Docker/Kubernetes                             | AWS ElastiCache or equivalent         |
+| Durable event broker   | Optional initially; required as scale grows                        | NATS/Kafka                                    | Managed Kafka/NATS equivalent         |
+| Search                 | Required when PostgreSQL search is insufficient                    | OpenSearch                                    | AWS OpenSearch or equivalent          |
+| PACS/DICOM             | Required for complete RIS                                          | Orthanc                                       | Vendor/managed PACS                   |
+| FHIR server            | Optional based on external interoperability scope                  | HAPI FHIR                                     | Managed FHIR service                  |
+| HL7 interface engine   | Required where legacy/third-party HL7 integration exists           | NextGen Connect/other approved engine         | Integration platform                  |
+| PDF/document rendering | Required for reliable server-side document generation              | Gotenberg                                     | Managed document service              |
+| OCR                    | Optional but useful for migration/scanned documents                | Tesseract                                     | Managed OCR                           |
+| Antivirus              | Recommended for upload pipeline                                    | ClamAV                                        | Managed malware scanning              |
+| Secrets                | Required for production                                            | HashiCorp Vault                               | AWS Secrets Manager/KMS or equivalent |
+| Observability          | Required                                                           | OpenTelemetry + Prometheus/Grafana/Loki/Tempo | Managed observability                 |
+| Backup/DR              | Required                                                           | pgBackRest + off-host object storage          | Managed PostgreSQL backup/PITR        |
+| Reverse proxy/WAF      | Required for internet-facing deployment                            | Nginx/Traefik + firewall                      | Cloud WAF/CDN                         |
+| Messaging              | Required for transactional notifications                           | Internal worker + provider API                | SES/WhatsApp/SMS providers            |
+| Payments               | Required where online payment enabled                              | N/A                                           | Razorpay/PayU/etc.                    |
+| Push                   | Required for mobile push                                           | N/A                                           | FCM/APNs                              |
+| Video                  | Required only for telemedicine                                     | Jitsi                                         | Managed video provider                |
+| Security monitoring    | Recommended for mature production                                  | Wazuh                                         | Managed SIEM                          |
 
 Docker Desktop shall be treated as a development/local-test host. Production must run on Linux-based infrastructure with persistent storage, backups, monitoring and access controls. A small pilot may use a single Linux host, but the architecture shall already preserve the separation required for later HA deployment.
 
@@ -2067,8 +2067,6 @@ Recommended requirement IDs:
 
 ---
 
-
-
 # 99A. Production Service Deployment Classification
 
 ### Can run in Docker/Docker Compose
@@ -2111,23 +2109,23 @@ Docker Desktop is not the production runtime standard. It is a developer/test en
 
 # 99B. Cross-Module Transaction Acceptance Matrix
 
-| Scenario | Required source | Required downstream result |
-|---|---|---|
-| OPD registration | OPD/Registration | UHID + department-specific encounter |
-| OPD prescription | OPD | Pharmacy queue + EMR medication history |
-| OPD lab order | OPD | LIS worklist/order |
-| OPD imaging order | OPD | RIS worklist/order |
-| OPD admission | OPD | IPD admission request |
-| IPD medication order | IPD | Pharmacy queue; eventual MAR linkage |
-| IPD lab order | IPD | LIS order |
-| IPD imaging order | IPD | RIS order |
-| IPD ICU transfer | IPD | ICU acceptance/bed/movement workflow |
-| IPD OT request | IPD | OT scheduling/case workflow |
-| Emergency admission | Emergency | IPD/ICU admission without duplicate patient |
-| Lab result release | LIS | EMR result availability + critical workflow if applicable |
-| Radiology report release | RIS | EMR report/study availability |
-| Pharmacy dispensing | Pharmacy | Inventory decrement + billing/EMR linkage where configured |
-| Insurance preauth/claim | Insurance | Billing/RCM state update |
+| Scenario                 | Required source  | Required downstream result                                 |
+| ------------------------ | ---------------- | ---------------------------------------------------------- |
+| OPD registration         | OPD/Registration | UHID + department-specific encounter                       |
+| OPD prescription         | OPD              | Pharmacy queue + EMR medication history                    |
+| OPD lab order            | OPD              | LIS worklist/order                                         |
+| OPD imaging order        | OPD              | RIS worklist/order                                         |
+| OPD admission            | OPD              | IPD admission request                                      |
+| IPD medication order     | IPD              | Pharmacy queue; eventual MAR linkage                       |
+| IPD lab order            | IPD              | LIS order                                                  |
+| IPD imaging order        | IPD              | RIS order                                                  |
+| IPD ICU transfer         | IPD              | ICU acceptance/bed/movement workflow                       |
+| IPD OT request           | IPD              | OT scheduling/case workflow                                |
+| Emergency admission      | Emergency        | IPD/ICU admission without duplicate patient                |
+| Lab result release       | LIS              | EMR result availability + critical workflow if applicable  |
+| Radiology report release | RIS              | EMR report/study availability                              |
+| Pharmacy dispensing      | Pharmacy         | Inventory decrement + billing/EMR linkage where configured |
+| Insurance preauth/claim  | Insurance        | Billing/RCM state update                                   |
 
 The full acceptance suite must exercise these paths with real database transactions and failure/retry scenarios; mocked unit tests alone are insufficient.
 
@@ -2228,4 +2226,3 @@ Gate 7: Production monitoring readiness.
 - ABDM FAQ: https://abdm.gov.in/faqs
 - NABH Hospital Accreditation Standards, 6th Edition, effective 1 Jan 2025: https://portal.nabh.co/images/Standards/NABH%20Hospital%20Accreditation%20Standard%206th%20Edition%20January%202025.pdf
 - MeitY Digital Personal Data Protection Rules 2025: https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa?pageTitle=Digital-Personal-Data-Protection-Rules-2025
-

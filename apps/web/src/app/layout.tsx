@@ -8,14 +8,11 @@ export const metadata: Metadata = {
     default: 'HIMS | Hospital Information Management System',
     template: '%s | HIMS',
   },
-  description: 'Enterprise-grade, India-first Hospital Information Management, Operating System & Clinical Decision Support Platform',
+  description:
+    'Enterprise-grade, India-first Hospital Information Management, Operating System & Clinical Decision Support Platform',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-slate-50 text-slate-900">
@@ -23,9 +20,7 @@ export default function RootLayout({
           <Navbar />
           <div className="flex flex-1 overflow-hidden">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto p-6 bg-[#f8fafc]">
-              {children}
-            </main>
+            <main className="flex-1 overflow-y-auto p-6 bg-[#f8fafc]">{children}</main>
           </div>
         </div>
       </body>

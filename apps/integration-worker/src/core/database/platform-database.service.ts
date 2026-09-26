@@ -19,7 +19,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
 
     if (!connectionString) {
       throw new Error(
-        'DATABASE_PLATFORM_URL is not set. Integration dispatch needs a role with BYPASSRLS.',
+        'DATABASE_PLATFORM_URL is not set. Integration dispatch needs a role with BYPASSRLS.'
       );
     }
 
@@ -35,11 +35,11 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
     const client = await this.pool.connect();
     try {
       const { rows } = await client.query<{ bypassrls: boolean }>(
-        'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user',
+        'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user'
       );
       if (!rows[0]?.bypassrls) {
         this.logger.error(
-          'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant dispatch will return zero rows.',
+          'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant dispatch will return zero rows.'
         );
       } else {
         this.logger.log('Platform role verified: BYPASSRLS is set');
@@ -62,7 +62,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
               endpoint, secret_ref, status
          FROM hims_integration.integrations
         WHERE tenant_id = $1 AND status = 'ACTIVE'`,
-      [tenantId],
+      [tenantId]
     );
     return rows;
   }
@@ -86,7 +86,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
         data.correlationId ?? null,
         data.requestPayloadRef ?? null,
         data.status,
-      ],
+      ]
     );
     return rows[0].id;
   }
@@ -107,7 +107,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
         data.resultStatus,
         data.errorCode ?? null,
         data.errorMessage ?? null,
-      ],
+      ]
     );
 
     await this.pool.query(
@@ -116,7 +116,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
               sent_at = CASE WHEN $2 = 'SENT' THEN now() ELSE sent_at END,
               error_code = $3
         WHERE id = $1`,
-      [data.messageRecordId, data.resultStatus, data.errorCode ?? null],
+      [data.messageRecordId, data.resultStatus, data.errorCode ?? null]
     );
   }
 
@@ -128,12 +128,12 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
       `INSERT INTO hims_integration.dead_letters (
           tenant_id, message_record_id, reason, first_failed_at, last_failed_at, replay_status
         ) VALUES ($1, $2, $3, now(), now(), 'PENDING')`,
-      [data.tenantId, data.messageRecordId, data.reason],
+      [data.tenantId, data.messageRecordId, data.reason]
     );
 
     await this.pool.query(
       `UPDATE hims_integration.messages SET status = 'DEAD_LETTER' WHERE id = $1`,
-      [data.messageRecordId],
+      [data.messageRecordId]
     );
   }
 
@@ -142,7 +142,7 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
    */
   async query<T extends QueryResultRow = QueryResultRow>(
     text: string,
-    params: unknown[],
+    params: unknown[]
   ): Promise<QueryResult<T>> {
     return this.pool.query<T>(text, params);
   }

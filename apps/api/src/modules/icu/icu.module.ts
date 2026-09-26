@@ -8,4 +8,3 @@ import { IcuService } from './icu.service.js';
   exports: [IcuService],
 })
 export class IcuModule {}
-

@@ -57,7 +57,7 @@ export class AuthorizationController {
     @DbContext() ctx: DatabaseContext,
     @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
     @Query('search') search: string | undefined,
-    @Query('status') status: string | undefined,
+    @Query('status') status: string | undefined
   ) {
     return this.authorizationService.listUsers(ctx, {
       limit: Math.min(limit, 200),
@@ -71,7 +71,7 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'Get a user with roles and facility grants' })
   async getUser(
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.getUser(userId, ctx);
   }
@@ -82,7 +82,7 @@ export class AuthorizationController {
   async deactivate(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @DbContext() ctx: DatabaseContext,
-    @CurrentUser() actor: AuthenticatedUser,
+    @CurrentUser() actor: AuthenticatedUser
   ) {
     // Guard against an administrator locking themselves — and potentially the
     // last administrator — out of the tenant.
@@ -97,7 +97,7 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'Restore a suspended user' })
   async reactivate(
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.setMembershipStatus(userId, 'ACTIVE', ctx);
   }
@@ -108,7 +108,7 @@ export class AuthorizationController {
   async assignRole(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body(new ZodValidationPipe(AssignRoleDtoSchema)) body: AssignRoleInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     if (body.userId !== userId) {
       throw new BadRequestException('Body userId must match the path userId');
@@ -122,7 +122,7 @@ export class AuthorizationController {
   async revokeRole(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.revokeRole(userId, roleId, ctx);
   }
@@ -133,7 +133,7 @@ export class AuthorizationController {
   async setFacilityAccess(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body(new ZodValidationPipe(SetFacilityAccessDtoSchema)) body: UpsertFacilityAccessInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.setFacilityAccess(userId, body, ctx);
   }
@@ -144,7 +144,7 @@ export class AuthorizationController {
   async setDepartmentAccess(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body(new ZodValidationPipe(SetDepartmentAccessDtoSchema)) body: SetDepartmentAccessInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.setDepartmentAccess(userId, body.departmentIds, ctx);
   }
@@ -154,7 +154,7 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'List roles' })
   async listRoles(
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.authorizationService.listRoles(ctx, Math.min(limit, 200));
   }
@@ -164,7 +164,7 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'Create a tenant-defined role' })
   async createRole(
     @Body(new ZodValidationPipe(CreateRoleDtoSchema)) body: CreateRoleInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.createRole(body, ctx);
   }
@@ -175,7 +175,7 @@ export class AuthorizationController {
   async updateRole(
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
     @Body(new ZodValidationPipe(UpdateRoleDtoSchema)) body: UpdateRoleInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.updateRole(roleId, body, ctx);
   }
@@ -186,7 +186,7 @@ export class AuthorizationController {
   async setPermissions(
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
     @Body(new ZodValidationPipe(SetPermissionsDtoSchema)) body: SetPermissionsInput,
-    @DbContext() ctx: DatabaseContext,
+    @DbContext() ctx: DatabaseContext
   ) {
     return this.authorizationService.setRolePermissions(roleId, body, ctx);
   }
@@ -195,7 +195,7 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'List the permission catalogue' })
   async listPermissions(
     @DbContext() ctx: DatabaseContext,
-    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(DEFAULT_PAGE_SIZE), ParseIntPipe) limit: number
   ) {
     return this.authorizationService.listPermissions(Math.min(limit, 1000), ctx);
   }

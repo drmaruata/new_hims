@@ -80,7 +80,7 @@ export function OpdQueueBoard() {
         setFailure(describeApiError(error));
       }
     },
-    [apply],
+    [apply]
   );
 
   useEffect(() => {
@@ -123,7 +123,10 @@ export function OpdQueueBoard() {
 
   if (failure) {
     return (
-      <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-900">
+      <div
+        role="alert"
+        className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-900"
+      >
         <h2 className="text-base font-bold">{failure.title}</h2>
         <p className="mt-1">{failure.detail}</p>
         {businessDate && (
@@ -141,7 +144,11 @@ export function OpdQueueBoard() {
 
   if (!appointments) {
     return (
-      <div role="status" aria-live="polite" className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div
+        role="status"
+        aria-live="polite"
+        className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500"
+      >
         Loading the OPD register…
       </div>
     );
@@ -160,15 +167,33 @@ export function OpdQueueBoard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200">
-            <caption className="sr-only">
-              Appointments booked for {businessDate}
-            </caption>
+            <caption className="sr-only">Appointments booked for {businessDate}</caption>
             <thead className="bg-slate-50">
               <tr>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Queue Token</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Queue Token
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Patient
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Department
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
@@ -188,7 +213,9 @@ export function OpdQueueBoard() {
                       {/* The UHID is the record. The patient's name is shown
                           beside it because a queue board is read by a human, not
                           an identifier — but the UHID stays the anchor. */}
-                      <span className="font-mono text-xs text-emerald-700">{appointment.patientUhid ?? '—'}</span>
+                      <span className="font-mono text-xs text-emerald-700">
+                        {appointment.patientUhid ?? '—'}
+                      </span>
                       {appointment.patientDisplayName && (
                         <span className="ml-2">{appointment.patientDisplayName}</span>
                       )}

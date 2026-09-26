@@ -7,18 +7,21 @@ import type { DispenseMedicationInput } from './dto/pharmacy.dto.js';
 export class PharmacyService {
   constructor(private readonly db: DatabaseService) {}
 
-  async getDispenseQueue(tenantId?: string, facilityId?: string | null): Promise<PharmacyDispenseOrder[]> {
+  async getDispenseQueue(
+    tenantId?: string,
+    facilityId?: string | null
+  ): Promise<PharmacyDispenseOrder[]> {
     return [
       {
-        id: '14141414-1414-1414-1414-141414141401',
-        tenantId: tenantId || '11111111-1111-1111-1111-111111111111',
-        facilityId: facilityId || '22222222-2222-2222-2222-222222222221',
+        id: '14141414-1414-4414-8414-141414141401',
+        tenantId: tenantId || '11111111-1111-4111-8111-111111111111',
+        facilityId: facilityId || '22222222-2222-4222-8222-222222222221',
         dispenseNumber: 'DISP-2026-0034',
-        patientId: '99999999-9999-9999-9999-999999999901',
+        patientId: '99999999-9999-4999-8999-999999999901',
         status: 'PENDING',
         items: [
           {
-            drugId: '15151515-1515-1515-1515-151515151501',
+            drugId: '15151515-1515-4515-8515-151515151501',
             drugName: 'Paracetamol 500mg Tablet',
             batchNumber: 'BATCH-2026-A12',
             expiryDate: '2028-06-30',
@@ -28,7 +31,7 @@ export class PharmacyService {
             totalAmount: 25.0,
           },
           {
-            drugId: '15151515-1515-1515-1515-151515151502',
+            drugId: '15151515-1515-4515-8515-151515151502',
             drugName: 'Pantoprazole 40mg Tablet',
             batchNumber: 'BATCH-2026-P09',
             expiryDate: '2027-12-31',
@@ -46,7 +49,11 @@ export class PharmacyService {
     ];
   }
 
-  async dispense(id: string, data: DispenseMedicationInput, pharmacistId: string): Promise<PharmacyDispenseOrder> {
+  async dispense(
+    id: string,
+    data: DispenseMedicationInput,
+    pharmacistId: string
+  ): Promise<PharmacyDispenseOrder> {
     const queue = await this.getDispenseQueue();
     const order = queue[0];
     order.status = 'DISPENSED';
@@ -55,4 +62,3 @@ export class PharmacyService {
     return order;
   }
 }
-

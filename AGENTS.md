@@ -166,7 +166,8 @@ Notes:
 - [supabase/config.toml](supabase/config.toml) — Supabase CLI project config; the link target for `db:push`.
 - [supabase/seed](supabase/seed) — opt-in development seed data.
 - [supabase/functions](supabase/functions), [supabase/tests](supabase/tests) — Edge Function boundary and database tests.
-- [infra/db](infra/db) — migration runner, cloud push wrapper, app-role provisioning, RLS verification.
+- [infra/db](infra/db) — migration runner, cloud push wrapper, application and platform role provisioning, RLS verification.
+- [infra/docker](infra/docker) — the shared image recipe for the API and both workers.
 - [infra/backup](infra/backup), [infra/monitoring](infra/monitoring) — operational baselines.
 - [infra/supabase](infra/supabase) — Supabase Cloud project setup and reachability check.
 - [scripts](scripts) — repo tooling, including the unscoped-DB-call finder.
@@ -224,10 +225,31 @@ pnpm format:check
 pnpm db:push
 pnpm db:seed
 pnpm db:provision-app-role
+pnpm db:provision-platform-role
 pnpm db:verify-rls   # needs HIMS_TENANT_ID
+pnpm db:verify-migration-ledger    # needs DATABASE_ADMIN_URL and psql
+pnpm db:reconcile-migration-ledger # the same, but renames drifted ledger versions
 pnpm db:migrate      # plain PostgreSQL only; refuses a cloud target
 pnpm db:reset        # destructive; needs HIMS_DB_RESET_CONFIRM=1
 ```
+
+The three Node services can also run as containers.
+[infra/docker/Dockerfile.app](infra/docker/Dockerfile.app) is one recipe
+parameterised by app directory, and [docker-compose.yml](docker-compose.yml)
+puts `api`, `worker` and `integration-worker` behind an `apps` profile so the
+supporting services still start without them:
+
+```bash
+docker compose up -d                          # Redis, Orthanc, Gotenberg, ClamAV, Mailpit, OpenSearch
+docker compose --profile apps up -d --build   # ...and the API and both workers
+```
+
+Compose passes an explicit allow-list of variables to those containers rather
+than `env_file`, so `DATABASE_ADMIN_URL` never enters a service runtime, and it
+rewrites the supporting-service URLs to Compose service names. `DATABASE_URL`,
+`DATABASE_PLATFORM_URL` and the Supabase keys are interpolated from the host
+`.env`, so nothing is baked into an image and `.dockerignore` keeps the
+filled-in `.env` files out of the build context.
 
 The platform layer is a **managed Supabase Cloud project** (see
 [ADR-0004](doc/ADR/0004-supabase-cloud-managed-platform.md)). No Supabase stack
@@ -287,9 +309,16 @@ node scripts/find-unscoped-db-calls.mjs apps/api/src
   migrations as Postgres init scripts, and do not add a second migration entry
   point — a divergent path is how a partially applied schema happens.
 - The cloud project is the single source of truth for its own schema version, in
-  `supabase_migrations.schema_migrations`. Nothing in this repository writes to
-  that table. A schema change is deployed only by `supabase db push`; anything
-  that applies SQL without recording a version has desynchronised it.
+  `supabase_migrations.schema_migrations`. A schema change is deployed either by
+  `supabase db push` or by the Supabase MCP server's `apply_migration`; anything
+  that applies SQL without recording a version has desynchronised it. The MCP
+  endpoint cannot be told which version to record, so a migration applied that
+  way always lands in the ledger under a timestamp its filename does not use.
+  The one thing in this repository that writes to that table is
+  `db:reconcile-migration-ledger`, and only to rename a drifted version back to
+  its filename — never to mark an unapplied migration as applied. Run
+  `pnpm db:verify-migration-ledger` before trusting either path; `db:push` runs
+  that check itself and refuses to push onto a drifted ledger.
 - [infra/db/seed.sh](infra/db/seed.sh) creates a demo tenant. It is development
   only and refuses a non-local host unless `HIMS_ALLOW_REMOTE_SEED=1`.
   [infra/db/reset-db.sh](infra/db/reset-db.sh) is destructive, drops every

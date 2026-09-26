@@ -52,6 +52,26 @@ if [ ! -f "$ROOT_DIR/supabase/.temp/project-ref" ]; then
 fi
 
 echo "Applying pending migrations to $(cat "$ROOT_DIR/supabase/.temp/project-ref")..."
+
+# Refuse to push onto a ledger that disagrees with the files.
+#
+# `db push` applies every filename absent from supabase_migrations, so a drifted
+# ledger -- which is what a migration applied through the Supabase MCP leaves
+# behind, because that endpoint stamps the version as the current time -- makes
+# it re-apply a migration that is already in the database. It fails on the first
+# object that already exists, which is survivable, but the obvious "fix" of
+# deleting the ledger row discards the record of what the database contains.
+#
+# Checking first turns that into one clear instruction. The check is read-only
+# and never repairs: repairing is a separate, explicit invocation, because a
+# wrong repair is the one failure this whole mechanism exists to prevent.
+#
+# This exits 0 with a warning when psql is absent, so a workstation without a
+# PostgreSQL client keeps working rather than being blocked on a nicety.
+if [ -f "$ROOT_DIR/infra/db/verify-migration-ledger.sh" ]; then
+  bash "$ROOT_DIR/infra/db/verify-migration-ledger.sh" || exit 1
+fi
+
 # Run from the repository root rather than passing --workdir. The CLI resolves
 # its project directory by walking up from the working directory looking for
 # supabase/config.toml, and --workdir is not one of the flags `db push` itself

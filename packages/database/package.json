@@ -24,6 +24,7 @@
     "pg": "catalog:"
   },
   "devDependencies": {
+    "@nestjs/testing": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "eslint": "catalog:",

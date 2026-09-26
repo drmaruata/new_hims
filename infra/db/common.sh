@@ -38,10 +38,10 @@ pg_url_host() {
 
 # Whether a PostgreSQL connection URL addresses a managed Supabase Cloud project.
 #
-# Cloud projects are served from `db.<project-ref>.supabase.com` directly and
-# from `aws-0-<region>.pooler.supabase.com` through the pooler. Both are
-# recognised; a hostname that merely *contains* the string is not matched, since
-# the point is to identify the platform, not to pattern-match text.
+# Cloud projects are served from `db.<project-ref>.supabase.co` directly and
+# from `aws-<index>-<region>.pooler.supabase.com` through the pooler. Note the
+# two different registrable domains: the direct host is under .co, the pooler
+# under .com, so both are matched.
 is_supabase_cloud_url() {
   local host
   host="$(pg_url_host "$1")"

@@ -23,6 +23,9 @@
     "db:seed": "bash infra/db/seed.sh",
     "db:reset": "bash infra/db/reset-db.sh",
     "db:provision-app-role": "bash infra/db/provision-app-role.sh",
+    "db:provision-platform-role": "bash infra/db/provision-platform-role.sh",
+    "db:verify-migration-ledger": "bash infra/db/verify-migration-ledger.sh",
+    "db:reconcile-migration-ledger": "bash infra/db/verify-migration-ledger.sh --reconcile",
     "db:verify-rls": "bash infra/db/verify-rls.sh",
     "prepare": "husky"
   },

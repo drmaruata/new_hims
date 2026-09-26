@@ -1,0 +1,28 @@
+# Line endings for files that are executed rather than parsed.
+#
+# This repository is developed on Windows, and two things execute these files on
+# Linux: the CI database job, and the container that hosts `psql` when no local
+# client is installed. Without an explicit rule, `core.autocrlf` on a Windows
+# checkout rewrites them to CRLF in the working tree, and what the Windows
+# working tree contains is what a bind mount into a Linux container hands over.
+#
+# A CRLF line ending in a bash script is tolerated by Git Bash — this was tested,
+# not assumed: a CRLF copy of a `set -euo pipefail` script exits 0 under
+# `C:\Program Files\Git\bin\bash.exe`. The hazard is not a syntax error, it is
+# that a CR can end up *inside* a value: in a heredoc, or in a SQL string
+# literal, where it becomes a silent part of the data rather than an error. That
+# is the failure mode these rules exist to prevent, so it is stated here rather
+# than left to be rediscovered.
+#
+# Only the executed formats are listed. Applying `text eol=lf` to everything
+# would rewrite line endings across the whole tree for no benefit, since JSON,
+# YAML and TypeScript are read by parsers that handle either ending.
+*.sh text eol=lf
+*.sql text eol=lf
+
+# Migrations are append-only and are applied to a live database, so a change to
+# one that has already run is a correctness incident, not a conflict to resolve.
+# `-merge` stops git from auto-merging these paths, which surfaces a concurrent
+# edit as a conflict a human has to look at, instead of a plausible-looking merge
+# that silently rewrites history the platform has already recorded.
+supabase/migrations/*.sql -merge

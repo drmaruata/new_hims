@@ -1997,7 +1997,12 @@ CREATE INDEX idx_patients_tenant_name ON hims_patient.patients(tenant_id, displa
 CREATE INDEX idx_patients_tenant_mobile ON hims_patient.patients(tenant_id, primary_mobile);
 CREATE INDEX idx_encounters_patient_time ON hims_clinical.encounters(tenant_id, patient_id, started_at DESC);
 CREATE INDEX idx_orders_patient_time ON hims_clinical.orders(tenant_id, patient_id, requested_at DESC);
-CREATE INDEX idx_lab_orders_status ON hims_lab.lab_orders(tenant_id, status, requested_at DESC);
+-- A lab order carries no timestamp of its own: `requested_at` belongs to the
+-- parent hims_clinical.orders, and this row is reached through order_id. The
+-- index therefore stops at (tenant_id, status), which is what a lab worklist
+-- selects on; ordering that worklist by recency means joining to the parent
+-- order rather than adding a second copy of the same time here.
+CREATE INDEX idx_lab_orders_status ON hims_lab.lab_orders(tenant_id, status);
 CREATE INDEX idx_rad_orders_status ON hims_rad.imaging_orders(tenant_id, status, accession_number);
 CREATE INDEX idx_stock_expiry ON hims_inventory.stock_lots(tenant_id, expiry_date);
 CREATE INDEX idx_claims_status ON hims_insurance.claims(tenant_id, status, submitted_at);

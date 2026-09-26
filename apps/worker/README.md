@@ -61,9 +61,13 @@ Beyond the shared env contract in `@hims/config`:
 | `OUTBOX_RETENTION_DAYS`       | `30`    | Published events are pruned after this.                                                               |
 | `OUTBOX_STUCK_MINUTES`        | `5`     | `IN_FLIGHT` age before the sweeper assumes a dead relay.                                              |
 | `OUTBOX_MAX_PUBLISH_ATTEMPTS` | `5`     | Relay failures before an event goes `DEAD`.                                                           |
-| `WORKER_POOL_MAX`             | `10`    | Tenant-scoped pool size.                                                                              |
 | `PLATFORM_POOL_MAX`           | `4`     | Cross-tenant pool size.                                                                               |
 | `CLAMAV_BASE_URL`             | —       | Without it, documents are never marked scanned.                                                       |
+
+`DATABASE_PLATFORM_URL` is a **second, distinct role**, not another way of
+spelling `DATABASE_URL`. Provision it once with `pnpm db:provision-platform-role`
+and see [infra/db/README.md](../../../infra/db/README.md) for the grant set; the
+worker is the only process that is ever given it.
 
 ## Running
 
@@ -71,6 +75,14 @@ Beyond the shared env contract in `@hims/config`:
 pnpm --filter @hims/worker dev     # watch build + run
 pnpm --filter @hims/worker build
 pnpm --filter @hims/worker start
+```
+
+The same process also runs as a built container from
+[infra/docker/Dockerfile.app](../../../infra/docker/Dockerfile.app), which is one
+recipe parameterised by service:
+
+```bash
+docker compose --profile apps up -d worker
 ```
 
 ## What a processor has to do before it is finished

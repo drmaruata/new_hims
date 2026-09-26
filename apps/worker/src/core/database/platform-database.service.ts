@@ -72,23 +72,40 @@ export class PlatformDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
-    const client = await this.pool.connect();
+    // Tolerant of a failed connection, unlike the constructor. The check below
+    // is a diagnostic, not a precondition: a database that is briefly
+    // unreachable at boot must not become a crash loop, and the rest of the
+    // worker — BullMQ consumers, the dead-letter sweep, Sentry — is still worth
+    // running so the failure is visible and the process recovers on its own.
+    // This mirrors `DatabaseService.onModuleInit`; the two pools must not
+    // disagree about whether an unreachable database is fatal.
     try {
-      // Verified rather than assumed. If the role lacks BYPASSRLS the drain
-      // silently reads nothing, so this is the difference between a loud
-      // misconfiguration and a hospital that stops receiving events.
-      const { rows } = await client.query<{ bypassrls: boolean }>(
-        'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user'
-      );
-      if (!rows[0]?.bypassrls) {
-        this.logger.error(
-          'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant reads will return zero rows. Grant it to this role only.'
+      const client = await this.pool.connect();
+      try {
+        // Verified rather than assumed. If the role lacks BYPASSRLS the drain
+        // silently reads nothing, so this is the difference between a loud
+        // misconfiguration and a hospital that stops receiving events.
+        const { rows } = await client.query<{ bypassrls: boolean }>(
+          'SELECT rolbypassrls AS bypassrls FROM pg_roles WHERE rolname = current_user'
         );
-      } else {
-        this.logger.log('Platform role verified: BYPASSRLS is set');
+        if (!rows[0]?.bypassrls) {
+          this.logger.error(
+            'The DATABASE_PLATFORM_URL role does not have BYPASSRLS. Cross-tenant reads will return zero rows. Grant it to this role only.'
+          );
+        } else {
+          this.logger.log('Platform role verified: BYPASSRLS is set');
+        }
+      } finally {
+        client.release();
       }
-    } finally {
-      client.release();
+    } catch (error) {
+      // The relay will fail its own queries, and each one logs, so the outage
+      // is not silent — but the worker stays up rather than restarting on a
+      // timer and losing the BullMQ connection state every time.
+      this.logger.warn(
+        `Initial platform database connection failed: ${(error as Error).message}. ` +
+          'The outbox relay and the dead-letter sweep will report their own failures until this recovers.'
+      );
     }
   }
 

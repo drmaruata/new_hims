@@ -39,8 +39,8 @@ The system is structured as a high-performance modular monolith with strict doma
        └──────────────────────────────────┼──────────────────────────────────┘
                                           │
                     ┌─────────────────────▼──────────────────────┐
-                    │            SELF-HOSTED SUPABASE            │
-                    │ PostgreSQL 18 | Auth | Realtime | Storage  │
+                    │            MANAGED SUPABASE CLOUD          │
+                    │ PostgreSQL | Auth | Realtime | Storage     │
                     └─────────────────────┬──────────────────────┘
                                           │
                ┌──────────────────────────┼───────────────────────────┐
@@ -90,13 +90,14 @@ hims/
 │
 ├── infra/
 │   ├── supabase/                 # Supabase Cloud project setup guide
-│   ├── docker/                   # Docker Compose supporting-service infrastructure
+│   ├── docker/                   # Dockerfile.app — one image recipe for api, worker, integration-worker
 │   ├── k8s/                      # Kubernetes manifests & Helm charts
 │   └── terraform/                # Infrastructure-as-Code definitions
 │
 ├── doc/                        # Architecture blueprints, SRS, PRD, API contract, schemas
 ├── package.json                # Turborepo and pnpm workspace configuration
-└── docker-compose.yml          # Local developer stack (Postgres, Redis, Orthanc, Gotenberg, etc.)
+└── docker-compose.yml          # Local developer stack (Redis, Orthanc, Gotenberg, ClamAV, Mailpit,
+                                # OpenSearch + an `apps` profile for api, worker, integration-worker)
 ```
 
 ---
@@ -148,15 +149,29 @@ See [infra/supabase/README.md](infra/supabase/README.md) for the full walkthroug
 ### 3. Start Supporting Infrastructure
 
 ```bash
-docker-compose up -d
+docker compose up -d                # Redis, Orthanc, Gotenberg, ClamAV, Mailpit, OpenSearch
 ```
+
+There is deliberately **no PostgreSQL service in Compose**: the database, auth,
+storage and realtime come from the Supabase Cloud project. `docker-compose.yml`
+puts the three Node services behind an `apps` profile so they stay out of the way
+until you ask for them:
+
+```bash
+docker compose --profile apps up -d          # ...plus api, worker, integration-worker
+```
+
+They are built images, not watch containers. [infra/docker/Dockerfile.app](infra/docker/Dockerfile.app)
+is one recipe parameterised by service, and [`.dockerignore`](.dockerignore) keeps
+the filled-in `.env` files out of every layer.
 
 ### 4. Initialize Database Migrations & Seeds
 
 ```bash
-pnpm db:push                  # apply pending migrations to the cloud project
-pnpm db:seed                  # development seed; needs HIMS_ALLOW_REMOTE_SEED=1
-pnpm db:provision-app-role    # create the non-BYPASSRLS hims_app role
+pnpm db:push                       # apply pending migrations to the cloud project
+pnpm db:seed                       # development seed; needs HIMS_ALLOW_REMOTE_SEED=1
+pnpm db:provision-app-role         # create the non-BYPASSRLS hims_app role
+pnpm db:provision-platform-role    # create the BYPASSRLS hims_platform role (worker outbox drain)
 ```
 
 ### 5. Start Development Servers

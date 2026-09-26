@@ -103,8 +103,8 @@ export const SupabaseEnvSchema = z.object({
 
   /**
    * The 20-character project slug Supabase assigns when the project is created,
-   * visible in both the API hostname (`<ref>.supabase.co`) and the database
-   * hostname (`db.<ref>.supabase.com`).
+   * visible in both the API hostname (`<ref>.supabase.co`) and the direct
+   * database hostname (`db.<ref>.supabase.co`).
    *
    * Not needed to connect — `DATABASE_URL` is complete on its own. It is
    * recorded separately because the pooler hostname is built from the ref *and*
@@ -122,8 +122,10 @@ export const SupabaseEnvSchema = z.object({
 
   /**
    * The project's region, for example `ap-south-1`. Supabase's connection pooler
-   * is per-region: `aws-0-<region>.pooler.supabase.com`. Optional for the same
-   * reason as `SUPABASE_PROJECT_REF`, and shape-checked when present.
+   * is per-region: `aws-<index>-<region>.pooler.supabase.com`, where `index` is
+   * a pooler cluster number that is not derivable from the region, so the exact
+   * host has to be copied from the project's Connect dialog. Optional for the
+   * same reason as `SUPABASE_PROJECT_REF`, and shape-checked when present.
    */
   SUPABASE_REGION: z
     .string()
@@ -164,17 +166,6 @@ export const WorkerEnvSchema = z.object({
   WORKER_OUTBOX_BATCH_SIZE: z.coerce.number().int().positive().default(100),
   WORKER_OUTBOX_POLL_MS: z.coerce.number().int().positive().default(1_000),
   OUTBOX_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
-
-  /**
-   * Connection-pool size for a worker's tenant-scoped pool.
-   *
-   * Not the API's `DATABASE_POOL_MAX`: a worker's in-flight job count is
-   * `WORKER_CONCURRENCY`, so the pool is sized to that rather than to a
-   * request rate. Sizing it independently is what stops a wide worker from
-   * holding `WORKER_CONCURRENCY` connections open against the same server the
-   * API is serving from.
-   */
-  WORKER_POOL_MAX: z.coerce.number().int().positive().default(10),
 
   /**
    * Connection-pool size for the cross-tenant platform pool.

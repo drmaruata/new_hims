@@ -1,3 +1,89 @@
+# Local developer stack.
+#
+# Division of responsibility: the platform layer — PostgreSQL, Auth, Storage,
+# Realtime, the Data API — is the managed Supabase Cloud project described in
+# infra/supabase/README.md and is deliberately absent here. Everything else the
+# system needs at runtime is in this file: the supporting services (Redis,
+# Orthanc, Gotenberg, ClamAV, Mailpit, OpenSearch) and the three Node services
+# that talk to Supabase over the network.
+#
+#   docker compose up -d                          # supporting services only
+#   docker compose --profile apps up -d --build   # ...and the API and workers
+#
+# The Node services sit behind the `apps` profile so `docker compose up -d` stays
+# fast for the common case of "I only need Redis and the PACS". A running
+# `pnpm dev` and the containers are alternatives, not peers: run the port once.
+#
+# Configuration is never copied into an image. Each service below receives an
+# explicit allow-list of variables that Compose interpolates from the host `.env`,
+# and the supporting-service URLs are rewritten to Compose service names — the
+# same variables that say `localhost` on the host say `redis` in here.
+# ---------------------------------------------------------------------------
+# Shared environment for the three Node services.
+#
+# An allow-list, not `env_file: .env`. Two reasons, and the second is not
+# stylistic:
+#
+#   1. `env_file` would also inject DATABASE_ADMIN_URL and HIMS_DB_APP_PASSWORD.
+#      The admin connection is the Supabase `postgres` role, which holds
+#      BYPASSRLS; handing it to a running service puts a migration credential
+#      and a tenant-isolation bypass in the same container as request handling.
+#      infra/db/README.md and doc/THREAT_MODEL.md both require it to be absent
+#      from the API and worker runtime.
+#   2. It would silently forward the host's `localhost` service URLs, which
+#      resolve to the container itself. The values below are the same settings
+#      rewritten to Compose service names.
+#
+# `:?` makes Compose refuse to start with a readable message when a required
+# value is missing, rather than leaving a container to crash-loop on a Zod error.
+# ---------------------------------------------------------------------------
+x-hims-service-env: &hims-service-env
+  NODE_ENV: ${NODE_ENV:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+  # Supabase Cloud over the pooler, TLS on. `loadEnv` refuses to start a cloud
+  # URL without DATABASE_SSL, so this cannot be quietly turned off.
+  DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the non-BYPASSRLS hims_app connection}
+  DATABASE_SSL: ${DATABASE_SSL:-true}
+  DATABASE_POOL_MAX: ${DATABASE_POOL_MAX:-25}
+  SUPABASE_URL: ${SUPABASE_URL:?Set SUPABASE_URL to the project API URL}
+  SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:?Set SUPABASE_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+  SUPABASE_JWKS_URL: ${SUPABASE_JWKS_URL:-}
+  SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-}
+  SUPABASE_JWT_AUDIENCE: ${SUPABASE_JWT_AUDIENCE:-authenticated}
+  SUPABASE_JWT_ISSUER: ${SUPABASE_JWT_ISSUER:-}
+  SUPABASE_PROJECT_REF: ${SUPABASE_PROJECT_REF:-}
+  SUPABASE_REGION: ${SUPABASE_REGION:-}
+  STORAGE_BUCKET: ${STORAGE_BUCKET:-hims-documents}
+  # On the correctness path, not a hardening option: patient identifiers are
+  # looked up by HMAC digest, so a wrong key makes them unresolvable.
+  PATIENT_IDENTIFIER_HASH_KEY: ${PATIENT_IDENTIFIER_HASH_KEY:?Set PATIENT_IDENTIFIER_HASH_KEY to at least 32 characters}
+  # Passed through as configured. `loadEnv` reads this from the raw environment
+  # and refuses to boot a production process with it set, so clearing it in `.env`
+  # is the switch between the development and production auth contracts.
+  AUTH_DEV_FALLBACK: ${AUTH_DEV_FALLBACK:-}
+
+  # Redis, by Compose service name. The container reaches it over the shared
+  # hims-network rather than the published host port.
+  REDIS_URL: redis://redis:6379
+  REDIS_HOST: redis
+  REDIS_PORT: '6379'
+  REDIS_TLS: 'false'
+
+  # Supporting services, by Compose service name. The names match the keys in
+  # AppEnvSchema (ORTHANC_BASE_URL and friends) — note that `.env` also carries
+  # ORTHANC_URL/CLAMAV_HOST, which the schema does not read.
+  ORTHANC_BASE_URL: http://orthanc:8042
+  ORTHANC_DICOMWEB_BASE_URL: http://orthanc:8042/dicom-web
+  ORTHANC_USERNAME: ${ORTHANC_USERNAME:-orthanc}
+  ORTHANC_PASSWORD: ${ORTHANC_PASSWORD:-orthanc}
+  GOTENBERG_BASE_URL: http://gotenberg:3000
+  CLAMAV_BASE_URL: http://clamav:3310
+  OPENSEARCH_URL: http://opensearch:9200
+  SMTP_HOST: mailpit
+  SMTP_PORT: '1025'
+
 services:
   # Supporting services only. PostgreSQL/Auth/Realtime/Storage come from the managed Supabase Cloud project described in infra/supabase/README.md and are deliberately absent here.
   redis:
@@ -67,6 +153,107 @@ services:
       - '9200:9200'
     volumes:
       - opensearch-data:/usr/share/opensearch/data
+
+  # ---------------------------------------------------------------------------
+  # Node services
+  #
+  # One image recipe, three services: infra/docker/Dockerfile.app takes the app
+  # directory as a build argument. All three run `node dist/main.js` against a
+  # directory produced by `pnpm deploy`, so there is no per-service command.
+  # ---------------------------------------------------------------------------
+
+  # HIMS API — the only HTTP listener. The other two serve nothing, which is why
+  # the port mapping and the health check live on this service alone.
+  api:
+    profiles: ['apps']
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.app
+      args:
+        APP: api
+    image: hims/api:local
+    container_name: hims-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      <<: *hims-service-env
+      # `HOST` rather than `API_HOST`: loadEnv reads HOST, and it defaults to
+      # 0.0.0.0 anyway. `PORT` is 4000 to match the mapping above, and the
+      # global prefix is hard-coded in src/http-app.config.ts, not configurable.
+      HOST: 0.0.0.0
+      PORT: '4000'
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,http://localhost:8081}
+      # 0, not the default of 1: nothing proxies the API in this stack, so
+      # trusting X-Forwarded-For would let any client forge its own IP into the
+      # rate limiter and the audit log.
+      TRUST_PROXY_HOPS: '0'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # Liveness, not readiness. /health answers from process state alone;
+      # /health/ready also pings PostgreSQL, and a probe that fails on a slow
+      # database restarts the service precisely when it is most needed.
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # BullMQ worker — outbox relay, document processing, scheduled jobs.
+  worker:
+    profiles: ['apps']
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.app
+      args:
+        APP: worker
+    image: hims/worker:local
+    container_name: hims-worker
+    restart: unless-stopped
+    environment:
+      <<: *hims-service-env
+      # The outbox drain and the dead-letter sweep span every tenant, so they
+      # need BYPASSRLS. That is a real privilege and it is confined to this one
+      # pool: DATABASE_URL below still connects as the non-BYPASSRLS
+      # hims_app role, and DATABASE_ADMIN_URL is deliberately absent from this
+      # container so the workers cannot reach the migration credential.
+      DATABASE_PLATFORM_URL: ${DATABASE_PLATFORM_URL:?Set DATABASE_PLATFORM_URL to the hims_platform role created by pnpm db:provision-platform-role}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # External integration worker — ABDM/FHIR/HL7/DICOM dispatch and dead letters.
+  integration-worker:
+    profiles: ['apps']
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.app
+      args:
+        APP: integration-worker
+    image: hims/integration-worker:local
+    container_name: hims-integration-worker
+    restart: unless-stopped
+    environment:
+      <<: *hims-service-env
+      DATABASE_PLATFORM_URL: ${DATABASE_PLATFORM_URL:?Set DATABASE_PLATFORM_URL to the hims_platform role created by pnpm db:provision-platform-role}
+    depends_on:
+      redis:
+        condition: service_healthy
+      # These are dependencies of the work, not of the boot: nothing connects to
+      # Orthanc or Gotenberg until a job needs it, so the containers are not
+      # waited on and a slow PACS start cannot hold the worker up.
+      orthanc:
+        condition: service_started
+      gotenberg:
+        condition: service_started
 
 volumes:
   redis-data:

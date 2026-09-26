@@ -1,0 +1,49 @@
+# Build context for the application images (see infra/docker/Dockerfile.app).
+#
+# Everything the image needs to install, compile and run is inside apps/,
+# packages/ and the four root manifests. Everything below is either host state
+# that would shadow the container's own, or a file that has no business being
+# in an image layer.
+#
+# One exclusion here is a security control rather than a size optimisation: the
+# filled-in .env files hold a live Supabase project ref, database passwords and
+# the service-role key. A credential copied into a layer stays in the image
+# history long after the file is deleted from the working tree, so they are
+# excluded unconditionally. Configuration reaches a container through its
+# environment, assembled by docker-compose.yml from the host .env.
+
+# Host install and build output. Copying these in shadows the image's own
+# node_modules and dist, and on Windows the host ones contain platform-specific
+# optional dependencies that do not belong in a Linux image.
+**/node_modules
+**/dist
+**/build
+**/.next
+**/.turbo
+**/.expo
+**/coverage
+**/*.tsbuildinfo
+
+# Secrets.
+.env
+.env.*
+
+# VCS, CI and tooling state.
+.git
+.gitattributes
+.github
+.husky
+
+# Documentation and database tooling: not read by tsc or by node at runtime.
+*.md
+doc
+supabase
+infra/monitoring
+infra/backup
+scripts
+
+# Frontend-only config. The API and both workers are built with tsc and run with
+# node, so nothing here is read.
+.prettierrc.json
+.prettierignore
+eslint.config.base.mjs

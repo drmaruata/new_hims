@@ -54,16 +54,23 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly pool: Pool;
   private ready = false;
 
-  constructor(
-    private readonly configService: ConfigService,
-    /**
-     * Connection-pool size. Left at the API's `DATABASE_POOL_MAX` default
-     * because the API is the only consumer today; a worker that wants a
-     * different size sets it in its own `ConfigModule` and gets a different
-     * pool from its own instantiation of this provider.
-     */
-    poolSizeKey = 'DATABASE_POOL_MAX'
-  ) {
+  /**
+   * ## Why the config key is read inline rather than taken as a parameter
+   *
+   * This constructor used to accept a second `poolSizeKey` argument defaulting
+   * to `'DATABASE_POOL_MAX'`, so each app could name its own key. Nothing ever
+   * passed it, and the flexibility was actively harmful: TypeScript infers the
+   * type of a string-literal default as a *literal* type, for which there is no
+   * runtime class, so `tsc` emitted `__metadata("design:paramtypes",
+   * [ConfigService, Object])`. Nest then tried to resolve a provider for the
+   * `Object` token and every service in every app failed to boot with
+   * `Nest can't resolve dependencies of the DatabaseService (?, Object)`.
+   *
+   * A constructor parameter used for DI must be a class. A config key is a
+   * string, so it belongs inside the constructor body. `DatabaseModule` imports
+   * `ConfigModule` precisely so `ConfigService` is a class at index 0.
+   */
+  constructor(private readonly configService: ConfigService) {
     const databaseUrl = this.configService.get<string>('DATABASE_URL');
     if (!databaseUrl) {
       throw new Error(
@@ -75,7 +82,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       withDatabaseTls(
         {
           connectionString: databaseUrl,
-          max: this.configService.get<number>(poolSizeKey, 20),
+          max: this.configService.get<number>('DATABASE_POOL_MAX', 20),
           idleTimeoutMillis: 30_000,
           connectionTimeoutMillis: 5_000,
           // The API role must NOT have BYPASSRLS, otherwise every policy in the

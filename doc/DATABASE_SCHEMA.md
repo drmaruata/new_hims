@@ -1970,8 +1970,8 @@ Examples:
 CREATE INDEX idx_encounters_tenant_patient_time
   ON hims_clinical.encounters (tenant_id, patient_id, started_at DESC);
 
-CREATE INDEX idx_lab_orders_tenant_status
-  ON hims_lab.lab_orders (tenant_id, status, requested_at DESC);
+CREATE INDEX idx_lab_orders_status
+  ON hims_lab.lab_orders (tenant_id, status);
 
 CREATE INDEX idx_queue_tickets_tenant_queue_state
   ON hims_opd.queue_tickets (tenant_id, queue_id, state, token_number);

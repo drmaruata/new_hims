@@ -28,7 +28,7 @@
 
 # Placeholder. `supabase link --project-ref` overwrites this with the real ref,
 # which is the 20-character slug in both the API and database hostnames.
-project_id = "REPLACE_WITH_PROJECT_REF"
+project_id = "ieizuaklonbqpfzoctwp"
 
 [db]
 # Only meaningful for a local Supabase stack, which this project does not use.
